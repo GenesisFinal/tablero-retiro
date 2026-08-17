@@ -6,27 +6,15 @@
     "periodo_fin": "2026-07",
     "ultima_actualizacion": "Julio 2026",
     "ejercicio_vigente": "2026/2027",
-    "regimen_ejercicios": "01 de julio a 30 de junio",
-    "fuentes": [
-      {
-        "nombre": "La Segunda Retiro",
-        "descripcion": "Balances y Estados Contables Mensuales Auditados"
-      },
-      {
-        "nombre": "Alberto Fastman y Asociados",
-        "descripcion": "Informe de Rentabilidad de Fondos por Ejercicio"
-      },
-      {
-        "nombre": "INDEC",
-        "descripcion": "Índice de Precios al Consumidor (IPC Cobertura Nacional)"
-      },
-      {
-        "nombre": "Banco Nación Argentina",
-        "descripcion": "Tipo de Cambio Mayorista Vendedor (BNA Com A 3500)"
-      }
-    ],
-    "looker_studio_url": "https://datastudio.google.com/reporting/0967cadf-978d-4878-b1fe-ff2b61d9a6ac/page/p_sqiys20e6d",
-    "looker_studio_embed": "https://lookerstudio.google.com/embed/reporting/0967cadf-978d-4878-b1fe-ff2b61d9a6ac/page/p_sqiys20e6d"
+    "cierre_julio_2026": {
+      "tipo_cambio_bna": 1485.00,
+      "primas_pesos": 1933937911.00,
+      "primas_usd": 229991.00,
+      "primas_consolidado_pesos": 2275474323.00,
+      "rentas_pesos": 150551010.00,
+      "rescates_pesos": -356570460.00,
+      "flujo_neto_pesos": 1426816441.00
+    }
   },
   "ejercicios": [
     {
@@ -34,7 +22,8 @@
       "nombre": "Ejercicio 2026/2027",
       "rango": "01/07/2026 al 30/06/2027",
       "estado": "En curso",
-      "meses_computados": 1
+      "meses_computados": 1,
+      "primas_consolidado_acumuladas": 2275474323.00
     },
     {
       "id": "2025-2026",
