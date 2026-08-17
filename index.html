@@ -204,30 +204,25 @@
         </nav>
       </div>
 
-      <!-- Auto-Update & Status Controls -->
-      <div class="flex items-center gap-3 flex-wrap">
-        <!-- Interval Selector -->
-        <div class="flex items-center gap-1.5 bg-slate-900/90 px-2.5 py-1 rounded-lg border border-slate-800 text-[11px]">
-          <i data-lucide="timer" class="w-3.5 h-3.5 text-emerald-400"></i>
-          <span class="text-slate-400 hidden sm:inline">Auto-Actualizar:</span>
-          <select id="auto-refresh-select" onchange="changeRefreshInterval(this.value)" class="bg-transparent text-emerald-300 font-mono font-semibold outline-none cursor-pointer">
-            <option value="0" class="bg-slate-900 text-slate-300">Pausado</option>
-            <option value="30" class="bg-slate-900 text-slate-300">Cada 30s</option>
-            <option value="60" class="bg-slate-900 text-slate-300" selected>Cada 1 min</option>
-            <option value="300" class="bg-slate-900 text-slate-300">Cada 5 min</option>
-            <option value="600" class="bg-slate-900 text-slate-300">Cada 10 min</option>
-          </select>
-          <span id="countdown-badge" class="font-mono text-emerald-400 font-bold ml-1 bg-emerald-950 px-1.5 py-0.2 rounded border border-emerald-800">60s</span>
+      <!-- Status & Manual / Weekly Refresh Controls -->
+      <div class="flex items-center gap-2.5 flex-wrap">
+        
+        <!-- Weekly Frequency & Status Indicator -->
+        <div class="flex items-center gap-2 bg-slate-900/90 px-3 py-1.5 rounded-xl border border-slate-800 text-[11px] font-mono shadow-sm">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span class="text-slate-400">Frecuencia:</span>
+          <span class="text-emerald-300 font-bold">Semanal</span>
+          <span id="last-sync-badge" class="text-[10px] text-slate-400"></span>
         </div>
 
-        <!-- Manual Refresh Button -->
-        <button onclick="manualRefresh()" id="btn-refresh-manual" class="flex items-center gap-1 px-2.5 py-1 bg-emerald-950 hover:bg-emerald-900 border border-emerald-700/50 text-emerald-200 rounded-lg transition text-[11px] font-mono shadow-sm">
-          <i data-lucide="refresh-cw" id="icon-refresh" class="w-3.5 h-3.5 text-emerald-400 transition"></i>
-          <span>Actualizar</span>
+        <!-- Prominent Manual Refresh Button -->
+        <button onclick="manualRefresh()" id="btn-refresh-manual" class="flex items-center gap-2 px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-semibold rounded-xl transition text-xs font-mono shadow-md shadow-emerald-950/40">
+          <i data-lucide="refresh-cw" id="icon-refresh" class="w-3.5 h-3.5 transition"></i>
+          <span>Actualizar Datos</span>
         </button>
 
         <!-- GitHub Repo Link -->
-        <a href="https://github.com/GenesisFinal/tablero-retiro" target="_blank" class="flex items-center gap-1 px-2.5 py-1 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white rounded-lg transition text-[11px]">
+        <a href="https://github.com/GenesisFinal/tablero-retiro" target="_blank" class="flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white rounded-xl transition text-xs font-mono shadow-sm">
           <i data-lucide="github" class="w-3.5 h-3.5"></i>
           <span class="hidden md:inline">GitHub</span>
         </a>
@@ -1481,36 +1476,63 @@
       renderAllChartsAndKPIs();
     }
 
-    function startAutoRefreshLoop() {
-      if (refreshIntervalHandle) clearInterval(refreshIntervalHandle);
-      refreshIntervalHandle = setInterval(() => {
-        if (refreshTimerSeconds === 0) return;
+    // =========================================================================
+    // MOTOR DE ACTUALIZACIÓN SEMANAL Y A DEMANDA
+    // =========================================================================
+    const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
-        refreshRemaining--;
-        const badge = document.getElementById('countdown-badge');
-        if (badge) badge.textContent = refreshRemaining + 's';
+    function updateLastSyncDisplay() {
+      const lastSyncStr = localStorage.getItem('last_tablero_sync');
+      const badge = document.getElementById('last-sync-badge');
+      if (!badge) return;
+      if (lastSyncStr) {
+        const d = new Date(parseInt(lastSyncStr, 10));
+        const dayNames = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+        const day = dayNames[d.getDay()];
+        const time = d.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+        badge.textContent = `(Sinc: ${day} ${time})`;
+      } else {
+        badge.textContent = ``;
+      }
+    }
 
-        if (refreshRemaining <= 0) {
-          refreshRemaining = refreshTimerSeconds;
-          triggerAutoSync();
+    function initWeeklyAutoRefresh() {
+      const lastSyncStr = localStorage.getItem('last_tablero_sync');
+      const now = Date.now();
+      
+      // Si nunca se sincronizó o transcurrieron más de 7 días, ejecutar actualización automática
+      if (!lastSyncStr || (now - parseInt(lastSyncStr, 10) > ONE_WEEK_MS)) {
+        console.log('[AGMD Sync] Ejecutando sincronización automática semanal...');
+        manualRefresh();
+      } else {
+        updateLastSyncDisplay();
+      }
+
+      // Intervalo de chequeo diario para ejecutar cuando cumpla los 7 días
+      setInterval(() => {
+        const curLast = localStorage.getItem('last_tablero_sync');
+        if (!curLast || (Date.now() - parseInt(curLast, 10) > ONE_WEEK_MS)) {
+          console.log('[AGMD Sync] Ciclo semanal cumplido. Actualizando dataset...');
+          manualRefresh();
         }
-      }, 1000);
+      }, 24 * 60 * 60 * 1000);
     }
 
-    function triggerAutoSync() {
-      renderAllChartsAndKPIs();
-      console.log(`[AGMD Auto-Sync] Sincronizado a las ${new Date().toLocaleTimeString('es-AR')}`);
-    }
-
-    function manualRefresh() {
+    async function manualRefresh() {
       const icon = document.getElementById('icon-refresh');
+      const btn = document.getElementById('btn-refresh-manual');
       if (icon) icon.classList.add('animate-spin');
+      if (btn) btn.disabled = true;
 
-      triggerAutoSync();
+      await loadExternalDatasetAndRender();
+      localStorage.setItem('last_tablero_sync', Date.now().toString());
+      updateLastSyncDisplay();
+      console.log(`[AGMD Sincronización] Datos actualizados exitosamente a las ${new Date().toLocaleTimeString('es-AR')}`);
 
       setTimeout(() => {
         if (icon) icon.classList.remove('animate-spin');
-      }, 800);
+        if (btn) btn.disabled = false;
+      }, 700);
     }
 
     // 7. CONTROLS STATE CHANGES
@@ -2354,8 +2376,8 @@
     window.addEventListener('DOMContentLoaded', async () => {
       await loadExternalDatasetAndRender();
       setEjercicio('12m');
-      startAutoRefreshLoop();
-      console.log("[AGMD Tablero Retiro] Tablero con carga dinámica desde data_retiro.json inicializado en L12M.");
+      initWeeklyAutoRefresh();
+      console.log("[AGMD Tablero Retiro] Tablero con carga dinámica y sincronización semanal inicializado en L12M.");
     });
   </script>
 </body>
