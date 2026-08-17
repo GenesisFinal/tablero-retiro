@@ -256,7 +256,7 @@
             </span>
           </div>
           <p class="text-xs text-slate-400 mt-0.5 flex items-center gap-2 flex-wrap">
-            <span>Evolución mensual por Ejercicio Económico (01/07 al 30/06)</span>
+            <span>Evolución mensual por Ejercicio Económico (01/07 al 30/06) & Últimos 12M</span>
             <span class="text-slate-600">•</span>
             <span class="text-emerald-400 font-mono font-semibold" id="header-periodo-tag">Información Oficial al 31/07/2026 (Julio 2026)</span>
           </p>
@@ -320,17 +320,20 @@
     <!-- ======================================================== -->
     <div class="glass-card rounded-2xl p-4 space-y-3 shadow-xl">
       
-      <!-- FILA 1: SELECTOR DE EJERCICIO ECONÓMICO (01/07 a 30/06) -->
+      <!-- FILA 1: SELECTOR DE EJERCICIO ECONÓMICO & ÚLTIMOS 12 MESES -->
       <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pb-3 border-b border-slate-800">
         <div class="flex items-center gap-2">
           <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 inline-block pulse-dot"></span>
-          <span class="text-xs font-mono uppercase font-bold text-emerald-300">Ejercicio Económico (01/07 a 30/06):</span>
+          <span class="text-xs font-mono uppercase font-bold text-emerald-300">Período / Ejercicio Económico:</span>
         </div>
 
-        <!-- Botones Directos de Ejercicios -->
+        <!-- Botones Directos de Períodos -->
         <div class="flex items-center gap-1.5 flex-wrap" id="bg-ejercicios">
           <button onclick="setEjercicio('2026-2027')" id="btn-ej-2026-2027" class="btn-toggle active px-3 py-1.5 text-xs rounded-xl font-mono transition">
             ⭐ Ej. 2026/2027 (Jul 26 En curso)
+          </button>
+          <button onclick="setEjercicio('12m')" id="btn-ej-12m" class="btn-toggle px-3 py-1.5 text-xs rounded-xl font-mono transition">
+            📅 Últimos 12 Meses (L12M)
           </button>
           <button onclick="setEjercicio('2025-2026')" id="btn-ej-2025-2026" class="btn-toggle px-3 py-1.5 text-xs rounded-xl font-mono transition">
             Ej. 2025/2026 (Jul 25 - Jun 26)
@@ -392,7 +395,7 @@
       </div>
     </div>
 
-    <!-- BANNER DESCRIPTIVO DEL EJERCICIO ACTIVO -->
+    <!-- BANNER DESCRIPTIVO DEL PERÍODO/EJERCICIO ACTIVO -->
     <div class="flex items-center justify-between text-xs text-slate-400 bg-slate-950/70 p-3 rounded-xl border border-slate-800 font-mono">
       <div class="flex items-center gap-2">
         <i data-lucide="info" class="w-4 h-4 text-emerald-400"></i>
@@ -658,7 +661,7 @@
               <tr>
                 <th class="py-2.5 px-3 text-left">Período / Ejercicio</th>
                 <th class="py-2.5 px-3 text-right text-emerald-400">IPC Acumulada</th>
-                <th class="py-2.5 px-3 text-right text-emerald-400">IPC Anualizada</th>
+                <th class="py-2.5 px-3 text-right text-emerald-300">IPC Anualizada</th>
                 <th class="py-2.5 px-3 text-right text-amber-400">TC BNA Acumulado</th>
                 <th class="py-2.5 px-3 text-right text-amber-400">TC BNA Anualizado</th>
               </tr>
@@ -838,7 +841,7 @@
     <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
       <div>
         <p class="font-mono text-slate-400">Tablero Seguros de Retiro • AGMD Style Dark Green</p>
-        <p class="text-[11px] text-slate-600 mt-0.5">Información expresada en $ Millones • Verificada a Julio 2026 • Ejercicios 01/07 a 30/06</p>
+        <p class="text-[11px] text-slate-600 mt-0.5">Información expresada en $ Millones • Verificada a Julio 2026 • Ejercicios 01/07 a 30/06 & L12M</p>
       </div>
       <div class="flex items-center gap-3 font-mono text-[11px]">
         <span class="text-emerald-400">● Sistema Activo</span>
@@ -876,9 +879,10 @@
       2.85,2.88,2.90,3.38,2.58,2.10,1.80,1.70
     ];
 
-    // DEFINICIÓN DE EJERCICIOS ECONÓMICOS (01/07 al 30/06)
+    // DEFINICIÓN DE EJERCICIOS Y PERÍODOS
     const EJERCICIOS = {
       '2026-2027': { name: 'Ejercicio 2026/2027', desc: '01/07/2026 al 31/07/2026 (En curso)', start: '2026-07', end: '2027-06' },
+      '12m': { name: 'Últimos 12 Meses (L12M)', desc: '01/08/2025 al 31/07/2026 (Período Móvil)', isL12M: true },
       '2025-2026': { name: 'Ejercicio 2025/2026', desc: '01/07/2025 al 30/06/2026 (Completo)', start: '2025-07', end: '2026-06' },
       '2024-2025': { name: 'Ejercicio 2024/2025', desc: '01/07/2024 al 30/06/2025 (Completo)', start: '2024-07', end: '2025-06' },
       '2023-2024': { name: 'Ejercicio 2023/2024', desc: '01/07/2023 al 30/06/2024 (Completo)', start: '2023-07', end: '2024-06' },
@@ -896,7 +900,7 @@
       }
     }
 
-    // Series de Primas (Valores brutos en Pesos y USD)
+    // Series de Primas (Valores en Pesos y USD)
     const ri_primas_p=[101918982.90,3828886.09,4537942.06,23893119.50,4850355,6713107.98,9157313.20,5307260.96,6203113.01,5846746.23,6698455.41,379438350.39,340514322.82,20994313.44,596049551.43,13409607.45,615097315.71,66666619.20,15631500.14,302731071.34,199314454.36,20077514.60,21074486.45,450132673.71,24379813.49,27858634.71,28597165.52,32780180.16,45153637.34,52914840.70,46281818.27,51160529.14,54730363.78,68230446.13,79549544.92,105487240.12,85389993.02,98211446.90,97122802.49,99450230.15,115017571.00];
     const ri_primas_d=[524003.10,72655.29,461111.31,134265.69,61549.32,64491.69,61620.68,67085.95,64780.88,63131.06,144566.65,1168082.97,434103.40,281416.31,704456.31,61685.48,711907.70,65106.91,79960.86,68585.53,420945.09,86316.91,72811.03,472624.74,78640.94,187232.50,99530.40,175065.94,84634.17,89492.02,86036.88,88223.23,294283.18,101057.34,103399.14,141356.54,322588.52,561744.47,119825.33,125430.20,135141.00];
     
@@ -949,6 +953,9 @@
 
     // 2. HELPER FUNCTIONS
     function getIndicesForEjercicio(ejKey) {
+      if (ejKey === '12m') {
+        return { start: Math.max(0, N - 12), end: N };
+      }
       if (ejKey === 'all') {
         return { start: 0, end: N };
       }
@@ -997,7 +1004,6 @@
         }
         return 'u$s ' + Number(val).toLocaleString('es-AR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
       } else {
-        // Expresado en MILLONES ($ M)
         const inMillions = val / 1e6;
         if (isChartAxis) {
           return '$ ' + inMillions.toLocaleString('es-AR', { minimumFractionDigits: 0, maximumFractionDigits: 1 }) + ' M';
@@ -1200,7 +1206,7 @@
       const lastTotPol = totPolAct[totPolAct.length - 1] || 0;
       const ratioRescPrimas = sumPrimas > 0 ? ((sumRescates / sumPrimas) * 100).toFixed(1) : '0.0';
 
-      const ejInfo = EJERCICIOS[currentEjercicioKey] || { name: 'Ejercicio' };
+      const ejInfo = EJERCICIOS[currentEjercicioKey] || { name: 'Período' };
 
       const kpiContainer = document.getElementById('kpi-cards-grid');
       kpiContainer.innerHTML = `
@@ -1208,7 +1214,7 @@
           <span class="text-[10px] font-mono text-emerald-300 uppercase tracking-wider block">Primas ${ejInfo.name}</span>
           <div class="text-xl font-bold text-white num">${formatCurrency(sumPrimas)}</div>
           <div class="text-[9px] text-slate-300 flex items-center justify-between pt-1 border-t border-emerald-900/50">
-            <span>Acum. Ejercicio</span>
+            <span>Acumulado</span>
             <span class="text-emerald-400 font-bold">${datesSlice.length} mes(es)</span>
           </div>
         </div>
@@ -1656,7 +1662,7 @@
       renderTables();
       setEjercicio('2026-2027');
       startAutoRefreshLoop();
-      console.log("[AGMD Tablero Retiro] 100% Nativo en Millones ($ M) inicializado.");
+      console.log("[AGMD Tablero Retiro] 100% Nativo con selector L12M y valores en $ M inicializado.");
     });
   </script>
 </body>
