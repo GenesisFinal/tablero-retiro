@@ -80,7 +80,7 @@ def main():
 
         url = f"https://api.github.com/repos/{full_repo}/contents/{remote_path}"
         
-        for attempt in range(4):
+        for attempt in range(6):
             get_res = requests.get(url, headers=headers)
             sha = None
             if get_res.status_code == 200:
@@ -99,9 +99,9 @@ def main():
                 print(f"OK: {remote_path} publicado en GitHub.")
                 return True
             else:
-                print(f"Aviso al subir {remote_path}: {put_res.status_code} - {put_res.text}")
-                time.sleep(2)
-        print(f"ERROR: No se pudo subir {remote_path} tras 4 intentos.")
+                print(f"Aviso al subir {remote_path}: {put_res.status_code} - {put_res.text[:120]}")
+                time.sleep(2 * (attempt + 1))
+        print(f"ERROR: No se pudo subir {remote_path} tras 6 intentos.")
         return False
 
     base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -109,8 +109,9 @@ def main():
     # 3. Subir archivos del Tablero
     upload_file(".nojekyll", os.path.join(base_dir, ".nojekyll"), "Config: Deshabilitar procesamiento Jekyll con .nojekyll")
     upload_file("favicon.svg", os.path.join(base_dir, "favicon.svg"), "Asset: Favicon SVG para pestaña y marcadores")
-    upload_file("index.html", os.path.join(base_dir, "index.html"), "Feat: Tablero Seguros de Retiro AGMD Style Dark Green con Variaciones MoM/YoY, Asegurados 8003 y Valores en Millones enteros")
-    upload_file("data_retiro.json", os.path.join(base_dir, "data_retiro.json"), "Data: Series históricas consolidadas de Seguros de Retiro con asegurados 8003")
+    upload_file("index.html", os.path.join(base_dir, "index.html"), "Feat: Tablero Seguros de Retiro L12M por defecto, Asegurados 8003 y Carga Dinamica de Looker")
+    upload_file("data_retiro.json", os.path.join(base_dir, "data_retiro.json"), "Data: Series historicas consolidadas de Seguros de Retiro con 8003 asegurados")
+    upload_file("actualizar_tablero.py", os.path.join(base_dir, "actualizar_tablero.py"), "Code: Script de actualizacion y validacion actuarial")
     upload_file("deploy_to_github.py", os.path.join(base_dir, "deploy_to_github.py"), "Code: Script de despliegue automatizado a GitHub Pages")
 
     # 4. Activar GitHub Pages si aún no está activado
