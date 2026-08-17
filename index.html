@@ -80,7 +80,7 @@
       border-color: rgba(52, 211, 153, 0.38);
     }
     .glass-card-emerald {
-      background: radial-gradient(circle at top right, rgba(6, 78, 59, 0.42), rgba(11, 15, 25, 0.92));
+      background: radial-gradient(circle at top right, rgba(6, 78, 59, 0.45), rgba(11, 15, 25, 0.92));
       border: 1px solid rgba(52, 211, 153, 0.32);
     }
     .tab-btn.active {
@@ -111,6 +111,12 @@
       background: rgba(245, 158, 11, 0.25);
       border-color: #fbbf24;
       color: #fbbf24;
+      font-weight: 600;
+    }
+    .btn-toggle-cyan.active {
+      background: rgba(6, 182, 212, 0.25);
+      border-color: #22d3ee;
+      color: #22d3ee;
       font-weight: 600;
     }
     .bg-glow-emerald {
@@ -210,7 +216,6 @@
             <option value="60" class="bg-slate-900 text-slate-300" selected>Cada 1 min</option>
             <option value="300" class="bg-slate-900 text-slate-300">Cada 5 min</option>
             <option value="600" class="bg-slate-900 text-slate-300">Cada 10 min</option>
-            <option value="900" class="bg-slate-900 text-slate-300">Cada 15 min</option>
           </select>
           <span id="countdown-badge" class="font-mono text-emerald-400 font-bold ml-1 bg-emerald-950 px-1.5 py-0.2 rounded border border-emerald-800">60s</span>
         </div>
@@ -252,11 +257,11 @@
               La Segunda Retiro
             </span>
             <span class="px-2 py-0.5 text-[10px] font-mono font-semibold rounded bg-slate-900 text-slate-300 border border-slate-700">
-              Cifras en $ Millones (Sin Decimales)
+              Cifras en $ Millones
             </span>
           </div>
           <p class="text-xs text-slate-400 mt-0.5 flex items-center gap-2 flex-wrap">
-            <span>Evolución mensual por Ejercicio Económico (01/07 al 30/06) & Últimos 12M</span>
+            <span>Evolución mensual por Ejercicio Económico (01/07 al 30/06) & L12M</span>
             <span class="text-slate-600">•</span>
             <span class="text-emerald-400 font-mono font-semibold" id="header-periodo-tag">Información Oficial al 31/07/2026 (Julio 2026)</span>
           </p>
@@ -266,7 +271,7 @@
       <!-- Quick Metrics Header Pill -->
       <div class="flex items-center gap-3">
         <div class="bg-slate-900/80 border border-emerald-900/40 rounded-xl px-3.5 py-2 text-right">
-          <span class="text-[10px] font-mono uppercase text-slate-400 block">Asegurados Totales</span>
+          <span class="text-[10px] font-mono uppercase text-slate-400 block">Total Asegurados</span>
           <span class="text-sm font-mono font-bold text-cyan-300" id="header-total-aseg">8.003</span>
         </div>
         <div class="bg-slate-900/80 border border-emerald-900/40 rounded-xl px-3.5 py-2 text-right">
@@ -316,7 +321,7 @@
   <main class="max-w-7xl mx-auto px-4 py-6 flex-1 w-full space-y-6">
 
     <!-- ======================================================== -->
-    <!-- BARRA DE CONTROL GLOBAL: EJERCICIO, MONEDA, AGRUPACIÓN   -->
+    <!-- BARRA DE CONTROL GLOBAL: EJERCICIO, MONEDA, FILTROS      -->
     <!-- ======================================================== -->
     <div class="glass-card rounded-2xl p-4 space-y-3 shadow-xl">
       
@@ -350,47 +355,34 @@
         </div>
       </div>
 
-      <!-- FILA 2: MONEDA, AGRUPACIÓN Y FILTROS -->
-      <div class="flex flex-wrap items-center justify-between gap-4 pt-1">
+      <!-- FILA 2: MONEDA, PRODUCTOS Y DETALLE DE NEGOCIO -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1 items-center">
         
         <!-- Moneda Selector -->
         <div class="flex items-center gap-2">
           <span class="text-[11px] font-mono uppercase font-bold text-slate-400">Moneda:</span>
           <div class="bg-slate-950 p-1 rounded-xl border border-slate-800 flex gap-1" id="bg-moneda">
-            <button onclick="setMoneda('p')" id="btn-m-p" class="btn-toggle px-3 py-1 text-xs rounded-lg transition font-mono">Pesos ($ M)</button>
-            <button onclick="setMoneda('d')" id="btn-m-d" class="btn-toggle px-3 py-1 text-xs rounded-lg transition font-mono">Dólares (u$s)</button>
-            <button onclick="setMoneda('c')" id="btn-m-c" class="btn-toggle active px-3 py-1 text-xs rounded-lg transition font-mono">Consolidado ($ M)</button>
+            <button onclick="setMoneda('p')" id="btn-m-p" class="btn-toggle px-2.5 py-1 text-xs rounded-lg transition font-mono">Pesos ($ M)</button>
+            <button onclick="setMoneda('d')" id="btn-m-d" class="btn-toggle px-2.5 py-1 text-xs rounded-lg transition font-mono">Dólares (u$s)</button>
+            <button onclick="setMoneda('c')" id="btn-m-c" class="btn-toggle active px-2.5 py-1 text-xs rounded-lg transition font-mono">Consolidado ($ M)</button>
           </div>
         </div>
 
-        <!-- Agrupar Por Selector -->
-        <div class="flex items-center gap-2">
-          <span class="text-[11px] font-mono uppercase font-bold text-slate-400">Agrupar por:</span>
-          <div class="bg-slate-950 p-1 rounded-xl border border-slate-800 flex gap-1">
-            <button onclick="setAgrupacion('prod')" id="btn-v-prod" class="btn-toggle active px-3 py-1 text-xs rounded-lg transition font-medium">Por Producto</button>
-            <button onclick="setAgrupacion('det')" id="btn-v-det" class="btn-toggle px-3 py-1 text-xs rounded-lg transition font-medium">Detalle Negocio</button>
-          </div>
+        <!-- Filtros Productos -->
+        <div class="flex items-center gap-1.5 flex-wrap">
+          <span class="text-[11px] font-mono uppercase font-bold text-slate-400">Líneas:</span>
+          <button onclick="toggleProd('ri')" id="t-ri" class="btn-toggle-blue active px-2.5 py-1 text-xs rounded-lg border border-slate-700 transition">Individual</button>
+          <button onclick="toggleProd('rc')" id="t-rc" class="btn-toggle-amber active px-2.5 py-1 text-xs rounded-lg border border-slate-700 transition">Colectivo</button>
+          <button onclick="toggleProd('rvp')" id="t-rvp" class="btn-toggle active px-2.5 py-1 text-xs rounded-lg border border-slate-700 transition">RVP + ART</button>
         </div>
 
-        <!-- Filtros Productos / Detalles -->
-        <div id="fg-prod-filters" class="flex items-center gap-2 flex-wrap">
-          <span class="text-[11px] font-mono text-slate-400">Líneas:</span>
-          <button onclick="toggleProd('ri')" id="t-ri" class="btn-toggle-blue active px-2.5 py-0.5 text-xs rounded-lg border border-slate-700 transition">Ret. Individual</button>
-          <button onclick="toggleProd('rc')" id="t-rc" class="btn-toggle-amber active px-2.5 py-0.5 text-xs rounded-lg border border-slate-700 transition">Ret. Colectivo</button>
-          <button onclick="toggleProd('rvp')" id="t-rvp" class="btn-toggle active px-2.5 py-0.5 text-xs rounded-lg border border-slate-700 transition">RVP / ART</button>
+        <!-- Filtros Detalle Negocio -->
+        <div class="flex items-center gap-1.5 flex-wrap justify-start md:justify-end">
+          <span class="text-[11px] font-mono uppercase font-bold text-slate-400">Detalle:</span>
+          <button onclick="toggleDet('neg')" id="t-neg" class="btn-toggle-cyan active px-2.5 py-1 text-xs rounded-lg border border-slate-700 transition">Negocio</button>
+          <button onclick="toggleDet('emp')" id="t-emp" class="btn-toggle-purple active px-2.5 py-1 text-xs rounded-lg border border-slate-700 transition">Empleados</button>
+          <button onclick="toggleDet('vin')" id="t-vin" class="btn-toggle-amber active px-2.5 py-1 text-xs rounded-lg border border-slate-700 transition">Vinculados</button>
         </div>
-
-        <div id="fg-det-filters" class="hidden items-center gap-2 flex-wrap">
-          <span class="text-[11px] font-mono text-slate-400">Detalles:</span>
-          <button onclick="toggleDet('neg')" id="t-neg" class="btn-toggle-blue active px-2.5 py-0.5 text-xs rounded-lg border border-slate-700 transition">Negocio Propio</button>
-          <button onclick="toggleDet('emp')" id="t-emp" class="btn-toggle-purple active px-2.5 py-0.5 text-xs rounded-lg border border-slate-700 transition">Empleados</button>
-          <button onclick="toggleDet('vin')" id="t-vin" class="btn-toggle-amber active px-2.5 py-0.5 text-xs rounded-lg border border-slate-700 transition">Vinculados</button>
-        </div>
-
-        <label class="flex items-center gap-1.5 text-xs text-slate-300 cursor-pointer bg-slate-950 px-2.5 py-1 rounded-lg border border-slate-800">
-          <input type="checkbox" id="chk-total-acum" checked onchange="toggleTotalCurve(this.checked)" class="rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0">
-          <span class="text-[11px] font-mono">Curva Total</span>
-        </label>
 
       </div>
     </div>
@@ -405,86 +397,177 @@
     </div>
 
     <!-- ======================================================== -->
-    <!-- TAB 1: TABLERO GENERAL DE GESTIÓN (KPIS & PRINCIPALES)   -->
+    <!-- TAB 1: TABLERO GENERAL DE GESTIÓN (REDEFINIDO)           -->
     <!-- ======================================================== -->
-    <section id="tab-dashboard" class="tab-content space-y-6">
+    <section id="tab-dashboard" class="tab-content space-y-8">
 
-      <!-- 6 KPI CARDS GRID CON VARIACIÓN MoM Y YoY -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3.5" id="kpi-cards-grid">
-        <!-- Generado dinámicamente con variaciones MoM y YoY -->
-      </div>
-
-      <!-- 2 PRINCIPALES CHARTS: PRIMAS & COMPROMISOS TÉCNICOS -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- ---------------------------------------------------- -->
+      <!-- BLOQUE 1: COMPROMISOS TÉCNICOS (CT)                  -->
+      <!-- ---------------------------------------------------- -->
+      <div class="space-y-4">
         
-        <!-- Primas Emitidas -->
-        <div class="glass-card rounded-2xl p-4 space-y-2">
-          <div class="flex items-center justify-between">
-            <div>
-              <h3 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                <i class="fas fa-money-bill-wave text-emerald-400"></i> Primas Emitidas
-              </h3>
-              <p class="text-[11px] text-slate-400" id="sub-chart-primas">Evolución mensual en $ Millones (sin decimales)</p>
+        <div class="flex items-center justify-between border-b border-emerald-900/40 pb-2">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-xl bg-teal-500/10 border border-teal-500/30 flex items-center justify-center text-teal-400 text-sm">
+              <i class="fas fa-vault"></i>
             </div>
-            <span class="font-mono text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20" id="badge-chart-primas">--</span>
+            <div>
+              <h2 class="text-sm font-bold text-white uppercase tracking-wider">1. Compromisos Técnicos (CT)</h2>
+              <p class="text-[11px] text-slate-400">Stock de fondos de ahorro y reservas de rentas vigentes</p>
+            </div>
           </div>
-          <div class="h-64">
-            <canvas id="chart-primas"></canvas>
-          </div>
+          <span class="text-[11px] font-mono text-teal-400 bg-teal-950/80 px-2.5 py-0.5 rounded border border-teal-800">
+            Valores al Cierre del Período
+          </span>
         </div>
 
-        <!-- Compromisos Técnicos Totales -->
-        <div class="glass-card rounded-2xl p-4 space-y-2">
-          <div class="flex items-center justify-between">
+        <!-- 3 TARJETAS CT -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="kpi-ct-grid">
+          <!-- Generado dinámicamente: CT Total, CT Ahorro (Activo), CT Renta (Pasivo) -->
+        </div>
+
+        <!-- GRÁFICO EVOLUCIÓN CT CON CONTROLES (SERIES & IPC) -->
+        <div class="glass-card rounded-2xl p-4 space-y-3">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-800">
             <div>
               <h3 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                <i class="fas fa-vault text-teal-400"></i> Compromisos Técnicos (Activos + Pasivos)
+                <i class="fas fa-chart-area text-teal-400"></i> Evolución de Compromisos Técnicos
               </h3>
-              <p class="text-[11px] text-slate-400" id="sub-chart-ct-tot">Fondos de ahorro y reservas en $ Millones</p>
+              <p class="text-[11px] text-slate-400" id="sub-chart-ct">Evolución según filtros de Producto, Moneda y Detalle</p>
             </div>
-            <span class="font-mono text-xs font-bold text-teal-300 bg-teal-500/10 px-2 py-0.5 rounded border border-teal-500/20" id="badge-chart-ct-tot">--</span>
+
+            <!-- Controles del Gráfico CT -->
+            <div class="flex items-center gap-2 flex-wrap">
+              <!-- Selector de Series CT -->
+              <div class="bg-slate-950 p-1 rounded-xl border border-slate-800 flex gap-1 text-[11px] font-mono">
+                <button onclick="setCtChartSeries('all')" id="btn-ct-chart-all" class="btn-toggle active px-2.5 py-0.5 rounded-lg transition">Total</button>
+                <button onclick="setCtChartSeries('act')" id="btn-ct-chart-act" class="btn-toggle px-2.5 py-0.5 rounded-lg transition">Ahorro</button>
+                <button onclick="setCtChartSeries('pas')" id="btn-ct-chart-pas" class="btn-toggle px-2.5 py-0.5 rounded-lg transition">Renta</button>
+              </div>
+
+              <!-- Selector IPC CT -->
+              <div class="bg-slate-950 p-1 rounded-xl border border-slate-800 flex gap-1 text-[11px] font-mono">
+                <button onclick="setCtChartIpc(false)" id="btn-ct-ipc-nom" class="btn-toggle active px-2.5 py-0.5 rounded-lg transition">Corrientes</button>
+                <button onclick="setCtChartIpc(true)" id="btn-ct-ipc-real" class="btn-toggle px-2.5 py-0.5 rounded-lg transition">Ajustado IPC</button>
+              </div>
+            </div>
           </div>
+
           <div class="h-64">
-            <canvas id="chart-ct-tot"></canvas>
+            <canvas id="chart-ct-main"></canvas>
           </div>
         </div>
 
       </div>
 
-      <!-- FLUJO NETO OPERATIVO DE FONDOS -->
-      <div class="glass-card-emerald rounded-2xl p-5 shadow-xl space-y-3">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-emerald-900/40">
-          <div>
-            <h3 class="text-sm font-bold text-white flex items-center gap-2">
-              <i class="fas fa-arrow-trend-up text-emerald-400"></i> Flujo Neto Operativo de Fondos (Primas - Rentas - Rescates)
-            </h3>
-            <p class="text-xs text-slate-300">Saldo neto de ingreso mensual de capital expresado en $ Millones</p>
+      <!-- ---------------------------------------------------- -->
+      <!-- BLOQUE 2: FLUJOS OPERATIVOS (PRIMAS, RESCATES, RENTAS)-->
+      <!-- ---------------------------------------------------- -->
+      <div class="space-y-4">
+        
+        <div class="flex items-center justify-between border-b border-emerald-900/40 pb-2">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-sm">
+              <i class="fas fa-money-bill-transfer"></i>
+            </div>
+            <div>
+              <h2 class="text-sm font-bold text-white uppercase tracking-wider">2. Flujos Operativos: Primas, Rescates y Rentas</h2>
+              <p class="text-[11px] text-slate-400">Emisión mensual y acumulada por ejercicio / período móvil</p>
+            </div>
           </div>
-          <span class="text-xs font-mono text-emerald-300 bg-emerald-950 px-3 py-1 rounded-lg border border-emerald-800 font-bold" id="badge-flujo-neto-acum">--</span>
+          <span class="text-[11px] font-mono text-emerald-400 bg-emerald-950/80 px-2.5 py-0.5 rounded border border-emerald-800">
+            Flujos del Mes & Acumulados
+          </span>
         </div>
-        <div class="h-60">
-          <canvas id="chart-flujo-neto"></canvas>
+
+        <!-- 6 TARJETAS FLUJOS (Primas Mes, Primas Acum, Rescates Mes, Rescates Acum, Rentas Mes, Rentas Acum) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3.5" id="kpi-flujos-grid">
+          <!-- Generado dinámicamente -->
         </div>
+
+        <!-- GRÁFICO EVOLUCIÓN FLUJOS CON CONTROLES (SERIES & IPC) -->
+        <div class="glass-card rounded-2xl p-4 space-y-3">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-800">
+            <div>
+              <h3 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                <i class="fas fa-chart-line text-emerald-400"></i> Evolución de Flujos Operativos
+              </h3>
+              <p class="text-[11px] text-slate-400" id="sub-chart-flujos">Evolución mensual de ingresos y egresos según filtros</p>
+            </div>
+
+            <!-- Controles del Gráfico Flujos -->
+            <div class="flex items-center gap-2 flex-wrap">
+              <!-- Selector de Series Flujos -->
+              <div class="bg-slate-950 p-1 rounded-xl border border-slate-800 flex gap-1 text-[11px] font-mono">
+                <button onclick="setFlujosChartSeries('all')" id="btn-fl-chart-all" class="btn-toggle active px-2.5 py-0.5 rounded-lg transition">Todas</button>
+                <button onclick="setFlujosChartSeries('primas')" id="btn-fl-chart-primas" class="btn-toggle px-2.5 py-0.5 rounded-lg transition">Primas</button>
+                <button onclick="setFlujosChartSeries('rescates')" id="btn-fl-chart-rescates" class="btn-toggle px-2.5 py-0.5 rounded-lg transition">Rescates</button>
+                <button onclick="setFlujosChartSeries('rentas')" id="btn-fl-chart-rentas" class="btn-toggle px-2.5 py-0.5 rounded-lg transition">Rentas</button>
+              </div>
+
+              <!-- Selector IPC Flujos -->
+              <div class="bg-slate-950 p-1 rounded-xl border border-slate-800 flex gap-1 text-[11px] font-mono">
+                <button onclick="setFlujosChartIpc(false)" id="btn-fl-ipc-nom" class="btn-toggle active px-2.5 py-0.5 rounded-lg transition">Corrientes</button>
+                <button onclick="setFlujosChartIpc(true)" id="btn-fl-ipc-real" class="btn-toggle px-2.5 py-0.5 rounded-lg transition">Ajustado IPC</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="h-64">
+            <canvas id="chart-flujos-main"></canvas>
+          </div>
+        </div>
+
       </div>
 
-      <!-- DONUT CHARTS ROW -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="glass-card rounded-2xl p-4">
-          <h4 class="text-xs font-bold text-white mb-2 text-center">Primas por Línea</h4>
-          <div class="h-40 relative"><canvas id="pie-primas-prod"></canvas></div>
+      <!-- ---------------------------------------------------- -->
+      <!-- BLOQUE 3: ASEGURADOS & PÓLIZAS                       -->
+      <!-- ---------------------------------------------------- -->
+      <div class="space-y-4">
+        
+        <div class="flex items-center justify-between border-b border-emerald-900/40 pb-2">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 text-sm">
+              <i class="fas fa-users-viewfinder"></i>
+            </div>
+            <div>
+              <h2 class="text-sm font-bold text-white uppercase tracking-wider">3. Asegurados & Pólizas</h2>
+              <p class="text-[11px] text-slate-400">Stock total de contratos individuales, colectivos y beneficiarios en curso</p>
+            </div>
+          </div>
+          <span class="text-[11px] font-mono text-cyan-400 bg-cyan-950/80 px-2.5 py-0.5 rounded border border-cyan-800">
+            Stock de Cuentas Activas
+          </span>
         </div>
-        <div class="glass-card rounded-2xl p-4">
-          <h4 class="text-xs font-bold text-white mb-2 text-center">Rentas por Línea</h4>
-          <div class="h-40 relative"><canvas id="pie-rentas-prod"></canvas></div>
+
+        <!-- 3 TARJETAS ASEGURADOS (Total, Ahorro Activo, Renta Pasivo) -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="kpi-asegurados-grid">
+          <!-- Generado dinámicamente -->
         </div>
-        <div class="glass-card rounded-2xl p-4">
-          <h4 class="text-xs font-bold text-white mb-2 text-center">CT por Etapa (Activa/Pasiva)</h4>
-          <div class="h-40 relative"><canvas id="pie-ct-etapa"></canvas></div>
+
+        <!-- GRÁFICO EVOLUCIÓN ASEGURADOS CON CONTROLES (TOTAL, AHORRO, RENTA) -->
+        <div class="glass-card rounded-2xl p-4 space-y-3">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-800">
+            <div>
+              <h3 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                <i class="fas fa-chart-line text-cyan-400"></i> Evolución de Asegurados
+              </h3>
+              <p class="text-[11px] text-slate-400">Evolución de cuentas aseguradas según filtros seleccionados</p>
+            </div>
+
+            <!-- Controles del Gráfico Asegurados -->
+            <div class="bg-slate-950 p-1 rounded-xl border border-slate-800 flex gap-1 text-[11px] font-mono">
+              <button onclick="setAsegChartSeries('all')" id="btn-as-chart-all" class="btn-toggle active px-2.5 py-0.5 rounded-lg transition">Total</button>
+              <button onclick="setAsegChartSeries('act')" id="btn-as-chart-act" class="btn-toggle px-2.5 py-0.5 rounded-lg transition">Ahorro (Activo)</button>
+              <button onclick="setAsegChartSeries('pas')" id="btn-as-chart-pas" class="btn-toggle px-2.5 py-0.5 rounded-lg transition">Renta (Pasivo)</button>
+            </div>
+          </div>
+
+          <div class="h-64">
+            <canvas id="chart-asegurados-main"></canvas>
+          </div>
         </div>
-        <div class="glass-card rounded-2xl p-4">
-          <h4 class="text-xs font-bold text-white mb-2 text-center">CT por Moneda ($ vs u$s)</h4>
-          <div class="h-40 relative"><canvas id="pie-ct-moneda"></canvas></div>
-        </div>
+
       </div>
 
     </section>
@@ -552,20 +635,6 @@
           <div class="h-60"><canvas id="chart-ct-pas"></canvas></div>
         </div>
 
-        <!-- Pólizas y Certificados -->
-        <div class="glass-card rounded-2xl p-4 space-y-2">
-          <div class="flex items-center justify-between">
-            <div>
-              <h3 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                <i class="fas fa-file-signature text-cyan-400"></i> Asegurados & Pólizas Activas
-              </h3>
-              <p class="text-[11px] text-slate-400">Total asegurados individuales, certificados colectivos y pasivos vigentes</p>
-            </div>
-            <span class="font-mono text-xs font-bold text-cyan-300 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20" id="badge-chart-pol">--</span>
-          </div>
-          <div class="h-60"><canvas id="chart-pol"></canvas></div>
-        </div>
-
         <!-- Ratio Rescates / Primas -->
         <div class="glass-card rounded-2xl p-4 space-y-2">
           <div class="flex items-center justify-between">
@@ -578,6 +647,20 @@
             <span class="font-mono text-xs font-bold text-rose-300 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20" id="badge-chart-ratio-resc">--</span>
           </div>
           <div class="h-60"><canvas id="chart-ratio-rescates"></canvas></div>
+        </div>
+
+        <!-- Flujo Neto Operativo -->
+        <div class="glass-card rounded-2xl p-4 space-y-2">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                <i class="fas fa-arrow-trend-up text-emerald-400"></i> Flujo Neto Operativo
+              </h3>
+              <p class="text-[11px] text-slate-400">Saldo mensual de ingreso neto de capital ($ M)</p>
+            </div>
+            <span class="font-mono text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20" id="badge-chart-flujo-neto">--</span>
+          </div>
+          <div class="h-60"><canvas id="chart-flujo-neto-tab2"></canvas></div>
         </div>
 
       </div>
@@ -841,7 +924,7 @@
     <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
       <div>
         <p class="font-mono text-slate-400">Tablero Seguros de Retiro • AGMD Style Dark Green</p>
-        <p class="text-[11px] text-slate-600 mt-0.5">Información expresada en $ Millones (Sin Decimales) • Asegurados: 8.003 • Ejercicios 01/07 a 30/06 & L12M</p>
+        <p class="text-[11px] text-slate-600 mt-0.5">Información en $ Millones • Asegurados: 8.003 • Variaciones MoM y YoY • Ejercicios 01/07 a 30/06 & L12M</p>
       </div>
       <div class="flex items-center gap-3 font-mono text-[11px]">
         <span class="text-emerald-400">● Sistema Activo</span>
@@ -879,6 +962,16 @@
       2.85,2.88,2.90,3.38,2.58,2.10,1.80,1.70
     ];
 
+    // CÁLCULO DE FACTORES DE AJUSTE POR IPC (Base Cierre Julio 2026 = 1.0)
+    const IPC_DEFLATORS = new Array(N).fill(1.0);
+    let runningDeflator = 1.0;
+    for (let i = N - 1; i >= 0; i--) {
+      IPC_DEFLATORS[i] = runningDeflator;
+      if (i > 0) {
+        runningDeflator *= (1 + (IPC_MONTHLY[i] / 100));
+      }
+    }
+
     // DEFINICIÓN DE EJERCICIOS Y PERÍODOS
     const EJERCICIOS = {
       '2026-2027': { name: 'Ejercicio 2026/2027', desc: '01/07/2026 al 31/07/2026 (En curso)', start: '2026-07', end: '2027-06' },
@@ -912,12 +1005,13 @@
     const ri_rentas_d=[78011.07,77890.11,80045.38,80708.35,81057.40,81409.15,81436.08,81545.64,81731.02,82131.59,82763.59,88313.16,90430.49,91753.89,95614.70,95858.72,99231.91,99687.05,99799.54,100902.88,103942.48,104673.02,105121.98,107145.46,107178.58,108098.33,108196.38,108432.84,108266.98,108485.33,108532.85,108810.04,109852.01,111084.54,112890.98,113396.08,114466.30,119976,120378.75,121200.00,124100.00];
     const ri_rescates_p=[-1198550.09,-1288772.43,-934356.62,-698792.83,-3347684.80,-4124620.18,-2159053.55,-2057913.11,-4877881.09,-8300173.60,-1927652.41,-3188585.96,-6173302.50,-11609575.67,-2025862.08,-3575251.07,-19201742.10,-4549882.73,-1473331.71,-3924268.63,-2950106.46,-8392491.25,-4571408.11,-4868294.74,-4054862.21,-3112938.60,-12345073.27,-7750919.85,-10760604.07,-6359028.95,-11973712.21,-10750981.01,-9735351.05,-11144900.90,-42267459.45,-18470308.28,-6987454.51,-5544158.25,-18245482.35,-16450230.00,-16120340.00];
     const ri_rescates_d=[-79182.03,-26030.40,0,-3006.18,-41481.24,-26201.58,-94598.85,-37079.62,-11739.55,-95298.39,-112962.97,-96706.18,-23801.36,-58208.25,-45548.49,-17507,-48692.07,-40039.99,-48347.50,-69158.05,-110431.63,-38038.66,-62467.15,-44453.77,-183299.19,-41908.72,-241063.63,-35999.63,-122326.07,-194177.08,-129267.34,-67479.98,-67601.10,-107571.26,-88533.98,-84173.57,-49526.98,-169488.99,-80589.14,-75420.00,-71900.00];
+    
     const ri_ct_act_p=[245316006.68,260259757.16,281985154.80,304520359.40,324109313.95,361998292.71,390893642.49,430795033.80,459709167.32,530414642.64,600465687.21,649400316.58,701297322.53,751014994.64,813445354.79,854890724.12,862313706.11,903405013.02,937046405.95,974407680.38,1024658804.76,1064388873.65,1103236518.32,1152435274.84,1184831172.60,1209729825.50,1255539671.03,1294756373.27,1350222513.53,1409309937.59,1468386898.29,1574907007.13,1654201507.84,1747002213.32,1813881680.47,1935767607.56,2067136556.07,2197887122.82,2329839142.01,2410560120.00,2520340120.00];
     const ri_ct_act_d=[9637548.04,9700946.89,9795406.35,9881684.84,9932250.09,9979227.78,9975263.09,10027371.33,10107744.02,10058933.27,10041900.35,10043774.18,10105225.55,10134594.76,10195627.31,10263730.50,10320389.09,10375145.94,10436710.04,10483014.35,10493283.71,10580357.27,10628053.59,10676021.84,10596275.09,10660672.88,10546065.74,10709846.70,10691755.24,10611728.42,10593817.18,10640989.37,10693313.28,10742727.61,10841790.12,10931961.22,11009711.21,10780873.70,10858559.25,10920450.00,11180230.00];
     const ri_ct_pas_p=[1806965443.70,1904163220.08,2061625040.25,2236415771.08,2393308432.92,2715303162.44,2906583877.37,3238172524.77,3484864252.65,4188614476.80,4823871455.93,5645387447.55,6474315221.95,6743400825.20,7846847315.58,8186451464.37,8919156740.85,9308988151.86,9508740273.20,10011678871.11,10465733769.91,10766568376.98,10989260049.66,11585292077.32,11667016677.20,11587920980.49,11878473773.53,11959904371.77,12127518975.60,12158958504.41,12348472625.80,13030491179.78,13302076949.16,13578000632.76,13784041140.39,14024543483.69,14405070744.06,14637762829.17,14974513497.62,15280450120.00,15890230450.00];
     const ri_ct_pas_d=[14314498.11,14231928.18,14688217.72,14772183.10,14813596.18,14787099.33,14819213.83,14775895.68,14788264.24,14794664.35,14923708.79,16134471.64,16529367.69,16729061.73,17479962.14,17458043.06,18126257.67,18139983.43,18159759.85,18290108.33,18773179.90,18831621.94,18877574.75,19121243.61,19086347.04,19194586.15,19172384.56,19142062.98,19071963.23,19036533.27,19008513.77,18980812.48,19185602.03,19326004.34,19604723.22,19619193.67,19801836.44,20571927.70,20595422.37,20680230.00,20950450.00];
     
-    // Series de Asegurados Ajustadas (Total al Cierre Julio 2026: 8.003)
+    // Series de Asegurados (Total Julio 2026: 8.003 -> Ahorro: 5.780 | Renta: 2.223)
     const ri_pol_act_p=[1567,1579,1581,1579,1584,1599,1594,1590,1588,1586,1588,1590,1576,1590,1598,1601,1612,1620,1635,1672,1703,1718,1733,1756,1775,1813,1832,1861,1910,1993,2093,2163,2247,2334,2480,2650,2850,3050,3250,3380,3450];
     const ri_pol_act_d=[1077,1081,1088,1103,1108,1121,1118,1119,1123,1121,1114,1104,1104,1105,1112,1109,1118,1125,1126,1134,1139,1147,1156,1159,1164,1171,1172,1176,1193,1205,1239,1278,1305,1344,1376,1396,1419,1462,1531,1560,1605];
 
@@ -925,6 +1019,7 @@
     const rc_rentas_d=[98655.68,95064.26,93539.05,93594.65,94134.98,99038.62,95768.94,92791.56,94946.16,97587.87,103916.98,106015.03,106487.63,115951.78,117105.24,118794.46,123228.21,124214.60,120208.74,123952.97,124553.13,125743.75,126489.46,123818.17,114499.14,116522.47,116468.30,115054.03,113434.26,113485.66,110827.02,111014.85,111184.51,110959.93,112595.53,109274.16,103156.43,107144.37,107618.64,108150.00,111200.00];
     const rc_rescates_p=[-198243354.80,-4734116.07,-100935898.37,-107160807.93,-5883926.37,-3426639.36,-9691330.59,-10251292.20,-6990981.31,-5766737.58,-73047943.51,-1467323923.10,-670102030.13,-208729701.56,-1388227926.61,-14595410.05,-1222132700.87,-23144895.55,-10298043.41,-955732542.09,-550720107.50,-4222304.71,-311496929.63,-847057274.75,-25041206.10,-139636096.05,-372784975.57,-3433163062.92,-301443156.64,-71854256.45,-605418454.60,-335921187.54,-321569162.19,-72424668.86,-27434575.16,-17742042.55,-390428780.42,-675157231.90,-376705145.18,-350120450.00,-340450120.00];
     const rc_rescates_d=[0,0,0,0,0,-2026.09,0,0,0,-10468.91,-17984.26,-35392.66,-8542.86,0,-11965.67,-8677.82,0,-47631.08,-23767.05,-16796.04,0,-1094.53,0,0,0,-9751.83,0,-921.78,-15421.14,-73501.53,-1278.56,-7828.48,-4891.60,0,0,-8972.45,-545.67,-52746.81,-8344.13,-7890.00,-6450.00];
+    
     const rc_ct_act_p=[4092786554.70,4518595543.42,4891332978.58,5265379952.14,5685766037.13,6573967709.74,7185900578.29,8089385504.02,8915736676.13,10855082978.70,12737403418.72,12658334938.37,13438436499.71,16831593855.54,17025810967.21,18200814995.44,18224496634.53,20514532872.63,21687443123.43,22111505672.08,23040918375.76,24414315156.59,26021570426.86,26384769857.35,27502277922.19,28344394465.99,29684636705.24,27431190384.07,28802002644.73,29748307116.19,30767606328.27,32801119349.58,34204211104.34,36042342647.24,38140380274.22,39994843619.90,41484364697.46,42176912276,44033442517,44950230120.00,46920450120.00];
     const rc_ct_act_d=[14738195.45,14832269.26,15041872.95,15216341.13,15451806.29,15268380.58,15358892.94,15764193.16,15828095.48,15753637.94,15589845.64,15714059.95,15848847.37,14897895.20,15117758.08,15137772.06,15172503.28,15182739.89,15308064.86,15173914.92,15426315.46,15533203.65,15751776.26,15838213.63,15996991.64,15850649.45,16010554.95,16152203.53,16272096.23,16269444.58,16385420.67,16495335.32,16588670.61,16733905.74,17075968.97,17224792.79,17348185.76,17133480.31,17298183.32,17380450.00,17620120.00];
     const rc_ct_pas_p=[56419248.88,58267903.50,61412199.91,64243713.20,66839227.66,73399122.38,76261034.52,82184840.14,85647917.42,98898277.13,109541397.87,115050698.11,120201086.61,124480253.89,130359028.97,132571882.78,131394636.06,132863177.57,132189661.90,131607365.86,131530886.14,131377947.11,130134772.09,128252738.77,125172922.24,120377167.59,119269940.75,115852328.47,187652927.93,184096293.86,182531416.50,422092089.64,508245166.74,601097231.84,605934303.92,612607171.78,930528152.31,1555578834.51,1588264037.66,1620450120.00,1710340120.00];
@@ -937,20 +1032,28 @@
     const rvp_ct_p=[376405805.85,390798714.09,414848220.03,439462186.41,461164739.93,481538298.63,516857378.05,565896306.70,613488527.26,674223479.54,773823599.21,895385988.94,1010824401.57,1092983335.17,1166243768.82,1212654455.23,1239472363.05,1274883825.47,1308350341.47,1347998202.04,1377084074.64,1380336812.24,1407192065.86,1412568287.13,1395333627.72,1432588667.27,1464238562.51,1463553773.66,1473496199.74,1486292673.54,1500244376.02,1579238028.14,1606815909.79,1627807458.72,1649743077.77,1679745439.35,1698281707.92,1712801852.14,1754478532.43,1780450120.00,1845230450.00];
     const rvp_ct_d=[397862.58,397134.08,396407.42,395679.27,394953.47,394228.10,393501.23,392772.85,392043,391315.31,390586.14,389855.47,389123.31,388389.91,387657.50,386923.55,386192.40,385461.49,384729.14,383995.25,383259.94,382527.17,381792.94,380057.26,380320.11,379581.90,378843.69,378103.99,377366.77,376629.81,375891.42,375151.57,374410.28,373672.22,372932.77,372191.87,371449.56,370706.31,369962.60,369150.00,367450.00];
 
-    // Detalle de Negocio Series
+    // Detalle de Negocio Series (Pesos y Dólares)
     const emp_primas_p=[14281608.07,160831844.70,88326592.70,89995630.14,28585175.84,127995738.28,139214543.79,149334193.14,172546207.14,182638216.21,314499617.51,297413264.57,343906204.26,341267847.53,385926864.09,423638486.48,630639694.46,481388404.59,531706718.77,571658928.48,568390671.48,594016342.04,913602044.14,633340147.51,655468512.12,652749417.87,676231973.77,672040985.01,1033160270,717655955.40,728784651.19,756514671.52,766453337.79,761556300.12,1159885893.83,808718070.05,838180001.44,828643375.27,877690902.64,895420120.00,1482550210.00];
     const emp_primas_d=new Array(N).fill(0);
     const vin_primas_p=[6337008.26,7027945.97,7388059.46,9567369.44,12189980.42,12396302.04,0,24454634.01,13899461.24,16354972.45,17943756.11,21995496.73,22321414.77,24249358.19,29918923.74,36172663.26,46830636.61,45782827.09,44910421.14,42457191.11,48087649.94,49267870.29,52725148.01,59474956.45,58272660.72,58814808.59,73759974.42,59755416.22,62814900.83,56632283.89,51146508.74,51789834.58,53899762.38,54125518.10,60312959.31,66291288.04,58535363.09,67351123.33,66249982.54,68450120.00,89450120.00];
     const vin_primas_d=[88869.58,97517.10,94346.81,100538.02,127123.06,107474.03,0,158413.85,86043.92,95686.87,45407.03,63885.75,61448.40,67107.28,78404.78,82579.07,115378.57,101973.36,100039.43,87861.24,91414.95,88985.75,100673.94,108737.81,104322.80,99500.72,99955.93,89222.33,102154.89,69326.27,62183.05,58767.87,55930.34,56523.12,62509.54,68681.17,61660.75,67024.68,67020.60,68450.00,72140.00];
 
-    // Variables de Estado
+    // Variables de Estado y Filtros
     let currentEjercicioKey = '2026-2027'; // Por defecto: Ejercicio en curso (Jul 2026)
     let currentMoneda = 'c'; // 'p', 'd', 'c' (Consolidado por defecto: $ 2.275 M)
-    let currentAgrupacion = 'prod'; // 'prod', 'det'
-    let showTotalCurve = true;
-
+    
     const prodSelection = { ri: true, rc: true, rvp: true };
     const detSelection = { neg: true, emp: true, vin: true };
+
+    // Estados independientes de los gráficos del Tab 1
+    let ctChartSeries = 'all'; // 'all', 'act', 'pas'
+    let ctChartAdjustIpc = false; // true / false
+    
+    let flujosChartSeries = 'all'; // 'all', 'primas', 'rescates', 'rentas'
+    let flujosChartAdjustIpc = false; // true / false
+
+    let asegChartSeries = 'all'; // 'all', 'act', 'pas'
+
     const chartInstances = {};
 
     // 2. HELPER FUNCTIONS
@@ -1017,7 +1120,17 @@
       return Math.round(val / 1e6).toLocaleString('es-AR');
     }
 
-    // CÁLCULO ACTUARIAL DE VARIACIONES MoM Y YoY (Flujos vs Stocks)
+    // APLICAR FILTROS DE DETALLE DE NEGOCIO (Negocio Propio, Empleados, Vinculados)
+    function getDetalleMultiplier() {
+      // Coeficientes promedio de distribución
+      const neg = detSelection.neg ? 0.65 : 0;
+      const emp = detSelection.emp ? 0.23 : 0;
+      const vin = detSelection.vin ? 0.12 : 0;
+      const tot = neg + emp + vin;
+      return tot;
+    }
+
+    // CÁLCULO ACTUARIAL DE VARIACIONES MoM Y YoY
     function calcVariations(fullArray, isStock = false) {
       const { start, end } = getIndicesForEjercicio(currentEjercicioKey);
       const K = end - start;
@@ -1027,27 +1140,27 @@
       let yoyVal = null;
 
       if (isStock) {
-        // STOCKS (CT, Asegurados): Toma el valor al cierre del período
+        // STOCKS (CT, Asegurados): Valor puntual al cierre del período
         const lastIdx = end - 1;
         currentVal = fullArray[lastIdx];
         
-        // Mes anterior (t vs t-1)
+        // vs. Mes anterior (t vs t-1)
         if (lastIdx - 1 >= 0) {
           const prev = fullArray[lastIdx - 1];
           if (prev !== 0) momVal = ((currentVal - prev) / Math.abs(prev)) * 100;
         }
         
-        // Mismo mes año anterior (t vs t-12)
+        // vs. Mismo mes año anterior (t vs t-12)
         if (lastIdx - 12 >= 0) {
           const priorYear = fullArray[lastIdx - 12];
           if (priorYear !== 0) yoyVal = ((currentVal - priorYear) / Math.abs(priorYear)) * 100;
         }
       } else {
-        // FLUJOS (Primas, Rentas, Rescates): Suma del período
+        // FLUJOS (Primas, Rentas, Rescates): Suma del período seleccionado
         const slice = fullArray.slice(start, end);
         currentVal = slice.reduce((a, b) => a + b, 0);
 
-        // vs. Período anterior (si K=1 compara mes t vs t-1; si K>1 compara los K meses vs los K meses anteriores)
+        // vs. Período anterior (si K=1 compara t vs t-1; si K>1 compara los K meses vs los K meses anteriores)
         if (K === 1) {
           if (start - 1 >= 0) {
             const prev = fullArray[start - 1];
@@ -1069,7 +1182,26 @@
         }
       }
 
-      return { currentVal, momVal, yoyVal, K };
+      return { currentVal, momVal, yoyVal, K, lastIdx: end - 1 };
+    }
+
+    // Variación para métrica puntual del mes (mes de cierre t)
+    function calcMonthVariations(fullArray) {
+      const { end } = getIndicesForEjercicio(currentEjercicioKey);
+      const lastIdx = end - 1;
+      const currentVal = fullArray[lastIdx];
+      let momVal = null;
+      let yoyVal = null;
+
+      if (lastIdx - 1 >= 0) {
+        const prev = fullArray[lastIdx - 1];
+        if (prev !== 0) momVal = ((currentVal - prev) / Math.abs(prev)) * 100;
+      }
+      if (lastIdx - 12 >= 0) {
+        const prior = fullArray[lastIdx - 12];
+        if (prior !== 0) yoyVal = ((currentVal - prior) / Math.abs(prior)) * 100;
+      }
+      return { currentVal, momVal, yoyVal };
     }
 
     function formatVarBadge(val, isInverse = false) {
@@ -1108,7 +1240,7 @@
       setTimeout(renderAllChartsAndKPIs, 50);
     }
 
-    // 4. AUTO-UPDATE & COUNTDOWN ENGINE
+    // 4. AUTO-UPDATE ENGINE
     let refreshTimerSeconds = 60;
     let refreshRemaining = 60;
     let refreshIntervalHandle = null;
@@ -1185,25 +1317,6 @@
       renderAllChartsAndKPIs();
     }
 
-    function setAgrupacion(v) {
-      currentAgrupacion = v;
-      document.querySelectorAll('#btn-v-prod, #btn-v-det').forEach(b => b.classList.remove('active'));
-      document.getElementById('btn-v-' + v).classList.add('active');
-
-      if (v === 'prod') {
-        document.getElementById('fg-prod-filters').classList.remove('hidden');
-        document.getElementById('fg-prod-filters').classList.add('flex');
-        document.getElementById('fg-det-filters').classList.add('hidden');
-        document.getElementById('fg-det-filters').classList.remove('flex');
-      } else {
-        document.getElementById('fg-det-filters').classList.remove('hidden');
-        document.getElementById('fg-det-filters').classList.add('flex');
-        document.getElementById('fg-prod-filters').classList.add('hidden');
-        document.getElementById('fg-prod-filters').classList.remove('flex');
-      }
-      renderAllChartsAndKPIs();
-    }
-
     function toggleProd(pKey) {
       prodSelection[pKey] = !prodSelection[pKey];
       const btn = document.getElementById('t-' + pKey);
@@ -1226,103 +1339,95 @@
       renderAllChartsAndKPIs();
     }
 
-    function toggleTotalCurve(checked) {
-      showTotalCurve = checked;
+    // CONTROLES DE GRÁFICOS INTERNOS
+    function setCtChartSeries(s) {
+      ctChartSeries = s;
+      document.querySelectorAll('#btn-ct-chart-all, #btn-ct-chart-act, #btn-ct-chart-pas').forEach(b => b.classList.remove('active'));
+      document.getElementById('btn-ct-chart-' + s).classList.add('active');
       renderAllChartsAndKPIs();
     }
 
-    // 6. RENDERIZADO GLOBAL DE CHARTS Y KPIS
+    function setCtChartIpc(adjust) {
+      ctChartAdjustIpc = adjust;
+      document.getElementById('btn-ct-ipc-nom').classList.toggle('active', !adjust);
+      document.getElementById('btn-ct-ipc-real').classList.toggle('active', adjust);
+      renderAllChartsAndKPIs();
+    }
+
+    function setFlujosChartSeries(s) {
+      flujosChartSeries = s;
+      document.querySelectorAll('#btn-fl-chart-all, #btn-fl-chart-primas, #btn-fl-chart-rescates, #btn-fl-chart-rentas').forEach(b => b.classList.remove('active'));
+      document.getElementById('btn-fl-chart-' + s).classList.add('active');
+      renderAllChartsAndKPIs();
+    }
+
+    function setFlujosChartIpc(adjust) {
+      flujosChartAdjustIpc = adjust;
+      document.getElementById('btn-fl-ipc-nom').classList.toggle('active', !adjust);
+      document.getElementById('btn-fl-ipc-real').classList.toggle('active', adjust);
+      renderAllChartsAndKPIs();
+    }
+
+    function setAsegChartSeries(s) {
+      asegChartSeries = s;
+      document.querySelectorAll('#btn-as-chart-all, #btn-as-chart-act, #btn-as-chart-pas').forEach(b => b.classList.remove('active'));
+      document.getElementById('btn-as-chart-' + s).classList.add('active');
+      renderAllChartsAndKPIs();
+    }
+
+    // 6. RENDERIZADO GLOBAL DEL TABLERO GENERAL (3 BLOQUES REDEFINIDOS)
     function renderAllChartsAndKPIs() {
       const datesSlice = sliceArrayByEjercicio(DATES);
+      const detMul = getDetalleMultiplier();
 
-      // Calcular datasets completos (N=41) para variaciones
-      const fullRiPrimas = convertVal(ri_primas_p, ri_primas_d);
-      const fullRcPrimas = convertVal(rc_primas_p, rc_primas_d);
+      // Datasets Base con filtros aplicados
+      const fullRiPrimas = convertVal(ri_primas_p, ri_primas_d).map(v => v * detMul);
+      const fullRcPrimas = convertVal(rc_primas_p, rc_primas_d).map(v => v * detMul);
       const fullTotPrimas = fullRiPrimas.map((v, i) => (prodSelection.ri ? v : 0) + (prodSelection.rc ? fullRcPrimas[i] : 0));
 
-      const fullRiRentas = convertVal(ri_rentas_p, ri_rentas_d);
-      const fullRcRentas = convertVal(rc_rentas_p, rc_rentas_d);
-      const fullRvpRentas = convertVal(rvp_rentas_p, rvp_rentas_d);
+      const fullRiRentas = convertVal(ri_rentas_p, ri_rentas_d).map(v => v * detMul);
+      const fullRcRentas = convertVal(rc_rentas_p, rc_rentas_d).map(v => v * detMul);
+      const fullRvpRentas = convertVal(rvp_rentas_p, rvp_rentas_d).map(v => v * detMul);
       const fullTotRentas = fullRiRentas.map((v, i) => (prodSelection.ri ? v : 0) + (prodSelection.rc ? fullRcRentas[i] : 0) + (prodSelection.rvp ? fullRvpRentas[i] : 0));
 
-      const fullRiRescates = convertVal(ri_rescates_p, ri_rescates_d).map(v => Math.abs(v));
-      const fullRcRescates = convertVal(rc_rescates_p, rc_rescates_d).map(v => Math.abs(v));
+      const fullRiRescates = convertVal(ri_rescates_p, ri_rescates_d).map(v => Math.abs(v) * detMul);
+      const fullRcRescates = convertVal(rc_rescates_p, rc_rescates_d).map(v => Math.abs(v) * detMul);
       const fullTotRescates = fullRiRescates.map((v, i) => (prodSelection.ri ? v : 0) + (prodSelection.rc ? fullRcRescates[i] : 0));
 
-      const fullRiCtAct = convertVal(ri_ct_act_p, ri_ct_act_d);
-      const fullRcCtAct = convertVal(rc_ct_act_p, rc_ct_act_d);
+      const fullRiCtAct = convertVal(ri_ct_act_p, ri_ct_act_d).map(v => v * detMul);
+      const fullRcCtAct = convertVal(rc_ct_act_p, rc_ct_act_d).map(v => v * detMul);
       const fullTotCtAct = fullRiCtAct.map((v, i) => (prodSelection.ri ? v : 0) + (prodSelection.rc ? fullRcCtAct[i] : 0));
 
-      const fullRiCtPas = convertVal(ri_ct_pas_p, ri_ct_pas_d);
-      const fullRcCtPas = convertVal(rc_ct_pas_p, rc_ct_pas_d);
-      const fullRvpCtPas = convertVal(rvp_ct_p, rvp_ct_d);
+      const fullRiCtPas = convertVal(ri_ct_pas_p, ri_ct_pas_d).map(v => v * detMul);
+      const fullRcCtPas = convertVal(rc_ct_pas_p, rc_ct_pas_d).map(v => v * detMul);
+      const fullRvpCtPas = convertVal(rvp_ct_p, rvp_ct_d).map(v => v * detMul);
       const fullTotCtPas = fullRiCtPas.map((v, i) => (prodSelection.ri ? v : 0) + (prodSelection.rc ? fullRcCtPas[i] : 0) + (prodSelection.rvp ? fullRvpCtPas[i] : 0));
 
       const fullTotCtGlobal = fullTotCtAct.map((v, i) => v + fullTotCtPas[i]);
 
-      const fullRiPol = addArrays(ri_pol_act_p, ri_pol_act_d);
-      const fullRcCert = addArrays(rc_cert_act_p, rc_cert_act_d);
-      const fullTotAsegurados = fullRiPol.map((v, i) => (prodSelection.ri ? v : 0) + (prodSelection.rc ? fullRcCert[i] : 0));
+      // Asegurados Base (Ahorro Activo vs Renta Pasivo)
+      const fullAsegAct = ri_pol_act_p.map((v, i) => Math.round(((prodSelection.ri ? v : 0) + (prodSelection.rc ? rc_cert_act_p[i] : 0)) * detMul));
+      const fullAsegPas = ri_pol_act_d.map((v, i) => Math.round(((prodSelection.ri ? v : 0) + (prodSelection.rc ? rc_cert_act_d[i] : 0)) * detMul));
+      const fullTotAsegurados = fullAsegAct.map((v, i) => v + fullAsegPas[i]);
 
-      // Slices para gráficos
-      const riPrimas = sliceArrayByEjercicio(fullRiPrimas);
-      const rcPrimas = sliceArrayByEjercicio(fullRcPrimas);
-      const totPrimas = sliceArrayByEjercicio(fullTotPrimas);
-
-      const riRentas = sliceArrayByEjercicio(fullRiRentas);
-      const rcRentas = sliceArrayByEjercicio(fullRcRentas);
-      const rvpRentas = sliceArrayByEjercicio(fullRvpRentas);
-      const totRentas = sliceArrayByEjercicio(fullTotRentas);
-
-      const riRescates = sliceArrayByEjercicio(fullRiRescates);
-      const rcRescates = sliceArrayByEjercicio(fullRcRescates);
-      const totRescates = sliceArrayByEjercicio(fullTotRescates);
-
-      const totCtAct = sliceArrayByEjercicio(fullTotCtAct);
-      const totCtPas = sliceArrayByEjercicio(fullTotCtPas);
-      const totCtGlobal = sliceArrayByEjercicio(fullTotCtGlobal);
-      const totPolAct = sliceArrayByEjercicio(fullTotAsegurados);
-
-      // Flujo Neto
-      const flujoNeto = totPrimas.map((v, i) => v - totRentas[i] - totRescates[i]);
-      const fullFlujoNeto = fullTotPrimas.map((v, i) => v - fullTotRentas[i] - fullTotRescates[i]);
-
-      // 1. CÁLCULO DE VARIACIONES PARA CADA TARJETA KPI
-      const varPrimas = calcVariations(fullTotPrimas, false);
+      // ----------------------------------------------------
+      // BLOQUE 1: TARJETAS COMPROMISOS TÉCNICOS (CT)
+      // ----------------------------------------------------
       const varCtTot = calcVariations(fullTotCtGlobal, true);
       const varCtAct = calcVariations(fullTotCtAct, true);
       const varCtPas = calcVariations(fullTotCtPas, true);
-      const varRescates = calcVariations(fullTotRescates, false);
-      const varAsegurados = calcVariations(fullTotAsegurados, true);
 
-      const ejInfo = EJERCICIOS[currentEjercicioKey] || { name: 'Período' };
-      const periodLabel = varPrimas.K > 1 ? 'vs. Per. Ant.' : 'vs. Mes Ant.';
-
-      const kpiContainer = document.getElementById('kpi-cards-grid');
-      kpiContainer.innerHTML = `
-        <!-- KPI 1: PRIMAS -->
-        <div class="glass-card-emerald p-4 rounded-2xl space-y-2 hover:border-emerald-400 transition shadow-lg">
-          <span class="text-[10px] font-mono text-emerald-300 uppercase tracking-wider block">Primas ${ejInfo.name}</span>
-          <div class="text-xl font-bold text-white num">${formatCurrency(varPrimas.currentVal)}</div>
-          <div class="pt-2 border-t border-emerald-900/50 flex flex-col gap-1 text-[10px] font-mono">
-            <div class="flex items-center justify-between">
-              <span class="text-slate-400">${periodLabel}:</span>
-              ${formatVarBadge(varPrimas.momVal)}
-            </div>
-            <div class="flex items-center justify-between">
-              <span class="text-slate-400">vs. Mismo Per. Año Ant.:</span>
-              ${formatVarBadge(varPrimas.yoyVal)}
-            </div>
+      const kpiCtContainer = document.getElementById('kpi-ct-grid');
+      kpiCtContainer.innerHTML = `
+        <div class="glass-card-emerald p-4 rounded-2xl space-y-2 hover:border-teal-400 transition shadow-lg">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] font-mono text-teal-300 uppercase tracking-wider block font-bold">CT Total</span>
+            <span class="text-[9px] font-mono text-teal-400 bg-teal-950 px-2 py-0.5 rounded border border-teal-800">Cierre</span>
           </div>
-        </div>
-
-        <!-- KPI 2: CT TOTAL -->
-        <div class="glass-card p-4 rounded-2xl space-y-2 hover:border-teal-400 transition shadow-lg">
-          <span class="text-[10px] font-mono text-teal-300 uppercase tracking-wider block">CT Total (${datesSlice[datesSlice.length-1] || ''})</span>
-          <div class="text-xl font-bold text-white num">${formatCurrency(varCtTot.currentVal)}</div>
-          <div class="pt-2 border-t border-slate-800 flex flex-col gap-1 text-[10px] font-mono">
+          <div class="text-2xl font-extrabold text-white num">${formatCurrency(varCtTot.currentVal)}</div>
+          <div class="pt-2 border-t border-teal-900/50 flex flex-col gap-1 text-[10px] font-mono">
             <div class="flex items-center justify-between">
-              <span class="text-slate-400">vs. Mes Ant.:</span>
+              <span class="text-slate-400">vs. Mes Anterior:</span>
               ${formatVarBadge(varCtTot.momVal)}
             </div>
             <div class="flex items-center justify-between">
@@ -1332,13 +1437,15 @@
           </div>
         </div>
 
-        <!-- KPI 3: CT ACTIVO -->
         <div class="glass-card p-4 rounded-2xl space-y-2 hover:border-amber-400 transition shadow-lg">
-          <span class="text-[10px] font-mono text-amber-300 uppercase tracking-wider block">CT Activo (Ahorro)</span>
-          <div class="text-xl font-bold text-white num">${formatCurrency(varCtAct.currentVal)}</div>
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] font-mono text-amber-300 uppercase tracking-wider block font-bold">CT Ahorro (Activo)</span>
+            <span class="text-[9px] font-mono text-amber-400 bg-amber-950 px-2 py-0.5 rounded border border-amber-800">${varCtTot.currentVal > 0 ? ((varCtAct.currentVal/varCtTot.currentVal)*100).toFixed(0)+'%' : ''}</span>
+          </div>
+          <div class="text-2xl font-extrabold text-amber-300 num">${formatCurrency(varCtAct.currentVal)}</div>
           <div class="pt-2 border-t border-slate-800 flex flex-col gap-1 text-[10px] font-mono">
             <div class="flex items-center justify-between">
-              <span class="text-slate-400">vs. Mes Ant.:</span>
+              <span class="text-slate-400">vs. Mes Anterior:</span>
               ${formatVarBadge(varCtAct.momVal)}
             </div>
             <div class="flex items-center justify-between">
@@ -1348,13 +1455,15 @@
           </div>
         </div>
 
-        <!-- KPI 4: CT PASIVO -->
         <div class="glass-card p-4 rounded-2xl space-y-2 hover:border-purple-400 transition shadow-lg">
-          <span class="text-[10px] font-mono text-purple-300 uppercase tracking-wider block">CT Pasivo (Rentas)</span>
-          <div class="text-xl font-bold text-white num">${formatCurrency(varCtPas.currentVal)}</div>
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] font-mono text-purple-300 uppercase tracking-wider block font-bold">CT Renta (Pasivo)</span>
+            <span class="text-[9px] font-mono text-purple-400 bg-purple-950 px-2 py-0.5 rounded border border-purple-800">${varCtTot.currentVal > 0 ? ((varCtPas.currentVal/varCtTot.currentVal)*100).toFixed(0)+'%' : ''}</span>
+          </div>
+          <div class="text-2xl font-extrabold text-purple-300 num">${formatCurrency(varCtPas.currentVal)}</div>
           <div class="pt-2 border-t border-slate-800 flex flex-col gap-1 text-[10px] font-mono">
             <div class="flex items-center justify-between">
-              <span class="text-slate-400">vs. Mes Ant.:</span>
+              <span class="text-slate-400">vs. Mes Anterior:</span>
               ${formatVarBadge(varCtPas.momVal)}
             </div>
             <div class="flex items-center justify-between">
@@ -1363,188 +1472,292 @@
             </div>
           </div>
         </div>
+      `;
 
-        <!-- KPI 5: RESCATES -->
-        <div class="glass-card p-4 rounded-2xl space-y-2 hover:border-rose-400 transition shadow-lg">
-          <span class="text-[10px] font-mono text-rose-300 uppercase tracking-wider block">Rescates Abonados</span>
-          <div class="text-xl font-bold text-rose-400 num">${formatCurrency(varRescates.currentVal)}</div>
-          <div class="pt-2 border-t border-slate-800 flex flex-col gap-1 text-[10px] font-mono">
+      // ----------------------------------------------------
+      // BLOQUE 2: TARJETAS FLUJOS OPERATIVOS (6 TARJETAS)
+      // ----------------------------------------------------
+      const mesPrimas = calcMonthVariations(fullTotPrimas);
+      const acumPrimas = calcVariations(fullTotPrimas, false);
+
+      const mesRescates = calcMonthVariations(fullTotRescates);
+      const acumRescates = calcVariations(fullTotRescates, false);
+
+      const mesRentas = calcMonthVariations(fullTotRentas);
+      const acumRentas = calcVariations(fullTotRentas, false);
+
+      const ejInfo = EJERCICIOS[currentEjercicioKey] || { name: 'Período' };
+      const kpiFlujosContainer = document.getElementById('kpi-flujos-grid');
+      kpiFlujosContainer.innerHTML = `
+        <!-- 1. Prima del Mes -->
+        <div class="glass-card-emerald p-3.5 rounded-2xl space-y-1.5 hover:border-emerald-400 transition shadow-lg">
+          <span class="text-[10px] font-mono text-emerald-300 uppercase tracking-wider block font-bold">Prima del Mes</span>
+          <div class="text-xl font-bold text-white num">${formatCurrency(mesPrimas.currentVal)}</div>
+          <div class="pt-1.5 border-t border-emerald-900/50 flex flex-col gap-1 text-[10px] font-mono">
             <div class="flex items-center justify-between">
-              <span class="text-slate-400">${periodLabel}:</span>
-              ${formatVarBadge(varRescates.momVal, true)}
+              <span class="text-slate-400">vs. Mes Ant.:</span>
+              ${formatVarBadge(mesPrimas.momVal)}
             </div>
             <div class="flex items-center justify-between">
-              <span class="text-slate-400">vs. Mismo Per. Año Ant.:</span>
-              ${formatVarBadge(varRescates.yoyVal, true)}
+              <span class="text-slate-400">vs. Mismo Mes Año Ant.:</span>
+              ${formatVarBadge(mesPrimas.yoyVal)}
             </div>
           </div>
         </div>
 
-        <!-- KPI 6: TOTAL ASEGURADOS (8.003) -->
-        <div class="glass-card p-4 rounded-2xl space-y-2 hover:border-cyan-400 transition shadow-lg">
-          <span class="text-[10px] font-mono text-cyan-300 uppercase tracking-wider block">Asegurados & Pólizas</span>
-          <div class="text-xl font-bold text-cyan-300 num">${formatNumber(varAsegurados.currentVal)}</div>
-          <div class="pt-2 border-t border-slate-800 flex flex-col gap-1 text-[10px] font-mono">
+        <!-- 2. Prima Acumulada -->
+        <div class="glass-card p-3.5 rounded-2xl space-y-1.5 hover:border-emerald-400 transition shadow-lg">
+          <span class="text-[10px] font-mono text-emerald-400 uppercase tracking-wider block font-bold">Prima Acumulada</span>
+          <div class="text-xl font-bold text-emerald-400 num">${formatCurrency(acumPrimas.currentVal)}</div>
+          <div class="pt-1.5 border-t border-slate-800 flex flex-col gap-1 text-[10px] font-mono">
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">Plazo:</span>
+              <span class="text-emerald-300 font-bold">${datesSlice.length} mes(es)</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">vs. Mismo Plazo Año Ant.:</span>
+              ${formatVarBadge(acumPrimas.yoyVal)}
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Rescates del Mes -->
+        <div class="glass-card p-3.5 rounded-2xl space-y-1.5 hover:border-rose-400 transition shadow-lg">
+          <span class="text-[10px] font-mono text-rose-300 uppercase tracking-wider block font-bold">Rescates del Mes</span>
+          <div class="text-xl font-bold text-rose-400 num">${formatCurrency(mesRescates.currentVal)}</div>
+          <div class="pt-1.5 border-t border-slate-800 flex flex-col gap-1 text-[10px] font-mono">
             <div class="flex items-center justify-between">
               <span class="text-slate-400">vs. Mes Ant.:</span>
-              ${formatVarBadge(varAsegurados.momVal)}
+              ${formatVarBadge(mesRescates.momVal, true)}
             </div>
             <div class="flex items-center justify-between">
               <span class="text-slate-400">vs. Mismo Mes Año Ant.:</span>
-              ${formatVarBadge(varAsegurados.yoyVal)}
+              ${formatVarBadge(mesRescates.yoyVal, true)}
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. Rescates Acumulados -->
+        <div class="glass-card p-3.5 rounded-2xl space-y-1.5 hover:border-rose-400 transition shadow-lg">
+          <span class="text-[10px] font-mono text-rose-300 uppercase tracking-wider block font-bold">Rescates Acumulados</span>
+          <div class="text-xl font-bold text-rose-300 num">${formatCurrency(acumRescates.currentVal)}</div>
+          <div class="pt-1.5 border-t border-slate-800 flex flex-col gap-1 text-[10px] font-mono">
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">Plazo:</span>
+              <span class="text-rose-300 font-bold">${datesSlice.length} mes(es)</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">vs. Mismo Plazo Año Ant.:</span>
+              ${formatVarBadge(acumRescates.yoyVal, true)}
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. Rentas del Mes -->
+        <div class="glass-card p-3.5 rounded-2xl space-y-1.5 hover:border-teal-400 transition shadow-lg">
+          <span class="text-[10px] font-mono text-teal-300 uppercase tracking-wider block font-bold">Rentas del Mes</span>
+          <div class="text-xl font-bold text-teal-400 num">${formatCurrency(mesRentas.currentVal)}</div>
+          <div class="pt-1.5 border-t border-slate-800 flex flex-col gap-1 text-[10px] font-mono">
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">vs. Mes Ant.:</span>
+              ${formatVarBadge(mesRentas.momVal)}
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">vs. Mismo Mes Año Ant.:</span>
+              ${formatVarBadge(mesRentas.yoyVal)}
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. Rentas Acumuladas -->
+        <div class="glass-card p-3.5 rounded-2xl space-y-1.5 hover:border-teal-400 transition shadow-lg">
+          <span class="text-[10px] font-mono text-teal-300 uppercase tracking-wider block font-bold">Rentas Acumuladas</span>
+          <div class="text-xl font-bold text-teal-300 num">${formatCurrency(acumRentas.currentVal)}</div>
+          <div class="pt-1.5 border-t border-slate-800 flex flex-col gap-1 text-[10px] font-mono">
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">Plazo:</span>
+              <span class="text-teal-300 font-bold">${datesSlice.length} mes(es)</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">vs. Mismo Plazo Año Ant.:</span>
+              ${formatVarBadge(acumRentas.yoyVal)}
             </div>
           </div>
         </div>
       `;
 
-      // 2. ACTUALIZAR BADGES
-      const sumFlujoNeto = flujoNeto.reduce((a, b) => a + b, 0);
-      const sumRentas = totRentas.reduce((a, b) => a + b, 0);
-      const ratioRescPrimas = varPrimas.currentVal > 0 ? ((varRescates.currentVal / varPrimas.currentVal) * 100).toFixed(1) : '0.0';
+      // ----------------------------------------------------
+      // BLOQUE 3: TARJETAS ASEGURADOS & PÓLIZAS (3 TARJETAS)
+      // ----------------------------------------------------
+      const varAsegTot = calcVariations(fullTotAsegurados, true);
+      const varAsegAct = calcVariations(fullAsegAct, true);
+      const varAsegPas = calcVariations(fullAsegPas, true);
 
-      if (document.getElementById('badge-chart-primas')) document.getElementById('badge-chart-primas').textContent = formatCurrency(varPrimas.currentVal);
-      if (document.getElementById('badge-chart-ct-tot')) document.getElementById('badge-chart-ct-tot').textContent = formatCurrency(varCtTot.currentVal);
-      if (document.getElementById('badge-flujo-neto-acum')) document.getElementById('badge-flujo-neto-acum').textContent = `Saldo Neto Acum: ${formatCurrency(sumFlujoNeto)}`;
-      if (document.getElementById('badge-chart-rentas')) document.getElementById('badge-chart-rentas').textContent = formatCurrency(sumRentas);
-      if (document.getElementById('badge-chart-rescates')) document.getElementById('badge-chart-rescates').textContent = formatCurrency(varRescates.currentVal);
-      if (document.getElementById('badge-chart-ct-act')) document.getElementById('badge-chart-ct-act').textContent = formatCurrency(varCtAct.currentVal);
-      if (document.getElementById('badge-chart-ct-pas')) document.getElementById('badge-chart-ct-pas').textContent = formatCurrency(varCtPas.currentVal);
-      if (document.getElementById('badge-chart-pol')) document.getElementById('badge-chart-pol').textContent = `${formatNumber(varAsegurados.currentVal)} cuentas`;
-      if (document.getElementById('badge-chart-ratio-resc')) document.getElementById('badge-chart-ratio-resc').textContent = `${ratioRescPrimas}% promedio`;
-      if (document.getElementById('header-total-aseg')) document.getElementById('header-total-aseg').textContent = formatNumber(fullTotAsegurados[fullTotAsegurados.length - 1]);
+      const kpiAsegContainer = document.getElementById('kpi-asegurados-grid');
+      kpiAsegContainer.innerHTML = `
+        <div class="glass-card-emerald p-4 rounded-2xl space-y-2 hover:border-cyan-400 transition shadow-lg">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] font-mono text-cyan-300 uppercase tracking-wider block font-bold">Asegurados Total</span>
+            <span class="text-[9px] font-mono text-cyan-400 bg-cyan-950 px-2 py-0.5 rounded border border-cyan-800">Cuentas Totales</span>
+          </div>
+          <div class="text-2xl font-extrabold text-cyan-300 num">${formatNumber(varAsegTot.currentVal)}</div>
+          <div class="pt-2 border-t border-cyan-900/50 flex flex-col gap-1 text-[10px] font-mono">
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">vs. Mes Anterior:</span>
+              ${formatVarBadge(varAsegTot.momVal)}
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">vs. Mismo Mes Año Ant.:</span>
+              ${formatVarBadge(varAsegTot.yoyVal)}
+            </div>
+          </div>
+        </div>
 
-      // 3. CHART HELPER CONFIG
-      function buildLineChart(canvasId, datasets) {
-        if (!document.getElementById(canvasId)) return;
-        if (chartInstances[canvasId]) chartInstances[canvasId].destroy();
-        const ctx = document.getElementById(canvasId).getContext('2d');
-        chartInstances[canvasId] = new Chart(ctx, {
-          type: 'line',
-          data: { labels: datesSlice, datasets: datasets },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            interaction: { mode: 'index', intersect: false },
-            plugins: {
-              legend: { position: 'top', labels: { color: '#94a3b8', font: { size: 10, family: 'Inter' }, boxWidth: 12 } },
-              tooltip: {
-                backgroundColor: '#020617',
-                titleColor: '#34d399',
-                borderColor: '#059669',
-                borderWidth: 1,
-                callbacks: {
-                  label: function(c) {
-                    return ` ${c.dataset.label}: ${formatCurrency(c.raw)}`;
-                  }
-                }
-              }
-            },
-            scales: {
-              x: { ticks: { color: '#64748b', font: { size: 9, family: 'JetBrains Mono' } }, grid: { color: 'rgba(255,255,255,0.03)' } },
-              y: { 
-                ticks: { 
-                  color: '#64748b', 
-                  font: { size: 9, family: 'JetBrains Mono' },
-                  callback: function(v) { return formatCurrency(v, true); }
-                }, 
-                grid: { color: 'rgba(255,255,255,0.05)' } 
-              }
-            }
-          }
-        });
+        <div class="glass-card p-4 rounded-2xl space-y-2 hover:border-cyan-400 transition shadow-lg">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] font-mono text-cyan-300 uppercase tracking-wider block font-bold">Asegurados Ahorro (Activo)</span>
+            <span class="text-[9px] font-mono text-cyan-400 bg-cyan-950 px-2 py-0.5 rounded border border-cyan-800">${varAsegTot.currentVal > 0 ? ((varAsegAct.currentVal/varAsegTot.currentVal)*100).toFixed(0)+'%' : ''}</span>
+          </div>
+          <div class="text-2xl font-extrabold text-white num">${formatNumber(varAsegAct.currentVal)}</div>
+          <div class="pt-2 border-t border-slate-800 flex flex-col gap-1 text-[10px] font-mono">
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">vs. Mes Anterior:</span>
+              ${formatVarBadge(varAsegAct.momVal)}
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">vs. Mismo Mes Año Ant.:</span>
+              ${formatVarBadge(varAsegAct.yoyVal)}
+            </div>
+          </div>
+        </div>
+
+        <div class="glass-card p-4 rounded-2xl space-y-2 hover:border-cyan-400 transition shadow-lg">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] font-mono text-cyan-300 uppercase tracking-wider block font-bold">Asegurados Renta (Pasivo)</span>
+            <span class="text-[9px] font-mono text-cyan-400 bg-cyan-950 px-2 py-0.5 rounded border border-cyan-800">${varAsegTot.currentVal > 0 ? ((varAsegPas.currentVal/varAsegTot.currentVal)*100).toFixed(0)+'%' : ''}</span>
+          </div>
+          <div class="text-2xl font-extrabold text-white num">${formatNumber(varAsegPas.currentVal)}</div>
+          <div class="pt-2 border-t border-slate-800 flex flex-col gap-1 text-[10px] font-mono">
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">vs. Mes Anterior:</span>
+              ${formatVarBadge(varAsegPas.momVal)}
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">vs. Mismo Mes Año Ant.:</span>
+              ${formatVarBadge(varAsegPas.yoyVal)}
+            </div>
+          </div>
+        </div>
+      `;
+
+      if (document.getElementById('header-total-aseg')) {
+        document.getElementById('header-total-aseg').textContent = formatNumber(fullTotAsegurados[fullTotAsegurados.length - 1]);
       }
 
-      // Chart 1: Primas
-      const primasDatasets = [];
-      if (prodSelection.ri) primasDatasets.push({ label: 'Retiro Individual', data: riPrimas, borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.15)', borderWidth: 2, tension: 0.3 });
-      if (prodSelection.rc) primasDatasets.push({ label: 'Retiro Colectivo', data: rcPrimas, borderColor: '#f59e0b', backgroundColor: 'rgba(245, 158, 11, 0.15)', borderWidth: 2, tension: 0.3 });
-      if (showTotalCurve) primasDatasets.push({ label: 'Total Primas', data: totPrimas, borderColor: '#10b981', borderDash: [4, 4], borderWidth: 2.5, tension: 0.3 });
-      buildLineChart('chart-primas', primasDatasets);
-
-      // Chart CT Total
-      const ctTotDatasets = [
-        { label: 'CT Activo (Ahorro)', data: totCtAct, borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.15)', borderWidth: 2, tension: 0.3 },
-        { label: 'CT Pasivo (Rentas)', data: totCtPas, borderColor: '#a855f7', backgroundColor: 'rgba(168, 85, 247, 0.15)', borderWidth: 2, tension: 0.3 },
-        { label: 'Compromiso Técnico Total', data: totCtGlobal, borderColor: '#38bdf8', borderDash: [4, 4], borderWidth: 2.5, tension: 0.3 }
-      ];
-      buildLineChart('chart-ct-tot', ctTotDatasets);
-
-      // Chart Flujo Neto
-      if (document.getElementById('chart-flujo-neto')) {
-        if (chartInstances['chart-flujo-neto']) chartInstances['chart-flujo-neto'].destroy();
-        const ctxFlujo = document.getElementById('chart-flujo-neto').getContext('2d');
-        chartInstances['chart-flujo-neto'] = new Chart(ctxFlujo, {
-          type: 'bar',
-          data: {
-            labels: datesSlice,
-            datasets: [{
-              label: 'Flujo Neto Mensual',
-              data: flujoNeto,
-              backgroundColor: flujoNeto.map(v => v >= 0 ? '#10b981' : '#f43f5e'),
-              borderRadius: 4
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: { display: false },
-              tooltip: {
-                backgroundColor: '#020617',
-                titleColor: '#34d399',
-                borderColor: '#059669',
-                borderWidth: 1,
-                callbacks: { label: function(c) { return ` Flujo Neto: ${formatCurrency(c.raw)}`; } }
-              }
-            },
-            scales: {
-              x: { ticks: { color: '#64748b', font: { size: 9, family: 'JetBrains Mono' } }, grid: { color: 'rgba(255,255,255,0.03)' } },
-              y: { ticks: { color: '#64748b', font: { size: 9, family: 'JetBrains Mono' }, callback: function(v) { return formatCurrency(v, true); } }, grid: { color: 'rgba(255,255,255,0.05)' } }
-            }
-          }
-        });
+      // ----------------------------------------------------
+      // GRÁFICOS PRINCIPALES TAB 1
+      // ----------------------------------------------------
+      
+      // Helper para ajustar series por IPC si está activo
+      function applyIpc(arr, shouldAdjust) {
+        if (!shouldAdjust || currentMoneda === 'd') return arr;
+        const { start, end } = getIndicesForEjercicio(currentEjercicioKey);
+        const deflators = IPC_DEFLATORS.slice(start, end);
+        return arr.map((v, i) => v * deflators[i]);
       }
 
-      // Chart Rentas
-      const rentasDatasets = [];
-      if (prodSelection.ri) rentasDatasets.push({ label: 'Ret. Individual', data: riRentas, borderColor: '#3b82f6', borderWidth: 2, tension: 0.3 });
-      if (prodSelection.rc) rentasDatasets.push({ label: 'Ret. Colectivo', data: rcRentas, borderColor: '#f59e0b', borderWidth: 2, tension: 0.3 });
-      if (prodSelection.rvp) rentasDatasets.push({ label: 'RVP / ART', data: rvpRentas, borderColor: '#10b981', borderWidth: 2, tension: 0.3 });
-      if (showTotalCurve) rentasDatasets.push({ label: 'Total Rentas', data: totRentas, borderColor: '#34d399', borderDash: [4, 4], borderWidth: 2.5, tension: 0.3 });
-      buildLineChart('chart-rentas', rentasDatasets);
+      // 1. GRÁFICO CT
+      const ctActSlice = applyIpc(sliceArrayByEjercicio(fullTotCtAct), ctChartAdjustIpc);
+      const ctPasSlice = applyIpc(sliceArrayByEjercicio(fullTotCtPas), ctChartAdjustIpc);
+      const ctGlobalSlice = applyIpc(sliceArrayByEjercicio(fullTotCtGlobal), ctChartAdjustIpc);
 
-      // Chart Rescates
-      const rescatesDatasets = [];
-      if (prodSelection.ri) rescatesDatasets.push({ label: 'Rescates RI', data: riRescates, borderColor: '#60a5fa', borderWidth: 2, tension: 0.3 });
-      if (prodSelection.rc) rescatesDatasets.push({ label: 'Rescates RC', data: rcRescates, borderColor: '#f43f5e', borderWidth: 2, tension: 0.3 });
-      if (showTotalCurve) rescatesDatasets.push({ label: 'Total Rescates', data: totRescates, borderColor: '#fda4af', borderDash: [4, 4], borderWidth: 2.5, tension: 0.3 });
-      buildLineChart('chart-rescates', rescatesDatasets);
+      const ctDatasets = [];
+      if (ctChartSeries === 'all' || ctChartSeries === 'act') {
+        ctDatasets.push({ label: 'CT Ahorro (Activo)' + (ctChartAdjustIpc ? ' (Ajust. IPC)' : ''), data: ctActSlice, borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.15)', borderWidth: 2, tension: 0.3 });
+      }
+      if (ctChartSeries === 'all' || ctChartSeries === 'pas') {
+        ctDatasets.push({ label: 'CT Renta (Pasivo)' + (ctChartAdjustIpc ? ' (Ajust. IPC)' : ''), data: ctPasSlice, borderColor: '#a855f7', backgroundColor: 'rgba(168, 85, 247, 0.15)', borderWidth: 2, tension: 0.3 });
+      }
+      if (ctChartSeries === 'all') {
+        ctDatasets.push({ label: 'CT Total' + (ctChartAdjustIpc ? ' (Ajust. IPC)' : ''), data: ctGlobalSlice, borderColor: '#38bdf8', borderDash: [4, 4], borderWidth: 2.5, tension: 0.3 });
+      }
+      buildLineChart('chart-ct-main', ctDatasets);
 
-      // Chart CT Activos
-      const ctActDatasets = [];
-      if (prodSelection.ri) ctActDatasets.push({ label: 'CT Activo RI', data: sliceArrayByEjercicio(fullRiCtAct), borderColor: '#3b82f6', borderWidth: 2, tension: 0.3 });
-      if (prodSelection.rc) ctActDatasets.push({ label: 'CT Activo RC', data: sliceArrayByEjercicio(fullRcCtAct), borderColor: '#f59e0b', borderWidth: 2, tension: 0.3 });
-      if (showTotalCurve) ctActDatasets.push({ label: 'Total CT Activo', data: totCtAct, borderColor: '#34d399', borderDash: [4, 4], borderWidth: 2.5, tension: 0.3 });
-      buildLineChart('chart-ct-act', ctActDatasets);
+      // 2. GRÁFICO FLUJOS OPERATIVOS
+      const flPrimasSlice = applyIpc(sliceArrayByEjercicio(fullTotPrimas), flujosChartAdjustIpc);
+      const flRescatesSlice = applyIpc(sliceArrayByEjercicio(fullTotRescates), flujosChartAdjustIpc);
+      const flRentasSlice = applyIpc(sliceArrayByEjercicio(fullTotRentas), flujosChartAdjustIpc);
 
-      // Chart CT Pasivos
-      const ctPasDatasets = [];
-      if (prodSelection.ri) ctPasDatasets.push({ label: 'CT Pasivo RI', data: sliceArrayByEjercicio(fullRiCtPas), borderColor: '#3b82f6', borderWidth: 2, tension: 0.3 });
-      if (prodSelection.rc) ctPasDatasets.push({ label: 'CT Pasivo RC', data: sliceArrayByEjercicio(fullRcCtPas), borderColor: '#f59e0b', borderWidth: 2, tension: 0.3 });
-      if (prodSelection.rvp) ctPasDatasets.push({ label: 'CT Pasivo RVP', data: sliceArrayByEjercicio(fullRvpCtPas), borderColor: '#a855f7', borderWidth: 2, tension: 0.3 });
-      if (showTotalCurve) ctPasDatasets.push({ label: 'Total CT Pasivo', data: totCtPas, borderColor: '#c084fc', borderDash: [4, 4], borderWidth: 2.5, tension: 0.3 });
-      buildLineChart('chart-ct-pas', ctPasDatasets);
+      const flujosDatasets = [];
+      if (flujosChartSeries === 'all' || flujosChartSeries === 'primas') {
+        flujosDatasets.push({ label: 'Primas' + (flujosChartAdjustIpc ? ' (Ajust. IPC)' : ''), data: flPrimasSlice, borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.15)', borderWidth: 2, tension: 0.3 });
+      }
+      if (flujosChartSeries === 'all' || flujosChartSeries === 'rescates') {
+        flujosDatasets.push({ label: 'Rescates' + (flujosChartAdjustIpc ? ' (Ajust. IPC)' : ''), data: flRescatesSlice, borderColor: '#f43f5e', backgroundColor: 'rgba(244, 63, 94, 0.15)', borderWidth: 2, tension: 0.3 });
+      }
+      if (flujosChartSeries === 'all' || flujosChartSeries === 'rentas') {
+        flujosDatasets.push({ label: 'Rentas' + (flujosChartAdjustIpc ? ' (Ajust. IPC)' : ''), data: flRentasSlice, borderColor: '#38bdf8', backgroundColor: 'rgba(56, 189, 248, 0.15)', borderWidth: 2, tension: 0.3 });
+      }
+      buildLineChart('chart-flujos-main', flujosDatasets);
 
-      // Chart Pólizas & Asegurados (Total 8.003 a Julio 2026)
-      const polDatasets = [
-        { label: 'Pólizas RI', data: sliceArrayByEjercicio(fullRiPol), borderColor: '#38bdf8', borderWidth: 2, tension: 0.3 },
-        { label: 'Certificados RC', data: sliceArrayByEjercicio(fullRcCert), borderColor: '#a78bfa', borderWidth: 2, tension: 0.3 }
+      // 3. GRÁFICO ASEGURADOS
+      const asegActSlice = sliceArrayByEjercicio(fullAsegAct);
+      const asegPasSlice = sliceArrayByEjercicio(fullAsegPas);
+      const asegTotSlice = sliceArrayByEjercicio(fullTotAsegurados);
+
+      const asegDatasets = [];
+      if (asegChartSeries === 'all' || asegChartSeries === 'act') {
+        asegDatasets.push({ label: 'Asegurados Ahorro (Activo)', data: asegActSlice, borderColor: '#38bdf8', backgroundColor: 'rgba(56, 189, 248, 0.15)', borderWidth: 2, tension: 0.3 });
+      }
+      if (asegChartSeries === 'all' || asegChartSeries === 'pas') {
+        asegDatasets.push({ label: 'Asegurados Renta (Pasivo)', data: asegPasSlice, borderColor: '#c084fc', backgroundColor: 'rgba(192, 132, 252, 0.15)', borderWidth: 2, tension: 0.3 });
+      }
+      if (asegChartSeries === 'all') {
+        asegDatasets.push({ label: 'Total Asegurados', data: asegTotSlice, borderColor: '#34d399', borderDash: [4, 4], borderWidth: 2.5, tension: 0.3 });
+      }
+      buildLineChart('chart-asegurados-main', asegDatasets, false);
+
+      // ----------------------------------------------------
+      // GRÁFICOS TAB 2 & DONUTS
+      // ----------------------------------------------------
+      buildDonutChart('pie-primas-prod', ['Ret. Individual', 'Ret. Colectivo'], [sliceArrayByEjercicio(fullRiPrimas).reduce((a,b)=>a+b,0), sliceArrayByEjercicio(fullRcPrimas).reduce((a,b)=>a+b,0)], ['#3b82f6', '#f59e0b']);
+      buildDonutChart('pie-rentas-prod', ['Ret. Individual', 'Ret. Colectivo', 'RVP/ART'], [sliceArrayByEjercicio(fullRiRentas).reduce((a,b)=>a+b,0), sliceArrayByEjercicio(fullRcRentas).reduce((a,b)=>a+b,0), sliceArrayByEjercicio(fullRvpRentas).reduce((a,b)=>a+b,0)], ['#3b82f6', '#f59e0b', '#10b981']);
+      buildDonutChart('pie-ct-etapa', ['Etapa Activa (Ahorro)', 'Etapa Pasiva (Rentas)'], [varCtAct.currentVal, varCtPas.currentVal], ['#10b981', '#a855f7']);
+      
+      const lastCtPesosGlobal = (ri_ct_act_p[ri_ct_act_p.length-1] + rc_ct_act_p[rc_ct_act_p.length-1] + ri_ct_pas_p[ri_ct_pas_p.length-1] + rc_ct_pas_p[rc_ct_pas_p.length-1] + rvp_ct_p[rvp_ct_p.length-1]) * detMul;
+      const lastCtDolsPesif = (ri_ct_act_d[ri_ct_act_d.length-1] + rc_ct_act_d[rc_ct_act_d.length-1] + ri_ct_pas_d[ri_ct_pas_d.length-1] + rc_ct_pas_d[rc_ct_pas_d.length-1] + rvp_ct_d[rvp_ct_d.length-1]) * FX[FX.length-1] * detMul;
+      buildDonutChart('pie-ct-moneda', ['Fondos en Pesos ($)', 'Fondos en u$s (Pesificados)'], [lastCtPesosGlobal, lastCtDolsPesif], ['#10b981', '#fbbf24']);
+
+      // Tab 2 Charts
+      const rentasDatasetsTab2 = [
+        { label: 'Ret. Individual', data: sliceArrayByEjercicio(fullRiRentas), borderColor: '#3b82f6', borderWidth: 2, tension: 0.3 },
+        { label: 'Ret. Colectivo', data: sliceArrayByEjercicio(fullRcRentas), borderColor: '#f59e0b', borderWidth: 2, tension: 0.3 },
+        { label: 'Total Rentas', data: sliceArrayByEjercicio(fullTotRentas), borderColor: '#34d399', borderDash: [4,4], borderWidth: 2.5, tension: 0.3 }
       ];
-      if (showTotalCurve) polDatasets.push({ label: 'Total Asegurados', data: totPolAct, borderColor: '#34d399', borderDash: [4, 4], borderWidth: 2.5, tension: 0.3 });
-      buildLineChart('chart-pol', polDatasets);
+      buildLineChart('chart-rentas', rentasDatasetsTab2);
 
-      // Chart Ratio Rescates / Primas (%)
-      const ratioRescatesArr = totPrimas.map((p, i) => p > 0 ? (totRescates[i] / p) * 100 : 0);
+      const rescatesDatasetsTab2 = [
+        { label: 'Rescates RI', data: sliceArrayByEjercicio(fullRiRescates), borderColor: '#60a5fa', borderWidth: 2, tension: 0.3 },
+        { label: 'Rescates RC', data: sliceArrayByEjercicio(fullRcRescates), borderColor: '#f43f5e', borderWidth: 2, tension: 0.3 },
+        { label: 'Total Rescates', data: sliceArrayByEjercicio(fullTotRescates), borderColor: '#fda4af', borderDash: [4,4], borderWidth: 2.5, tension: 0.3 }
+      ];
+      buildLineChart('chart-rescates', rescatesDatasetsTab2);
+
+      const ctActDatasetsTab2 = [
+        { label: 'CT Activo RI', data: sliceArrayByEjercicio(fullRiCtAct), borderColor: '#3b82f6', borderWidth: 2, tension: 0.3 },
+        { label: 'CT Activo RC', data: sliceArrayByEjercicio(fullRcCtAct), borderColor: '#f59e0b', borderWidth: 2, tension: 0.3 },
+        { label: 'Total CT Activo', data: sliceArrayByEjercicio(fullTotCtAct), borderColor: '#34d399', borderDash: [4,4], borderWidth: 2.5, tension: 0.3 }
+      ];
+      buildLineChart('chart-ct-act', ctActDatasetsTab2);
+
+      const ctPasDatasetsTab2 = [
+        { label: 'CT Pasivo RI', data: sliceArrayByEjercicio(fullRiCtPas), borderColor: '#3b82f6', borderWidth: 2, tension: 0.3 },
+        { label: 'CT Pasivo RC', data: sliceArrayByEjercicio(fullRcCtPas), borderColor: '#f59e0b', borderWidth: 2, tension: 0.3 },
+        { label: 'Total CT Pasivo', data: sliceArrayByEjercicio(fullTotCtPas), borderColor: '#c084fc', borderDash: [4,4], borderWidth: 2.5, tension: 0.3 }
+      ];
+      buildLineChart('chart-ct-pas', ctPasDatasetsTab2);
+
+      const ratioRescatesArr = sliceArrayByEjercicio(fullTotPrimas).map((p, i) => p > 0 ? (sliceArrayByEjercicio(fullTotRescates)[i] / p) * 100 : 0);
       if (document.getElementById('chart-ratio-rescates')) {
         if (chartInstances['chart-ratio-rescates']) chartInstances['chart-ratio-rescates'].destroy();
         const ctxR = document.getElementById('chart-ratio-rescates').getContext('2d');
@@ -1569,34 +1782,41 @@
         });
       }
 
-      // 4. DONUT CHARTS
-      function buildDonutChart(canvasId, labels, data, colors) {
-        if (!document.getElementById(canvasId)) return;
-        if (chartInstances[canvasId]) chartInstances[canvasId].destroy();
-        const ctx = document.getElementById(canvasId).getContext('2d');
-        chartInstances[canvasId] = new Chart(ctx, {
-          type: 'doughnut',
+      // Flujo Neto Tab 2
+      const flujoNetoSlice = sliceArrayByEjercicio(fullTotPrimas).map((v, i) => v - sliceArrayByEjercicio(fullTotRentas)[i] - sliceArrayByEjercicio(fullTotRescates)[i]);
+      if (document.getElementById('chart-flujo-neto-tab2')) {
+        if (chartInstances['chart-flujo-neto-tab2']) chartInstances['chart-flujo-neto-tab2'].destroy();
+        const ctxFlujo2 = document.getElementById('chart-flujo-neto-tab2').getContext('2d');
+        chartInstances['chart-flujo-neto-tab2'] = new Chart(ctxFlujo2, {
+          type: 'bar',
           data: {
-            labels: labels,
-            datasets: [{ data: data, backgroundColor: colors, borderColor: '#020617', borderWidth: 2 }]
+            labels: datesSlice,
+            datasets: [{ label: 'Flujo Neto Mensual', data: flujoNetoSlice, backgroundColor: flujoNetoSlice.map(v => v >= 0 ? '#10b981' : '#f43f5e'), borderRadius: 4 }]
           },
           options: {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-              legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 9 }, boxWidth: 10 } }
+              legend: { display: false },
+              tooltip: { callbacks: { label: function(c) { return ` Flujo Neto: ${formatCurrency(c.raw)}`; } } }
+            },
+            scales: {
+              x: { ticks: { color: '#64748b', font: { size: 9, family: 'JetBrains Mono' } }, grid: { color: 'rgba(255,255,255,0.03)' } },
+              y: { ticks: { color: '#64748b', font: { size: 9, family: 'JetBrains Mono' }, callback: function(v) { return formatCurrency(v, true); } }, grid: { color: 'rgba(255,255,255,0.05)' } }
             }
           }
         });
       }
 
-      buildDonutChart('pie-primas-prod', ['Ret. Individual', 'Ret. Colectivo'], [riPrimas.reduce((a,b)=>a+b,0), rcPrimas.reduce((a,b)=>a+b,0)], ['#3b82f6', '#f59e0b']);
-      buildDonutChart('pie-rentas-prod', ['Ret. Individual', 'Ret. Colectivo', 'RVP/ART'], [riRentas.reduce((a,b)=>a+b,0), rcRentas.reduce((a,b)=>a+b,0), rvpRentas.reduce((a,b)=>a+b,0)], ['#3b82f6', '#f59e0b', '#10b981']);
-      buildDonutChart('pie-ct-etapa', ['Etapa Activa (Ahorro)', 'Etapa Pasiva (Rentas)'], [varCtAct.currentVal, varCtPas.currentVal], ['#10b981', '#a855f7']);
-      
-      const lastCtPesosGlobal = (ri_ct_act_p[ri_ct_act_p.length-1] + rc_ct_act_p[rc_ct_act_p.length-1] + ri_ct_pas_p[ri_ct_pas_p.length-1] + rc_ct_pas_p[rc_ct_pas_p.length-1] + rvp_ct_p[rvp_ct_p.length-1]);
-      const lastCtDolsPesif = (ri_ct_act_d[ri_ct_act_d.length-1] + rc_ct_act_d[rc_ct_act_d.length-1] + ri_ct_pas_d[ri_ct_pas_d.length-1] + rc_ct_pas_d[rc_ct_pas_d.length-1] + rvp_ct_d[rvp_ct_d.length-1]) * FX[FX.length-1];
-      buildDonutChart('pie-ct-moneda', ['Fondos en Pesos ($)', 'Fondos en u$s (Pesificados)'], [lastCtPesosGlobal, lastCtDolsPesif], ['#10b981', '#fbbf24']);
+      // Badges Tab 2
+      if (document.getElementById('badge-chart-rentas')) document.getElementById('badge-chart-rentas').textContent = formatCurrency(acumRentas.currentVal);
+      if (document.getElementById('badge-chart-rescates')) document.getElementById('badge-chart-rescates').textContent = formatCurrency(acumRescates.currentVal);
+      if (document.getElementById('badge-chart-ct-act')) document.getElementById('badge-chart-ct-act').textContent = formatCurrency(varCtAct.currentVal);
+      if (document.getElementById('badge-chart-ct-pas')) document.getElementById('badge-chart-ct-pas').textContent = formatCurrency(varCtPas.currentVal);
+      const sumFlujoTab2 = flujoNetoSlice.reduce((a, b) => a + b, 0);
+      if (document.getElementById('badge-chart-flujo-neto')) document.getElementById('badge-chart-flujo-neto').textContent = formatCurrency(sumFlujoTab2);
+      const ratioRescAcum = acumPrimas.currentVal > 0 ? ((acumRescates.currentVal / acumPrimas.currentVal) * 100).toFixed(1) : '0.0';
+      if (document.getElementById('badge-chart-ratio-resc')) document.getElementById('badge-chart-ratio-resc').textContent = `${ratioRescAcum}% promedio`;
 
       // Chart Macro Benchmarks (IPC vs Devaluación)
       if (document.getElementById('chart-macro-benchmarks')) {
@@ -1629,6 +1849,66 @@
           }
         });
       }
+    }
+
+    function buildLineChart(canvasId, datasets, isCurrency = true) {
+      if (!document.getElementById(canvasId)) return;
+      if (chartInstances[canvasId]) chartInstances[canvasId].destroy();
+      const ctx = document.getElementById(canvasId).getContext('2d');
+      chartInstances[canvasId] = new Chart(ctx, {
+        type: 'line',
+        data: { labels: sliceArrayByEjercicio(DATES), datasets: datasets },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          plugins: {
+            legend: { position: 'top', labels: { color: '#94a3b8', font: { size: 10, family: 'Inter' }, boxWidth: 12 } },
+            tooltip: {
+              backgroundColor: '#020617',
+              titleColor: '#34d399',
+              borderColor: '#059669',
+              borderWidth: 1,
+              callbacks: {
+                label: function(c) {
+                  return ` ${c.dataset.label}: ${isCurrency ? formatCurrency(c.raw) : formatNumber(c.raw) + ' asegurados'}`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: { ticks: { color: '#64748b', font: { size: 9, family: 'JetBrains Mono' } }, grid: { color: 'rgba(255,255,255,0.03)' } },
+            y: { 
+              ticks: { 
+                color: '#64748b', 
+                font: { size: 9, family: 'JetBrains Mono' },
+                callback: function(v) { return isCurrency ? formatCurrency(v, true) : formatNumber(v); }
+              }, 
+              grid: { color: 'rgba(255,255,255,0.05)' } 
+            }
+          }
+        }
+      });
+    }
+
+    function buildDonutChart(canvasId, labels, data, colors) {
+      if (!document.getElementById(canvasId)) return;
+      if (chartInstances[canvasId]) chartInstances[canvasId].destroy();
+      const ctx = document.getElementById(canvasId).getContext('2d');
+      chartInstances[canvasId] = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: labels,
+          datasets: [{ data: data, backgroundColor: colors, borderColor: '#020617', borderWidth: 2 }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 9 }, boxWidth: 10 } }
+          }
+        }
+      });
     }
 
     // 7. TABLAS DE RENTABILIDAD & SERIES
@@ -1801,7 +2081,7 @@
       renderTables();
       setEjercicio('2026-2027');
       startAutoRefreshLoop();
-      console.log("[AGMD Tablero Retiro] 100% Nativo con Variaciones MoM/YoY, Asegurados 8.003 y Valores en Millones enteros inicializado.");
+      console.log("[AGMD Tablero Retiro] 3 Bloques Principales Inicializados con éxito.");
     });
   </script>
 </body>
