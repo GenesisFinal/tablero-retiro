@@ -1236,7 +1236,7 @@
       return addAll([ri, rc, rvp]);
     }
 
-    // OBTENER SERIE FILTRADA EXACTA: RVP+ART SUMA EXCLUSIVAMENTE A NEGOCIO (NUNCA A VINCULADOS O EMPLEADOS)
+    // OBTENER SERIE FILTRADA EXACTA: FILTRADO POR LÍNEAS O POR NEGOCIO ("O UNO O EL OTRO")
     function getFilteredMetricSeries(metric) {
       const ri = getRawArr('ri', metric);
       const rc = getRawArr('rc', metric);
@@ -1245,53 +1245,26 @@
       const vin = getRawArr('vin', metric);
 
       const res = new Array(N).fill(0);
+      const allProd = prodSelection.ri && prodSelection.rc && prodSelection.rvp;
+      const allDet = detSelection.neg && detSelection.emp && detSelection.vin;
 
       for (let i = 0; i < N; i++) {
         let sum = 0;
+        const total_i = ri[i] + rc[i] + rvp[i];
 
-        // 1. VINCULADOS (Solo existe en Retiro Colectivo - RC. Nunca contiene RVP)
-        if (prodSelection.rc && detSelection.vin) {
-          sum += vin[i];
-        }
-
-        // 2. EMPLEADOS (Existe en RI y RC. NUNCA contiene RVP)
-        if (detSelection.emp) {
-          if (prodSelection.ri && prodSelection.rc) {
-            sum += emp[i];
-          } else if (prodSelection.rc && !prodSelection.ri) {
-            // Empleados en RC
-            if (metric === 'ct_act' || metric === 'primas' || metric === 'rescates' || metric === 'aseg_act') {
-              sum += emp[i];
-            } else {
-              sum += emp[i] * 0.10;
-            }
-          } else if (prodSelection.ri && !prodSelection.rc) {
-            // Empleados en RI (rentistas pasivos)
-            if (metric === 'ct_pas' || metric === 'rentas' || metric === 'aseg_pas') {
-              sum += emp[i] * 0.90;
-            }
+        if (!allDet && allProd) {
+          // Filtrado exclusivamente por Segmento de Negocio (Líneas todas marcadas)
+          if (detSelection.vin) sum += vin[i];
+          if (detSelection.emp) sum += emp[i];
+          if (detSelection.neg) {
+            const negVal = total_i - emp[i] - vin[i];
+            sum += Math.max(0, negVal);
           }
-        }
-
-        // 3. NEGOCIO PROPIO:
-        if (detSelection.neg) {
-          // (a) Componente de Retiro Individual y Colectivo:
-          let neg_ri_rc = 0;
-          if (prodSelection.ri && prodSelection.rc) {
-            neg_ri_rc = (ri[i] + rc[i]) - emp[i] - vin[i];
-          } else if (prodSelection.ri && !prodSelection.rc) {
-            const emp_ri = (metric === 'ct_pas' || metric === 'rentas' || metric === 'aseg_pas') ? emp[i] * 0.90 : 0;
-            neg_ri_rc = ri[i] - emp_ri;
-          } else if (prodSelection.rc && !prodSelection.ri) {
-            const emp_rc = (metric === 'ct_act' || metric === 'primas' || metric === 'rescates' || metric === 'aseg_act') ? emp[i] : emp[i] * 0.10;
-            neg_ri_rc = rc[i] - vin[i] - emp_rc;
-          }
-          if (neg_ri_rc > 0) sum += neg_ri_rc;
-
-          // (b) Componente RVP+ART: SOLO suma a Negocio cuando RVP está seleccionado
-          if (prodSelection.rvp) {
-            sum += rvp[i];
-          }
+        } else {
+          // Filtrado exclusivamente por Líneas de Producto (Negocio todos marcados)
+          if (prodSelection.ri) sum += ri[i];
+          if (prodSelection.rc) sum += rc[i];
+          if (prodSelection.rvp) sum += rvp[i];
         }
 
         res[i] = Math.max(0, sum);
@@ -1567,24 +1540,46 @@
     }
 
     function toggleProd(pKey) {
+      // Al filtrar por Línea, los selectores de Negocio van todos marcados ("O uno o el otro")
+      detSelection.neg = true;
+      detSelection.emp = true;
+      detSelection.vin = true;
+      document.getElementById('t-neg').classList.add('active');
+      document.getElementById('t-emp').classList.add('active');
+      document.getElementById('t-vin').classList.add('active');
+
       prodSelection[pKey] = !prodSelection[pKey];
-      const btn = document.getElementById('t-' + pKey);
-      if (prodSelection[pKey]) {
-        btn.classList.add('active');
-      } else {
-        btn.classList.remove('active');
+      // Si se desmarcan todos, mantener el clickeado activo
+      if (!prodSelection.ri && !prodSelection.rc && !prodSelection.rvp) {
+        prodSelection[pKey] = true;
       }
+
+      document.getElementById('t-ri').classList.toggle('active', prodSelection.ri);
+      document.getElementById('t-rc').classList.toggle('active', prodSelection.rc);
+      document.getElementById('t-rvp').classList.toggle('active', prodSelection.rvp);
+
       renderAllChartsAndKPIs();
     }
 
     function toggleDet(dKey) {
+      // Al filtrar por Negocio, los selectores de Línea van todos marcados ("O uno o el otro")
+      prodSelection.ri = true;
+      prodSelection.rc = true;
+      prodSelection.rvp = true;
+      document.getElementById('t-ri').classList.add('active');
+      document.getElementById('t-rc').classList.add('active');
+      document.getElementById('t-rvp').classList.add('active');
+
       detSelection[dKey] = !detSelection[dKey];
-      const btn = document.getElementById('t-' + dKey);
-      if (detSelection[dKey]) {
-        btn.classList.add('active');
-      } else {
-        btn.classList.remove('active');
+      // Si se desmarcan todos, mantener el clickeado activo
+      if (!detSelection.neg && !detSelection.emp && !detSelection.vin) {
+        detSelection[dKey] = true;
       }
+
+      document.getElementById('t-neg').classList.toggle('active', detSelection.neg);
+      document.getElementById('t-emp').classList.toggle('active', detSelection.emp);
+      document.getElementById('t-vin').classList.toggle('active', detSelection.vin);
+
       renderAllChartsAndKPIs();
     }
 
