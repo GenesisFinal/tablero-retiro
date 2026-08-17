@@ -111,7 +111,6 @@ def main():
     upload_file("index.html", os.path.join(base_dir, "index.html"), "Feat: Tablero Seguros de Retiro con Actualizacion Semanal y Boton a Demanda")
     upload_file("data_retiro.json", os.path.join(base_dir, "data_retiro.json"), "Data: Series historicas consolidadas de Seguros de Retiro con 8003 asegurados")
     upload_file("actualizar_tablero.py", os.path.join(base_dir, "actualizar_tablero.py"), "Code: Script de actualizacion y validacion actuarial")
-    upload_file(".github/workflows/weekly_sync.yml", os.path.join(base_dir, ".github", "workflows", "weekly_sync.yml"), "CI/CD: Workflow de actualizacion automatica semanal")
     upload_file("deploy_to_github.py", os.path.join(base_dir, "deploy_to_github.py"), "Code: Script de despliegue automatizado a GitHub Pages")
 
     # 4. Activar GitHub Pages si aún no está activado
