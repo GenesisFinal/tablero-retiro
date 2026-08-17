@@ -68,7 +68,7 @@ def main():
     else:
         print(f"Repositorio '{full_repo}' ya existe.")
 
-    # 2. Función para subir o actualizar archivo en el repo
+    # 2. Función para subir o actualizar archivo en el repo con reintentos
     def upload_file(remote_path, local_path, commit_msg):
         if not os.path.exists(local_path):
             print(f"Archivo local no encontrado: {local_path}")
@@ -79,33 +79,38 @@ def main():
         content_b64 = base64.b64encode(content_bytes).decode("utf-8")
 
         url = f"https://api.github.com/repos/{full_repo}/contents/{remote_path}"
-        get_res = requests.get(url, headers=headers)
-        sha = None
-        if get_res.status_code == 200:
-            sha = get_res.json().get("sha")
+        
+        for attempt in range(4):
+            get_res = requests.get(url, headers=headers)
+            sha = None
+            if get_res.status_code == 200:
+                sha = get_res.json().get("sha")
 
-        payload = {
-            "message": commit_msg,
-            "content": content_b64
-        }
-        if sha:
-            payload["sha"] = sha
+            payload = {
+                "message": commit_msg,
+                "content": content_b64
+            }
+            if sha:
+                payload["sha"] = sha
 
-        print(f"Subiendo {remote_path} ({len(content_bytes):,} bytes)...")
-        put_res = requests.put(url, headers=headers, json=payload)
-        if put_res.status_code in [200, 201]:
-            print(f"OK: {remote_path} publicado en GitHub.")
-            return True
-        else:
-            print(f"ERROR al subir {remote_path}: {put_res.status_code} - {put_res.text}")
-            return False
+            print(f"Subiendo {remote_path} ({len(content_bytes):,} bytes, intento {attempt+1})...")
+            put_res = requests.put(url, headers=headers, json=payload)
+            if put_res.status_code in [200, 201]:
+                print(f"OK: {remote_path} publicado en GitHub.")
+                return True
+            else:
+                print(f"Aviso al subir {remote_path}: {put_res.status_code} - {put_res.text}")
+                time.sleep(2)
+        print(f"ERROR: No se pudo subir {remote_path} tras 4 intentos.")
+        return False
 
     base_dir = os.path.dirname(os.path.abspath(__file__))
     
     # 3. Subir archivos del Tablero
+    upload_file(".nojekyll", os.path.join(base_dir, ".nojekyll"), "Config: Deshabilitar procesamiento Jekyll con .nojekyll")
     upload_file("favicon.svg", os.path.join(base_dir, "favicon.svg"), "Asset: Favicon SVG para pestaña y marcadores")
-    upload_file("index.html", os.path.join(base_dir, "index.html"), "Feat: Tablero Seguros de Retiro AGMD Style Dark Green con Looker Studio y Monitor Analítico")
-    upload_file("data_retiro.json", os.path.join(base_dir, "data_retiro.json"), "Data: Series históricas consolidadas de Seguros de Retiro (2023-03 a 2026-05)")
+    upload_file("index.html", os.path.join(base_dir, "index.html"), "Feat: Tablero Seguros de Retiro AGMD Style Dark Green con Variaciones MoM/YoY, Asegurados 8003 y Valores en Millones enteros")
+    upload_file("data_retiro.json", os.path.join(base_dir, "data_retiro.json"), "Data: Series históricas consolidadas de Seguros de Retiro con asegurados 8003")
     upload_file("deploy_to_github.py", os.path.join(base_dir, "deploy_to_github.py"), "Code: Script de despliegue automatizado a GitHub Pages")
 
     # 4. Activar GitHub Pages si aún no está activado
