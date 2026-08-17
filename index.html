@@ -334,11 +334,11 @@
 
         <!-- Botones Directos de Períodos -->
         <div class="flex items-center gap-1.5 flex-wrap" id="bg-ejercicios">
-          <button onclick="setEjercicio('2026-2027')" id="btn-ej-2026-2027" class="btn-toggle active px-3 py-1.5 text-xs rounded-xl font-mono transition">
-            ⭐ Ej. 2026/2027 (Jul 26 En curso)
+          <button onclick="setEjercicio('12m')" id="btn-ej-12m" class="btn-toggle active px-3 py-1.5 text-xs rounded-xl font-mono transition">
+            ⭐ Últimos 12 Meses (L12M)
           </button>
-          <button onclick="setEjercicio('12m')" id="btn-ej-12m" class="btn-toggle px-3 py-1.5 text-xs rounded-xl font-mono transition">
-            📅 Últimos 12 Meses (L12M)
+          <button onclick="setEjercicio('2026-2027')" id="btn-ej-2026-2027" class="btn-toggle px-3 py-1.5 text-xs rounded-xl font-mono transition">
+            Ej. 2026/2027 (Jul 26 En curso)
           </button>
           <button onclick="setEjercicio('2025-2026')" id="btn-ej-2025-2026" class="btn-toggle px-3 py-1.5 text-xs rounded-xl font-mono transition">
             Ej. 2025/2026 (Jul 25 - Jun 26)
@@ -1066,7 +1066,7 @@
     const _z = new Array(N).fill(0);
 
     // Variables de Estado y Filtros
-    let currentEjercicioKey = '2026-2027'; // Por defecto: Ejercicio en curso (Jul 2026)
+    let currentEjercicioKey = '12m'; // Por defecto: Últimos 12 Meses (L12M)
     let currentMoneda = 'c'; // 'p', 'd', 'c' (Consolidado por defecto)
     
     const prodSelection = { ri: true, rc: true, rvp: true };
@@ -2358,9 +2358,9 @@
 
     window.addEventListener('DOMContentLoaded', async () => {
       await loadExternalDatasetAndRender();
-      setEjercicio('2026-2027');
+      setEjercicio('12m');
       startAutoRefreshLoop();
-      console.log("[AGMD Tablero Retiro] Tablero con carga dinámica desde data_retiro.json inicializado.");
+      console.log("[AGMD Tablero Retiro] Tablero con carga dinámica desde data_retiro.json inicializado en L12M.");
     });
   </script>
 </body>
