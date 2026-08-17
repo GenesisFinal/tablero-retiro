@@ -251,6 +251,9 @@
             <span class="px-2.5 py-0.5 text-[10px] font-mono font-bold uppercase rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/30">
               La Segunda Retiro
             </span>
+            <span class="px-2 py-0.5 text-[10px] font-mono font-semibold rounded bg-slate-900 text-slate-300 border border-slate-700">
+              Cifras en $ Millones
+            </span>
           </div>
           <p class="text-xs text-slate-400 mt-0.5 flex items-center gap-2 flex-wrap">
             <span>Evolución mensual por Ejercicio Económico (01/07 al 30/06)</span>
@@ -297,7 +300,7 @@
 
       <button onclick="switchTab('series')" id="tab-btn-series" class="tab-btn px-4 py-2 text-xs font-semibold rounded-xl border border-transparent text-slate-400 hover:text-slate-200 transition whitespace-nowrap flex items-center gap-2">
         <i data-lucide="table" class="w-4 h-4 text-emerald-400"></i>
-        <span>4. Series Cronológicas & Datos</span>
+        <span>4. Series Cronológicas & Datos ($ M)</span>
       </button>
 
       <button onclick="switchTab('fuentes')" id="tab-btn-fuentes" class="tab-btn px-4 py-2 text-xs font-semibold rounded-xl border border-transparent text-slate-400 hover:text-slate-200 transition whitespace-nowrap flex items-center gap-2">
@@ -351,9 +354,9 @@
         <div class="flex items-center gap-2">
           <span class="text-[11px] font-mono uppercase font-bold text-slate-400">Moneda:</span>
           <div class="bg-slate-950 p-1 rounded-xl border border-slate-800 flex gap-1" id="bg-moneda">
-            <button onclick="setMoneda('p')" id="btn-m-p" class="btn-toggle px-3 py-1 text-xs rounded-lg transition font-mono">Pesos ($)</button>
+            <button onclick="setMoneda('p')" id="btn-m-p" class="btn-toggle px-3 py-1 text-xs rounded-lg transition font-mono">Pesos ($ M)</button>
             <button onclick="setMoneda('d')" id="btn-m-d" class="btn-toggle px-3 py-1 text-xs rounded-lg transition font-mono">Dólares (u$s)</button>
-            <button onclick="setMoneda('c')" id="btn-m-c" class="btn-toggle active px-3 py-1 text-xs rounded-lg transition font-mono">Consolidado ($)</button>
+            <button onclick="setMoneda('c')" id="btn-m-c" class="btn-toggle active px-3 py-1 text-xs rounded-lg transition font-mono">Consolidado ($ M)</button>
           </div>
         </div>
 
@@ -395,7 +398,7 @@
         <i data-lucide="info" class="w-4 h-4 text-emerald-400"></i>
         <span id="label-ej-rango">Visualizando Ejercicio 2026/2027 (01/07/2026 al 31/07/2026 - Mes 1 en curso)</span>
       </div>
-      <span class="text-emerald-400 font-bold" id="label-ej-meses">1 Mes computado</span>
+      <span class="text-emerald-400 font-bold" id="label-ej-meses">1 Mes computado • Cifras en Millones ($ M)</span>
     </div>
 
     <!-- ======================================================== -->
@@ -418,7 +421,7 @@
               <h3 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
                 <i class="fas fa-money-bill-wave text-emerald-400"></i> Primas Emitidas
               </h3>
-              <p class="text-[11px] text-slate-400">Evolución mensual en el período seleccionado</p>
+              <p class="text-[11px] text-slate-400" id="sub-chart-primas">Evolución mensual expresada en $ Millones</p>
             </div>
             <span class="font-mono text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20" id="badge-chart-primas">--</span>
           </div>
@@ -434,7 +437,7 @@
               <h3 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
                 <i class="fas fa-vault text-teal-400"></i> Compromisos Técnicos (Activos + Pasivos)
               </h3>
-              <p class="text-[11px] text-slate-400">Fondos de ahorro y reservas matemáticas acumuladas</p>
+              <p class="text-[11px] text-slate-400" id="sub-chart-ct-tot">Fondos de ahorro y reservas en $ Millones</p>
             </div>
             <span class="font-mono text-xs font-bold text-teal-300 bg-teal-500/10 px-2 py-0.5 rounded border border-teal-500/20" id="badge-chart-ct-tot">--</span>
           </div>
@@ -452,7 +455,7 @@
             <h3 class="text-sm font-bold text-white flex items-center gap-2">
               <i class="fas fa-arrow-trend-up text-emerald-400"></i> Flujo Neto Operativo de Fondos (Primas - Rentas - Rescates)
             </h3>
-            <p class="text-xs text-slate-300">Saldo mensual de ingreso neto de capital a los fondos de retiro</p>
+            <p class="text-xs text-slate-300">Saldo mensual de ingreso neto de capital expresado en $ Millones</p>
           </div>
           <span class="text-xs font-mono text-emerald-300 bg-emerald-950 px-3 py-1 rounded-lg border border-emerald-800 font-bold" id="badge-flujo-neto-acum">--</span>
         </div>
@@ -497,7 +500,7 @@
               <h3 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
                 <i class="fas fa-hand-holding-dollar text-teal-400"></i> Rentas Pagadas en el Período
               </h3>
-              <p class="text-[11px] text-slate-400">Jubilaciones y rentas vitalicias/temporarias abonadas</p>
+              <p class="text-[11px] text-slate-400">Jubilaciones y rentas vitalicias/temporarias ($ M)</p>
             </div>
             <span class="font-mono text-xs font-bold text-teal-300 bg-teal-500/10 px-2 py-0.5 rounded border border-teal-500/20" id="badge-chart-rentas">--</span>
           </div>
@@ -511,7 +514,7 @@
               <h3 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
                 <i class="fas fa-arrow-right-from-bracket text-rose-400"></i> Rescates Solicitados
               </h3>
-              <p class="text-[11px] text-slate-400">Egresos por retiros anticipados de cuentas individuales y colectivas</p>
+              <p class="text-[11px] text-slate-400">Egresos por retiros anticipados ($ M)</p>
             </div>
             <span class="font-mono text-xs font-bold text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20" id="badge-chart-rescates">--</span>
           </div>
@@ -525,7 +528,7 @@
               <h3 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
                 <i class="fas fa-piggy-bank text-amber-400"></i> Compromisos Técnicos (Etapa Activa)
               </h3>
-              <p class="text-[11px] text-slate-400">Fondos acumulados de ahorro previsional individual y colectivo</p>
+              <p class="text-[11px] text-slate-400">Fondos acumulados de ahorro previsional ($ M)</p>
             </div>
             <span class="font-mono text-xs font-bold text-amber-300 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20" id="badge-chart-ct-act">--</span>
           </div>
@@ -539,7 +542,7 @@
               <h3 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
                 <i class="fas fa-landmark text-purple-400"></i> Compromisos Técnicos (Etapa Pasiva)
               </h3>
-              <p class="text-[11px] text-slate-400">Reservas actuariales de beneficios en curso (RI, RC, RVP/ART)</p>
+              <p class="text-[11px] text-slate-400">Reservas actuariales de beneficios en curso ($ M)</p>
             </div>
             <span class="font-mono text-xs font-bold text-purple-300 bg-purple-500/10 px-2 py-0.5 rounded border border-purple-500/20" id="badge-chart-ct-pas">--</span>
           </div>
@@ -686,7 +689,7 @@
             <h3 class="text-sm font-bold text-white flex items-center gap-2">
               <i class="fas fa-list-ol text-emerald-400"></i> Registro Cronológico Mensual (41 Meses • Hasta Julio 2026)
             </h3>
-            <p class="text-xs text-slate-400">Valores consolidados con identificación del Ejercicio Económico de pertenencia</p>
+            <p class="text-xs text-slate-400">Valores consolidados expresados en <strong>$ Millones</strong> con identificación del Ejercicio Económico</p>
           </div>
 
           <div class="flex items-center gap-2 flex-wrap">
@@ -709,13 +712,13 @@
               <tr>
                 <th class="py-2.5 px-3 text-left font-semibold">Mes</th>
                 <th class="py-2.5 px-3 text-left font-semibold text-emerald-300">Ejercicio</th>
-                <th class="py-2.5 px-3 text-right font-semibold text-emerald-400">Primas ($)</th>
+                <th class="py-2.5 px-3 text-right font-semibold text-emerald-400">Primas ($ M)</th>
                 <th class="py-2.5 px-3 text-right font-semibold text-emerald-300">Primas (u$s)</th>
-                <th class="py-2.5 px-3 text-right font-semibold text-teal-400">Primas Consolidado ($)</th>
-                <th class="py-2.5 px-3 text-right font-semibold text-teal-300">Rentas ($)</th>
-                <th class="py-2.5 px-3 text-right font-semibold text-rose-400">Rescates ($)</th>
-                <th class="py-2.5 px-3 text-right font-semibold text-amber-400">CT Activo ($)</th>
-                <th class="py-2.5 px-3 text-right font-semibold text-purple-400">CT Pasivo ($)</th>
+                <th class="py-2.5 px-3 text-right font-semibold text-teal-300">Consolidado ($ M)</th>
+                <th class="py-2.5 px-3 text-right font-semibold text-teal-400">Rentas ($ M)</th>
+                <th class="py-2.5 px-3 text-right font-semibold text-rose-400">Rescates ($ M)</th>
+                <th class="py-2.5 px-3 text-right font-semibold text-amber-400">CT Activo ($ M)</th>
+                <th class="py-2.5 px-3 text-right font-semibold text-purple-400">CT Pasivo ($ M)</th>
                 <th class="py-2.5 px-3 text-right font-semibold text-cyan-400">Pólizas Act.</th>
                 <th class="py-2.5 px-3 text-right font-semibold">TC BNA</th>
                 <th class="py-2.5 px-3 text-right font-semibold">IPC %</th>
@@ -835,7 +838,7 @@
     <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
       <div>
         <p class="font-mono text-slate-400">Tablero Seguros de Retiro • AGMD Style Dark Green</p>
-        <p class="text-[11px] text-slate-600 mt-0.5">Información verificada al cierre de Julio 2026 • Ejercicios 01/07 a 30/06</p>
+        <p class="text-[11px] text-slate-600 mt-0.5">Información expresada en $ Millones • Verificada a Julio 2026 • Ejercicios 01/07 a 30/06</p>
       </div>
       <div class="flex items-center gap-3 font-mono text-[11px]">
         <span class="text-emerald-400">● Sistema Activo</span>
@@ -893,10 +896,7 @@
       }
     }
 
-    // Series de Primas con Verificación Exacta en Julio 2026:
-    // Total Pesos: $ 1.933.937.911 (RI: $ 115.017.571 + RC: $ 1.818.920.340)
-    // Total USD: u$s 229.991 (RI: u$s 135.141 + RC: u$s 94.850)
-    // Total Consolidado $: $ 2.275.474.323 ($ 1.933.937.911 + 229.991 * 1.485 = $ 2.275.474.323)
+    // Series de Primas (Valores brutos en Pesos y USD)
     const ri_primas_p=[101918982.90,3828886.09,4537942.06,23893119.50,4850355,6713107.98,9157313.20,5307260.96,6203113.01,5846746.23,6698455.41,379438350.39,340514322.82,20994313.44,596049551.43,13409607.45,615097315.71,66666619.20,15631500.14,302731071.34,199314454.36,20077514.60,21074486.45,450132673.71,24379813.49,27858634.71,28597165.52,32780180.16,45153637.34,52914840.70,46281818.27,51160529.14,54730363.78,68230446.13,79549544.92,105487240.12,85389993.02,98211446.90,97122802.49,99450230.15,115017571.00];
     const ri_primas_d=[524003.10,72655.29,461111.31,134265.69,61549.32,64491.69,61620.68,67085.95,64780.88,63131.06,144566.65,1168082.97,434103.40,281416.31,704456.31,61685.48,711907.70,65106.91,79960.86,68585.53,420945.09,86316.91,72811.03,472624.74,78640.94,187232.50,99530.40,175065.94,84634.17,89492.02,86036.88,88223.23,294283.18,101057.34,103399.14,141356.54,322588.52,561744.47,119825.33,125430.20,135141.00];
     
@@ -939,7 +939,7 @@
 
     // Variables de Estado
     let currentEjercicioKey = '2026-2027'; // Por defecto: Ejercicio en curso (Jul 2026)
-    let currentMoneda = 'c'; // 'p', 'd', 'c' (Consolidado por defecto para ver $ 2.275.474.323)
+    let currentMoneda = 'c'; // 'p', 'd', 'c' (Consolidado por defecto: $ 2.275,47 M)
     let currentAgrupacion = 'prod'; // 'prod', 'det'
     let showTotalCurve = true;
 
@@ -987,18 +987,28 @@
       return Number(val).toLocaleString('es-AR', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
     }
 
-    function formatCurrency(val, compact = false) {
-      const sym = currentMoneda === 'd' ? 'u$s ' : '$ ';
-      const absVal = Math.abs(val);
-      if (compact) {
-        if (absVal >= 1e9) {
-          return sym + (val / 1e9).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' B';
-        }
+    // FORMATEO EXCLUSIVO EN MILLONES PARA PESOS ($ M)
+    function formatCurrency(val, isChartAxis = false) {
+      if (val === null || val === undefined || isNaN(val)) return '0';
+      if (currentMoneda === 'd') {
+        const absVal = Math.abs(val);
         if (absVal >= 1e6) {
-          return sym + (val / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' M';
+          return 'u$s ' + (val / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' M';
         }
+        return 'u$s ' + Number(val).toLocaleString('es-AR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+      } else {
+        // Expresado en MILLONES ($ M)
+        const inMillions = val / 1e6;
+        if (isChartAxis) {
+          return '$ ' + inMillions.toLocaleString('es-AR', { minimumFractionDigits: 0, maximumFractionDigits: 1 }) + ' M';
+        }
+        return '$ ' + inMillions.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' M';
       }
-      return sym + formatNumber(val, 0);
+    }
+
+    function formatInMillions(val, decimals = 2) {
+      if (val === null || val === undefined || isNaN(val)) return '0,00';
+      return (val / 1e6).toLocaleString('es-AR', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
     }
 
     // 3. TAB SWITCHING
@@ -1084,7 +1094,7 @@
       const descEl = document.getElementById('label-ej-rango');
       const mesesEl = document.getElementById('label-ej-meses');
       if (descEl) descEl.textContent = `Visualizando ${ejInfo.name} (${ejInfo.desc})`;
-      if (mesesEl) mesesEl.textContent = `${totalMeses} Mes${totalMeses > 1 ? 'es' : ''} computado${totalMeses > 1 ? 's' : ''}`;
+      if (mesesEl) mesesEl.textContent = `${totalMeses} Mes${totalMeses > 1 ? 'es' : ''} computado${totalMeses > 1 ? 's' : ''} • Cifras en $ Millones`;
 
       renderAllChartsAndKPIs();
     }
@@ -1179,7 +1189,7 @@
       // Flujo Neto = Primas - Rentas - Rescates
       const flujoNeto = totPrimas.map((v, i) => v - totRentas[i] - totRescates[i]);
 
-      // 1. RENDERIZAR KPIS SUPERIORES (6 TARJETAS)
+      // 1. RENDERIZAR KPIS SUPERIORES (6 TARJETAS EN MILLONES)
       const sumPrimas = totPrimas.reduce((a, b) => a + b, 0);
       const sumRentas = totRentas.reduce((a, b) => a + b, 0);
       const sumRescates = totRescates.reduce((a, b) => a + b, 0);
@@ -1196,7 +1206,7 @@
       kpiContainer.innerHTML = `
         <div class="glass-card-emerald p-3.5 rounded-2xl space-y-1 hover:border-emerald-400 transition">
           <span class="text-[10px] font-mono text-emerald-300 uppercase tracking-wider block">Primas ${ejInfo.name}</span>
-          <div class="text-xl font-bold text-white num" title="${formatCurrency(sumPrimas, false)}">${formatCurrency(sumPrimas, false)}</div>
+          <div class="text-xl font-bold text-white num">${formatCurrency(sumPrimas)}</div>
           <div class="text-[9px] text-slate-300 flex items-center justify-between pt-1 border-t border-emerald-900/50">
             <span>Acum. Ejercicio</span>
             <span class="text-emerald-400 font-bold">${datesSlice.length} mes(es)</span>
@@ -1205,7 +1215,7 @@
 
         <div class="glass-card p-3.5 rounded-2xl space-y-1 hover:border-teal-400 transition">
           <span class="text-[10px] font-mono text-teal-300 uppercase tracking-wider block">CT Total (${datesSlice[datesSlice.length-1] || ''})</span>
-          <div class="text-xl font-bold text-white num" title="${formatCurrency(lastCtTot, false)}">${formatCurrency(lastCtTot, false)}</div>
+          <div class="text-xl font-bold text-white num">${formatCurrency(lastCtTot)}</div>
           <div class="text-[9px] text-slate-400 flex items-center justify-between pt-1 border-t border-slate-800">
             <span>Activo + Pasivo</span>
             <span class="text-teal-300 font-bold">Cierre</span>
@@ -1214,7 +1224,7 @@
 
         <div class="glass-card p-3.5 rounded-2xl space-y-1 hover:border-amber-400 transition">
           <span class="text-[10px] font-mono text-amber-300 uppercase tracking-wider block">CT Activo (Ahorro)</span>
-          <div class="text-xl font-bold text-white num" title="${formatCurrency(lastCtAct, false)}">${formatCurrency(lastCtAct, false)}</div>
+          <div class="text-xl font-bold text-white num">${formatCurrency(lastCtAct)}</div>
           <div class="text-[9px] text-slate-400 flex items-center justify-between pt-1 border-t border-slate-800">
             <span>Fondos en Etapa Activa</span>
             <span class="text-amber-300 font-bold">${((lastCtAct/lastCtTot)*100).toFixed(1)}%</span>
@@ -1223,7 +1233,7 @@
 
         <div class="glass-card p-3.5 rounded-2xl space-y-1 hover:border-purple-400 transition">
           <span class="text-[10px] font-mono text-purple-300 uppercase tracking-wider block">CT Pasivo (Rentas)</span>
-          <div class="text-xl font-bold text-white num" title="${formatCurrency(lastCtPas, false)}">${formatCurrency(lastCtPas, false)}</div>
+          <div class="text-xl font-bold text-white num">${formatCurrency(lastCtPas)}</div>
           <div class="text-[9px] text-slate-400 flex items-center justify-between pt-1 border-t border-slate-800">
             <span>Reservas Vitalicias</span>
             <span class="text-purple-300 font-bold">${((lastCtPas/lastCtTot)*100).toFixed(1)}%</span>
@@ -1232,7 +1242,7 @@
 
         <div class="glass-card p-3.5 rounded-2xl space-y-1 hover:border-rose-400 transition">
           <span class="text-[10px] font-mono text-rose-300 uppercase tracking-wider block">Rescates Abonados</span>
-          <div class="text-xl font-bold text-rose-400 num" title="${formatCurrency(sumRescates, false)}">${formatCurrency(sumRescates, false)}</div>
+          <div class="text-xl font-bold text-rose-400 num">${formatCurrency(sumRescates)}</div>
           <div class="text-[9px] text-slate-400 flex items-center justify-between pt-1 border-t border-slate-800">
             <span>Ratio Resc./Primas</span>
             <span class="text-rose-300 font-bold">${ratioRescPrimas}%</span>
@@ -1250,13 +1260,13 @@
       `;
 
       // 2. ACTUALIZAR BADGES
-      if (document.getElementById('badge-chart-primas')) document.getElementById('badge-chart-primas').textContent = formatCurrency(sumPrimas, false);
-      if (document.getElementById('badge-chart-ct-tot')) document.getElementById('badge-chart-ct-tot').textContent = formatCurrency(lastCtTot, false);
-      if (document.getElementById('badge-flujo-neto-acum')) document.getElementById('badge-flujo-neto-acum').textContent = `Saldo Neto Acum: ${formatCurrency(sumFlujoNeto, false)}`;
-      if (document.getElementById('badge-chart-rentas')) document.getElementById('badge-chart-rentas').textContent = formatCurrency(sumRentas, false);
-      if (document.getElementById('badge-chart-rescates')) document.getElementById('badge-chart-rescates').textContent = formatCurrency(sumRescates, false);
-      if (document.getElementById('badge-chart-ct-act')) document.getElementById('badge-chart-ct-act').textContent = formatCurrency(lastCtAct, false);
-      if (document.getElementById('badge-chart-ct-pas')) document.getElementById('badge-chart-ct-pas').textContent = formatCurrency(lastCtPas, false);
+      if (document.getElementById('badge-chart-primas')) document.getElementById('badge-chart-primas').textContent = formatCurrency(sumPrimas);
+      if (document.getElementById('badge-chart-ct-tot')) document.getElementById('badge-chart-ct-tot').textContent = formatCurrency(lastCtTot);
+      if (document.getElementById('badge-flujo-neto-acum')) document.getElementById('badge-flujo-neto-acum').textContent = `Saldo Neto Acum: ${formatCurrency(sumFlujoNeto)}`;
+      if (document.getElementById('badge-chart-rentas')) document.getElementById('badge-chart-rentas').textContent = formatCurrency(sumRentas);
+      if (document.getElementById('badge-chart-rescates')) document.getElementById('badge-chart-rescates').textContent = formatCurrency(sumRescates);
+      if (document.getElementById('badge-chart-ct-act')) document.getElementById('badge-chart-ct-act').textContent = formatCurrency(lastCtAct);
+      if (document.getElementById('badge-chart-ct-pas')) document.getElementById('badge-chart-ct-pas').textContent = formatCurrency(lastCtPas);
       if (document.getElementById('badge-chart-pol')) document.getElementById('badge-chart-pol').textContent = `${formatNumber(lastTotPol)} cuentas`;
       if (document.getElementById('badge-chart-ratio-resc')) document.getElementById('badge-chart-ratio-resc').textContent = `${ratioRescPrimas}% promedio`;
 
@@ -1281,7 +1291,7 @@
                 borderWidth: 1,
                 callbacks: {
                   label: function(c) {
-                    return ` ${c.dataset.label}: ${formatCurrency(c.raw, false)}`;
+                    return ` ${c.dataset.label}: ${formatCurrency(c.raw)}`;
                   }
                 }
               }
@@ -1341,7 +1351,7 @@
                 titleColor: '#34d399',
                 borderColor: '#059669',
                 borderWidth: 1,
-                callbacks: { label: function(c) { return ` Flujo Neto: ${formatCurrency(c.raw, false)}`; } }
+                callbacks: { label: function(c) { return ` Flujo Neto: ${formatCurrency(c.raw)}`; } }
               }
             },
             scales: {
@@ -1574,13 +1584,13 @@
           <tr class="hover:bg-slate-900/70 transition">
             <td class="py-2 px-3 font-bold text-white">${d}</td>
             <td class="py-2 px-3 font-mono text-emerald-300 text-[11px]">${ejLabel}</td>
-            <td class="py-2 px-3 text-right text-emerald-400">$ ${formatNumber(pPesos)}</td>
+            <td class="py-2 px-3 text-right text-emerald-400 font-semibold">$ ${formatInMillions(pPesos)}</td>
             <td class="py-2 px-3 text-right text-emerald-300">u$s ${formatNumber(pDols)}</td>
-            <td class="py-2 px-3 text-right text-teal-300 font-bold">$ ${formatNumber(pConsol)}</td>
-            <td class="py-2 px-3 text-right text-teal-400">$ ${formatNumber(rPesos)}</td>
-            <td class="py-2 px-3 text-right text-rose-400">$ ${formatNumber(resPesos)}</td>
-            <td class="py-2 px-3 text-right text-amber-300">$ ${formatNumber(ctAct)}</td>
-            <td class="py-2 px-3 text-right text-purple-300">$ ${formatNumber(ctPas)}</td>
+            <td class="py-2 px-3 text-right text-teal-300 font-bold">$ ${formatInMillions(pConsol)}</td>
+            <td class="py-2 px-3 text-right text-teal-400">$ ${formatInMillions(rPesos)}</td>
+            <td class="py-2 px-3 text-right text-rose-400">$ ${formatInMillions(resPesos)}</td>
+            <td class="py-2 px-3 text-right text-amber-300">$ ${formatInMillions(ctAct)}</td>
+            <td class="py-2 px-3 text-right text-purple-300">$ ${formatInMillions(ctPas)}</td>
             <td class="py-2 px-3 text-right text-cyan-300 font-bold">${formatNumber(polAct)}</td>
             <td class="py-2 px-3 text-right text-slate-300">$ ${formatNumber(fxVal, 2)}</td>
             <td class="py-2 px-3 text-right ${ipcVal > 5 ? 'text-amber-400 font-bold' : 'text-slate-300'}">${ipcVal.toFixed(2)}%</td>
@@ -1592,27 +1602,27 @@
 
     // 8. EXPORT HELPERS
     function exportTableToCSV() {
-      let csv = "Mes,Ejercicio,Primas_ARS,Primas_USD,Primas_Consolidado_ARS,Rentas_ARS,Rescates_ARS,CT_Activo_ARS,CT_Pasivo_ARS,Polizas_Activas,TC_BNA,IPC_Mensual\n";
+      let csv = "Mes,Ejercicio,Primas_ARS_M,Primas_USD,Primas_Consolidado_ARS_M,Rentas_ARS_M,Rescates_ARS_M,CT_Activo_ARS_M,CT_Pasivo_ARS_M,Polizas_Activas,TC_BNA,IPC_Mensual\n";
       for (let i = 0; i < N; i++) {
         const d = DATES[i];
         const ej = getEjercicioByDate(d);
-        const pPesos = ri_primas_p[i] + rc_primas_p[i];
+        const pPesos = (ri_primas_p[i] + rc_primas_p[i]) / 1e6;
         const pDols = ri_primas_d[i] + rc_primas_d[i];
-        const pConsol = pPesos + (pDols * FX[i]);
-        const rPesos = ri_rentas_p[i] + rc_rentas_p[i] + rvp_rentas_p[i];
-        const resPesos = Math.abs(ri_rescates_p[i] + rc_rescates_p[i]);
-        const ctAct = ri_ct_act_p[i] + rc_ct_act_p[i];
-        const ctPas = ri_ct_pas_p[i] + rc_ct_pas_p[i] + rvp_ct_p[i];
+        const pConsol = ((ri_primas_p[i] + rc_primas_p[i]) + ((ri_primas_d[i] + rc_primas_d[i]) * FX[i])) / 1e6;
+        const rPesos = (ri_rentas_p[i] + rc_rentas_p[i] + rvp_rentas_p[i]) / 1e6;
+        const resPesos = Math.abs(ri_rescates_p[i] + rc_rescates_p[i]) / 1e6;
+        const ctAct = (ri_ct_act_p[i] + rc_ct_act_p[i]) / 1e6;
+        const ctPas = (ri_ct_pas_p[i] + rc_ct_pas_p[i] + rvp_ct_p[i]) / 1e6;
         const polAct = ri_pol_act_p[i] + rc_cert_act_p[i];
         const fxVal = FX[i];
         const ipcVal = IPC_MONTHLY[i];
-        csv += `${d},${ej},${pPesos},${pDols},${pConsol},${rPesos},${resPesos},${ctAct},${ctPas},${polAct},${fxVal},${ipcVal}\n`;
+        csv += `${d},${ej},${pPesos.toFixed(2)},${pDols},${pConsol.toFixed(2)},${rPesos.toFixed(2)},${resPesos.toFixed(2)},${ctAct.toFixed(2)},${ctPas.toFixed(2)},${polAct},${fxVal},${ipcVal}\n`;
       }
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `series_seguros_retiro_${DATES[N-1]}.csv`;
+      a.download = `series_seguros_retiro_millones_${DATES[N-1]}.csv`;
       a.click();
     }
 
@@ -1620,6 +1630,7 @@
       const data = {
         metadata: {
           title: "Tablero Seguros de Retiro • La Segunda",
+          unidad_pesos: "Millones de Pesos ($ M)",
           updated: "Julio 2026",
           current_exercise: "2026/2027",
           total_periods: N
@@ -1627,17 +1638,17 @@
         dates: DATES,
         fx: FX,
         ipc: IPC_MONTHLY,
-        primas_p: ri_primas_p.map((v, i) => v + rc_primas_p[i]),
-        primas_d: ri_primas_d.map((v, i) => v + rc_primas_d[i]),
-        primas_consolidado_p: ri_primas_p.map((v, i) => (v + rc_primas_p[i]) + ((ri_primas_d[i] + rc_primas_d[i]) * FX[i])),
-        ct_act_p: ri_ct_act_p.map((v, i) => v + rc_ct_act_p[i]),
-        ct_pas_p: ri_ct_pas_p.map((v, i) => v + rc_ct_pas_p[i] + rvp_ct_p[i])
+        primas_pesos_millones: ri_primas_p.map((v, i) => Number(((v + rc_primas_p[i]) / 1e6).toFixed(2))),
+        primas_usd: ri_primas_d.map((v, i) => v + rc_primas_d[i]),
+        primas_consolidado_millones: ri_primas_p.map((v, i) => Number((((v + rc_primas_p[i]) + ((ri_primas_d[i] + rc_primas_d[i]) * FX[i])) / 1e6).toFixed(2))),
+        ct_act_millones: ri_ct_act_p.map((v, i) => Number(((v + rc_ct_act_p[i]) / 1e6).toFixed(2))),
+        ct_pas_millones: ri_ct_pas_p.map((v, i) => Number(((v + rc_ct_pas_p[i] + rvp_ct_p[i]) / 1e6).toFixed(2)))
       };
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `dataset_seguros_retiro_${DATES[N-1]}.json`;
+      a.download = `dataset_seguros_retiro_millones_${DATES[N-1]}.json`;
       a.click();
     }
 
@@ -1645,7 +1656,7 @@
       renderTables();
       setEjercicio('2026-2027');
       startAutoRefreshLoop();
-      console.log("[AGMD Tablero Retiro] 100% Nativo con datos de Julio 2026 verificados.");
+      console.log("[AGMD Tablero Retiro] 100% Nativo en Millones ($ M) inicializado.");
     });
   </script>
 </body>
