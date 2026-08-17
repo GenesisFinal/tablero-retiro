@@ -1466,7 +1466,12 @@
                 }
               }
             }
-            console.log(`[AGMD Dataset] Sincronizado dinámicamente desde data_retiro.json (${N} períodos hasta ${DATES[N-1]}).`);
+            if (json && json.tables) {
+              if (json.tables.rent_pesos) rentPesosData = json.tables.rent_pesos;
+              if (json.tables.rent_dolares) rentDolaresData = json.tables.rent_dolares;
+              if (json.tables.benchmarks) benchmarksData = json.tables.benchmarks;
+            }
+            console.log(`[AGMD Dataset] Sincronizado dinámicamente desde data_retiro.json (${N} períodos hasta ${DATES[N-1]}). Tablas de rentabilidad oficiales cargadas.`);
           }
         }
       } catch (err) {
@@ -2207,35 +2212,35 @@
       });
     }
 
-    // 9. TABLAS DE RENTABILIDAD & SERIES CRONOLÓGICAS
-    const rentPesosData = [
-      { p: "Ejercicio 2026/2027 (En curso)", acum: "3,65%", anual: "53,80%" },
-      { p: "Ejercicio 2025/2026 (Completo)", acum: "59,12%", anual: "59,12%" },
-      { p: "Ejercicio 2024/2025 (Completo)", acum: "88,45%", anual: "88,45%" },
-      { p: "Ejercicio 2023/2024 (Completo)", acum: "214,30%", anual: "214,30%" },
-      { p: "Últimos 12 meses", acum: "58,40%", anual: "58,40%" },
-      { p: "Últimos 24 meses", acum: "228,15%", anual: "81,15%" },
-      { p: "Últimos 36 meses", acum: "1.380,40%", anual: "145,20%" }
+    // 9. TABLAS DE RENTABILIDAD & SERIES CRONOLÓGICAS (AUDITADAS LOOKER STUDIO)
+    let rentPesosData = [
+      { p: "Ejercicio 2026/2027 (En curso)", acum: "2,05%", anual: "27,52%" },
+      { p: "Ejercicio 2025/2026 (Completo)", acum: "39,00%", anual: "39,00%" },
+      { p: "Ejercicio 2024/2025 (Completo)", acum: "36,20%", anual: "36,20%" },
+      { p: "Ejercicio 2023/2024 (Completo)", acum: "232,66%", anual: "232,66%" },
+      { p: "Últimos 12 meses (L12M)", acum: "38,83%", anual: "38,83%" },
+      { p: "Últimos 24 meses (L24M)", acum: "88,82%", anual: "37,41%" },
+      { p: "Últimos 36 meses (L36M)", acum: "496,39%", anual: "81,35%" }
     ];
 
-    const rentDolaresData = [
-      { p: "Ejercicio 2026/2027 (En curso)", acum: "0,45%", anual: "5,45%" },
-      { p: "Ejercicio 2025/2026 (Completo)", acum: "6,40%", anual: "6,40%" },
-      { p: "Ejercicio 2024/2025 (Completo)", acum: "6,95%", anual: "6,95%" },
-      { p: "Ejercicio 2023/2024 (Completo)", acum: "6,80%", anual: "6,80%" },
-      { p: "Últimos 12 meses", acum: "6,35%", anual: "6,35%" },
-      { p: "Últimos 24 meses", acum: "14,80%", anual: "7,15%" },
-      { p: "Últimos 36 meses", acum: "22,50%", anual: "7,00%" }
+    let rentDolaresData = [
+      { p: "Ejercicio 2026/2027 (En curso)", acum: "0,66%", anual: "8,26%" },
+      { p: "Ejercicio 2025/2026 (Completo)", acum: "8,37%", anual: "8,37%" },
+      { p: "Ejercicio 2024/2025 (Completo)", acum: "7,69%", anual: "7,69%" },
+      { p: "Ejercicio 2023/2024 (Completo)", acum: "8,03%", anual: "8,03%" },
+      { p: "Últimos 12 meses (L12M)", acum: "8,90%", anual: "8,90%" },
+      { p: "Últimos 24 meses (L24M)", acum: "16,65%", anual: "8,01%" },
+      { p: "Últimos 36 meses (L36M)", acum: "25,84%", anual: "7,96%" }
     ];
 
-    const benchmarksData = [
-      { p: "Ejercicio 2026/2027 (En curso)", ipc_a: "1,70%", ipc_an: "22,42%", tc_a: "3,99%", tc_an: "59,85%" },
-      { p: "Ejercicio 2025/2026 (Completo)", ipc_a: "35,80%", ipc_an: "35,80%", tc_a: "19,20%", tc_an: "19,20%" },
-      { p: "Ejercicio 2024/2025 (Completo)", ipc_a: "48,20%", ipc_an: "48,20%", tc_a: "32,40%", tc_an: "32,40%" },
-      { p: "Ejercicio 2023/2024 (Completo)", ipc_a: "271,80%", ipc_an: "271,80%", tc_a: "254,80%", tc_an: "254,80%" },
-      { p: "Últimos 12 meses", ipc_a: "34,20%", ipc_an: "34,20%", tc_a: "23,20%", tc_an: "23,20%" },
-      { p: "Últimos 24 meses", ipc_a: "108,50%", ipc_an: "44,40%", tc_a: "62,50%", tc_an: "27,45%" },
-      { p: "Últimos 36 meses", ipc_a: "525,10%", ipc_an: "84,20%", tc_a: "504,80%", tc_an: "82,15%" }
+    let benchmarksData = [
+      { p: "Ejercicio 2026/2027 (En curso)", ipc_a: "1,70%", ipc_an: "22,42%", tc_a: "0,20%", tc_an: "2,46%" },
+      { p: "Ejercicio 2025/2026 (Completo)", ipc_a: "33,55%", ipc_an: "33,55%", tc_a: "22,99%", tc_an: "22,99%" },
+      { p: "Ejercicio 2024/2025 (Completo)", ipc_a: "39,41%", ipc_an: "39,41%", tc_a: "32,13%", tc_an: "32,13%" },
+      { p: "Ejercicio 2023/2024 (Completo)", ipc_a: "271,52%", ipc_an: "271,52%", tc_a: "255,28%", tc_an: "255,28%" },
+      { p: "Últimos 12 meses (L12M)", ipc_a: "31,06%", ipc_an: "31,06%", tc_a: "8,08%", tc_an: "8,08%" },
+      { p: "Últimos 24 meses (L24M)", ipc_a: "78,96%", ipc_an: "33,78%", tc_a: "59,33%", tc_an: "26,23%" },
+      { p: "Últimos 36 meses (L36M)", ipc_a: "550,44%", ipc_an: "86,67%", tc_a: "439,51%", tc_an: "75,39%" }
     ];
 
     function renderTables() {
