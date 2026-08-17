@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#022c22"/>
+      <stop offset="50%" stop-color="#064e3b"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </linearGradient>
+    <linearGradient id="emeraldGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#059669"/>
+      <stop offset="50%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#34d399"/>
+    </linearGradient>
+    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#10b981" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#047857" stop-opacity="0.05"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="12" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Background Base Rounded -->
+  <rect width="512" height="512" rx="128" fill="url(#bgGrad)" stroke="#10b981" stroke-width="8" stroke-opacity="0.3"/>
+
+  <!-- Shield Shape (Retiro / Protección) -->
+  <path d="M 256 90 L 390 145 C 390 280 256 390 256 420 C 256 390 122 280 122 145 Z" 
+        fill="url(#shieldGrad)" stroke="url(#emeraldGrad)" stroke-width="12" stroke-linejoin="round"/>
+
+  <!-- Growth Chart Lines / Bars Inside Shield -->
+  <g transform="translate(150, 160)">
+    <!-- Grid hint -->
+    <line x1="10" y1="180" x2="202" y2="180" stroke="#10b981" stroke-width="4" stroke-opacity="0.4" stroke-linecap="round"/>
+    
+    <!-- Rising Bar Chart -->
+    <rect x="25" y="125" width="28" height="55" rx="6" fill="#059669" opacity="0.85"/>
+    <rect x="68" y="95" width="28" height="85" rx="6" fill="#10b981" opacity="0.9"/>
+    <rect x="111" y="65" width="28" height="115" rx="6" fill="#34d399" filter="url(#glow)"/>
+    <rect x="154" y="30" width="28" height="150" rx="6" fill="url(#emeraldGrad)" filter="url(#glow)"/>
+
+    <!-- Upward Trend Arrow -->
+    <path d="M 20 120 Q 80 85 140 35 L 175 18" fill="none" stroke="#6ee7b7" stroke-width="8" stroke-linecap="round"/>
+    <polygon points="175,10 188,26 165,30" fill="#a7f3d0"/>
+  </g>
+
+  <!-- Central Star / Sparkle Node -->
+  <circle cx="330" cy="180" r="8" fill="#ffffff" filter="url(#glow)"/>
+</svg>
