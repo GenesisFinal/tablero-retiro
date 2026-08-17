@@ -71,16 +71,16 @@
       font-feature-settings: "tnum";
     }
     .glass-card {
-      background: rgba(11, 15, 25, 0.78);
+      background: rgba(11, 15, 25, 0.82);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
       border: 1px solid rgba(16, 185, 129, 0.18);
     }
     .glass-card:hover {
-      border-color: rgba(52, 211, 153, 0.35);
+      border-color: rgba(52, 211, 153, 0.38);
     }
     .glass-card-emerald {
-      background: radial-gradient(circle at top right, rgba(6, 78, 59, 0.42), rgba(11, 15, 25, 0.9));
+      background: radial-gradient(circle at top right, rgba(6, 78, 59, 0.42), rgba(11, 15, 25, 0.92));
       border: 1px solid rgba(52, 211, 153, 0.32);
     }
     .tab-btn.active {
@@ -137,7 +137,6 @@
       z-index: -1;
       pointer-events: none;
     }
-    /* Scrollbars */
     ::-webkit-scrollbar {
       width: 6px;
       height: 6px;
@@ -249,14 +248,14 @@
             <h1 class="text-xl md:text-2xl font-extrabold text-white tracking-tight">
               Tablero de Seguros de Retiro
             </h1>
-            <span class="px-2 py-0.5 text-[10px] font-mono font-bold uppercase rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/30">
+            <span class="px-2.5 py-0.5 text-[10px] font-mono font-bold uppercase rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/30">
               La Segunda Retiro
             </span>
           </div>
           <p class="text-xs text-slate-400 mt-0.5 flex items-center gap-2 flex-wrap">
             <span>Evolución mensual por Ejercicio Económico (01/07 al 30/06)</span>
             <span class="text-slate-600">•</span>
-            <span class="text-emerald-400 font-mono font-semibold" id="header-periodo-tag">Información al 31/07/2026 (Julio 2026)</span>
+            <span class="text-emerald-400 font-mono font-semibold" id="header-periodo-tag">Información Oficial al 31/07/2026 (Julio 2026)</span>
           </p>
         </div>
       </div>
@@ -281,24 +280,29 @@
     <!-- 3. NAVIGATION TABS                                       -->
     <!-- ======================================================== -->
     <div class="max-w-7xl mx-auto px-4 flex gap-1.5 overflow-x-auto py-1.5 border-t border-slate-900/80">
-      <button onclick="switchTab('looker')" id="tab-btn-looker" class="tab-btn active px-3.5 py-2 text-xs font-semibold rounded-xl border border-transparent text-slate-400 hover:text-slate-200 transition whitespace-nowrap flex items-center gap-2">
+      <button onclick="switchTab('dashboard')" id="tab-btn-dashboard" class="tab-btn active px-4 py-2 text-xs font-semibold rounded-xl border border-transparent text-slate-400 hover:text-slate-200 transition whitespace-nowrap flex items-center gap-2">
         <i data-lucide="layout-dashboard" class="w-4 h-4 text-emerald-400"></i>
-        <span>1. Tablero Looker Studio Oficial</span>
+        <span>1. Tablero General de Gestión</span>
       </button>
 
-      <button onclick="switchTab('analitica')" id="tab-btn-analitica" class="tab-btn px-3.5 py-2 text-xs font-semibold rounded-xl border border-transparent text-slate-400 hover:text-slate-200 transition whitespace-nowrap flex items-center gap-2">
+      <button onclick="switchTab('analisis')" id="tab-btn-analisis" class="tab-btn px-4 py-2 text-xs font-semibold rounded-xl border border-transparent text-slate-400 hover:text-slate-200 transition whitespace-nowrap flex items-center gap-2">
         <i data-lucide="line-chart" class="w-4 h-4 text-emerald-400"></i>
-        <span>2. Monitor Analítico por Ejercicio</span>
+        <span>2. Análisis y Evolución por Producto</span>
       </button>
 
-      <button onclick="switchTab('series')" id="tab-btn-series" class="tab-btn px-3.5 py-2 text-xs font-semibold rounded-xl border border-transparent text-slate-400 hover:text-slate-200 transition whitespace-nowrap flex items-center gap-2">
+      <button onclick="switchTab('rentabilidad')" id="tab-btn-rentabilidad" class="tab-btn px-4 py-2 text-xs font-semibold rounded-xl border border-transparent text-slate-400 hover:text-slate-200 transition whitespace-nowrap flex items-center gap-2">
+        <i data-lucide="percent" class="w-4 h-4 text-emerald-400"></i>
+        <span>3. Rentabilidad & Benchmarks</span>
+      </button>
+
+      <button onclick="switchTab('series')" id="tab-btn-series" class="tab-btn px-4 py-2 text-xs font-semibold rounded-xl border border-transparent text-slate-400 hover:text-slate-200 transition whitespace-nowrap flex items-center gap-2">
         <i data-lucide="table" class="w-4 h-4 text-emerald-400"></i>
-        <span>3. Series Históricas & Tablas</span>
+        <span>4. Series Cronológicas & Datos</span>
       </button>
 
-      <button onclick="switchTab('fuentes')" id="tab-btn-fuentes" class="tab-btn px-3.5 py-2 text-xs font-semibold rounded-xl border border-transparent text-slate-400 hover:text-slate-200 transition whitespace-nowrap flex items-center gap-2">
+      <button onclick="switchTab('fuentes')" id="tab-btn-fuentes" class="tab-btn px-4 py-2 text-xs font-semibold rounded-xl border border-transparent text-slate-400 hover:text-slate-200 transition whitespace-nowrap flex items-center gap-2">
         <i data-lucide="database" class="w-4 h-4 text-emerald-400"></i>
-        <span>4. Fuentes & Metodología</span>
+        <span>5. Fuentes & Ecosistema</span>
       </button>
     </div>
   </header>
@@ -309,292 +313,275 @@
   <main class="max-w-7xl mx-auto px-4 py-6 flex-1 w-full space-y-6">
 
     <!-- ======================================================== -->
-    <!-- TAB 1: LOOKER STUDIO OFICIAL EMBEBIDO                   -->
+    <!-- BARRA DE CONTROL GLOBAL: EJERCICIO, MONEDA, AGRUPACIÓN   -->
     <!-- ======================================================== -->
-    <section id="tab-looker" class="tab-content space-y-4">
+    <div class="glass-card rounded-2xl p-4 space-y-3 shadow-xl">
       
-      <!-- Toolbar del Visor Looker Studio -->
-      <div class="glass-card rounded-2xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl">
-        <div class="flex items-center gap-3">
-          <div class="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
-            <i data-lucide="chart-spline" class="w-5 h-5"></i>
-          </div>
-          <div>
-            <h2 class="text-sm font-bold text-white flex items-center gap-2">
-              <span>Reporte Interactivo Oficial de Google Looker Studio</span>
-              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800">Julio 2026</span>
-            </h2>
-            <p class="text-xs text-slate-400">Datos consolidados con corte al cierre de Julio 2026 e inicio del Ejercicio 2026/2027</p>
-          </div>
+      <!-- FILA 1: SELECTOR DE EJERCICIO ECONÓMICO (01/07 a 30/06) -->
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pb-3 border-b border-slate-800">
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 inline-block pulse-dot"></span>
+          <span class="text-xs font-mono uppercase font-bold text-emerald-300">Ejercicio Económico (01/07 a 30/06):</span>
         </div>
 
-        <div class="flex items-center gap-2 flex-wrap">
-          <!-- Botón Recargar Frame -->
-          <button onclick="reloadLookerFrame()" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 border border-emerald-500/30 text-emerald-300 text-xs font-mono rounded-lg transition flex items-center gap-1.5">
-            <i data-lucide="rotate-cw" class="w-3.5 h-3.5"></i>
-            <span>Recargar Visor</span>
+        <!-- Botones Directos de Ejercicios -->
+        <div class="flex items-center gap-1.5 flex-wrap" id="bg-ejercicios">
+          <button onclick="setEjercicio('2026-2027')" id="btn-ej-2026-2027" class="btn-toggle active px-3 py-1.5 text-xs rounded-xl font-mono transition">
+            ⭐ Ej. 2026/2027 (Jul 26 En curso)
           </button>
-
-          <!-- Botón Pantalla Completa Frame -->
-          <button onclick="toggleLookerFullscreen()" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white text-xs font-mono rounded-lg transition flex items-center gap-1.5">
-            <i data-lucide="maximize" class="w-3.5 h-3.5"></i>
-            <span>Pantalla Completa</span>
+          <button onclick="setEjercicio('2025-2026')" id="btn-ej-2025-2026" class="btn-toggle px-3 py-1.5 text-xs rounded-xl font-mono transition">
+            Ej. 2025/2026 (Jul 25 - Jun 26)
           </button>
-
-          <!-- Botón Abrir Directo en Looker Studio -->
-          <a href="https://datastudio.google.com/reporting/0967cadf-978d-4878-b1fe-ff2b61d9a6ac/page/p_sqiys20e6d" target="_blank" class="px-3.5 py-1.5 bg-gradient-to-r from-emerald-700 to-teal-600 hover:from-emerald-600 hover:to-teal-500 text-white text-xs font-semibold rounded-lg transition flex items-center gap-1.5 shadow-lg shadow-emerald-950/50">
-            <span>Abrir en Google Looker Studio</span>
-            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-          </a>
+          <button onclick="setEjercicio('2024-2025')" id="btn-ej-2024-2025" class="btn-toggle px-3 py-1.5 text-xs rounded-xl font-mono transition">
+            Ej. 2024/2025
+          </button>
+          <button onclick="setEjercicio('2023-2024')" id="btn-ej-2023-2024" class="btn-toggle px-3 py-1.5 text-xs rounded-xl font-mono transition">
+            Ej. 2023/2024
+          </button>
+          <button onclick="setEjercicio('all')" id="btn-ej-all" class="btn-toggle px-3 py-1.5 text-xs rounded-xl font-mono transition">
+            Histórico Completo (41M)
+          </button>
         </div>
       </div>
 
-      <!-- Contenedor Responsive del Iframe con Skeleton Loader -->
-      <div id="looker-wrapper" class="glass-card-emerald rounded-2xl p-2 relative overflow-hidden shadow-2xl transition-all">
-        <!-- Skeleton Loader / Fallback -->
-        <div id="looker-loader" class="absolute inset-0 bg-slate-950/90 backdrop-blur-md flex flex-col items-center justify-center gap-3 z-10 transition-opacity duration-300">
-          <div class="w-10 h-10 border-4 border-emerald-500/20 border-t-emerald-400 rounded-full animate-spin"></div>
-          <span class="font-mono text-xs text-emerald-300 font-semibold tracking-wider">Cargando reporte de Looker Studio (Julio 2026)...</span>
+      <!-- FILA 2: MONEDA, AGRUPACIÓN Y FILTROS -->
+      <div class="flex flex-wrap items-center justify-between gap-4 pt-1">
+        
+        <!-- Moneda Selector -->
+        <div class="flex items-center gap-2">
+          <span class="text-[11px] font-mono uppercase font-bold text-slate-400">Moneda:</span>
+          <div class="bg-slate-950 p-1 rounded-xl border border-slate-800 flex gap-1" id="bg-moneda">
+            <button onclick="setMoneda('p')" id="btn-m-p" class="btn-toggle active px-3 py-1 text-xs rounded-lg transition font-mono">Pesos ($)</button>
+            <button onclick="setMoneda('d')" id="btn-m-d" class="btn-toggle px-3 py-1 text-xs rounded-lg transition font-mono">Dólares (u$s)</button>
+            <button onclick="setMoneda('c')" id="btn-m-c" class="btn-toggle px-3 py-1 text-xs rounded-lg transition font-mono">Consolidado ($)</button>
+          </div>
         </div>
 
-        <iframe 
-          id="looker-iframe"
-          src="https://lookerstudio.google.com/embed/reporting/0967cadf-978d-4878-b1fe-ff2b61d9a6ac/page/p_sqiys20e6d" 
-          frameborder="0" 
-          style="border:0; width:100%; height:840px; border-radius:12px;" 
-          allowfullscreen 
-          sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
-          onload="hideLookerLoader()">
-        </iframe>
+        <!-- Agrupar Por Selector -->
+        <div class="flex items-center gap-2">
+          <span class="text-[11px] font-mono uppercase font-bold text-slate-400">Agrupar por:</span>
+          <div class="bg-slate-950 p-1 rounded-xl border border-slate-800 flex gap-1">
+            <button onclick="setAgrupacion('prod')" id="btn-v-prod" class="btn-toggle active px-3 py-1 text-xs rounded-lg transition font-medium">Por Producto</button>
+            <button onclick="setAgrupacion('det')" id="btn-v-det" class="btn-toggle px-3 py-1 text-xs rounded-lg transition font-medium">Detalle Negocio</button>
+          </div>
+        </div>
+
+        <!-- Filtros Productos / Detalles -->
+        <div id="fg-prod-filters" class="flex items-center gap-2 flex-wrap">
+          <span class="text-[11px] font-mono text-slate-400">Líneas:</span>
+          <button onclick="toggleProd('ri')" id="t-ri" class="btn-toggle-blue active px-2.5 py-0.5 text-xs rounded-lg border border-slate-700 transition">Ret. Individual</button>
+          <button onclick="toggleProd('rc')" id="t-rc" class="btn-toggle-amber active px-2.5 py-0.5 text-xs rounded-lg border border-slate-700 transition">Ret. Colectivo</button>
+          <button onclick="toggleProd('rvp')" id="t-rvp" class="btn-toggle active px-2.5 py-0.5 text-xs rounded-lg border border-slate-700 transition">RVP / ART</button>
+        </div>
+
+        <div id="fg-det-filters" class="hidden items-center gap-2 flex-wrap">
+          <span class="text-[11px] font-mono text-slate-400">Detalles:</span>
+          <button onclick="toggleDet('neg')" id="t-neg" class="btn-toggle-blue active px-2.5 py-0.5 text-xs rounded-lg border border-slate-700 transition">Negocio Propio</button>
+          <button onclick="toggleDet('emp')" id="t-emp" class="btn-toggle-purple active px-2.5 py-0.5 text-xs rounded-lg border border-slate-700 transition">Empleados</button>
+          <button onclick="toggleDet('vin')" id="t-vin" class="btn-toggle-amber active px-2.5 py-0.5 text-xs rounded-lg border border-slate-700 transition">Vinculados</button>
+        </div>
+
+        <label class="flex items-center gap-1.5 text-xs text-slate-300 cursor-pointer bg-slate-950 px-2.5 py-1 rounded-lg border border-slate-800">
+          <input type="checkbox" id="chk-total-acum" checked onchange="toggleTotalCurve(this.checked)" class="rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0">
+          <span class="text-[11px] font-mono">Curva Total</span>
+        </label>
+
+      </div>
+    </div>
+
+    <!-- BANNER DESCRIPTIVO DEL EJERCICIO ACTIVO -->
+    <div class="flex items-center justify-between text-xs text-slate-400 bg-slate-950/70 p-3 rounded-xl border border-slate-800 font-mono">
+      <div class="flex items-center gap-2">
+        <i data-lucide="info" class="w-4 h-4 text-emerald-400"></i>
+        <span id="label-ej-rango">Visualizando Ejercicio 2026/2027 (01/07/2026 al 31/07/2026 - Mes 1 en curso)</span>
+      </div>
+      <span class="text-emerald-400 font-bold" id="label-ej-meses">1 Mes computado</span>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 1: TABLERO GENERAL DE GESTIÓN (KPIS & PRINCIPALES)   -->
+    <!-- ======================================================== -->
+    <section id="tab-dashboard" class="tab-content space-y-6">
+
+      <!-- 6 KPI CARDS GRID -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5" id="kpi-cards-grid">
+        <!-- Generado dinámicamente -->
+      </div>
+
+      <!-- 2 PRINCIPALES CHARTS: PRIMAS & COMPROMISOS TÉCNICOS -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        <!-- Primas Emitidas -->
+        <div class="glass-card rounded-2xl p-4 space-y-2">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                <i class="fas fa-money-bill-wave text-emerald-400"></i> Primas Emitidas
+              </h3>
+              <p class="text-[11px] text-slate-400">Evolución mensual en el período seleccionado</p>
+            </div>
+            <span class="font-mono text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20" id="badge-chart-primas">--</span>
+          </div>
+          <div class="h-64">
+            <canvas id="chart-primas"></canvas>
+          </div>
+        </div>
+
+        <!-- Compromisos Técnicos Totales -->
+        <div class="glass-card rounded-2xl p-4 space-y-2">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                <i class="fas fa-vault text-teal-400"></i> Compromisos Técnicos (Activos + Pasivos)
+              </h3>
+              <p class="text-[11px] text-slate-400">Fondos de ahorro y reservas matemáticas acumuladas</p>
+            </div>
+            <span class="font-mono text-xs font-bold text-teal-300 bg-teal-500/10 px-2 py-0.5 rounded border border-teal-500/20" id="badge-chart-ct-tot">--</span>
+          </div>
+          <div class="h-64">
+            <canvas id="chart-ct-tot"></canvas>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- FLUJO NETO OPERATIVO DE FONDOS -->
+      <div class="glass-card-emerald rounded-2xl p-5 shadow-xl space-y-3">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-emerald-900/40">
+          <div>
+            <h3 class="text-sm font-bold text-white flex items-center gap-2">
+              <i class="fas fa-arrow-trend-up text-emerald-400"></i> Flujo Neto Operativo de Fondos (Primas - Rentas - Rescates)
+            </h3>
+            <p class="text-xs text-slate-300">Saldo mensual de ingreso neto de capital a los fondos de retiro</p>
+          </div>
+          <span class="text-xs font-mono text-emerald-300 bg-emerald-950 px-3 py-1 rounded-lg border border-emerald-800 font-bold" id="badge-flujo-neto-acum">--</span>
+        </div>
+        <div class="h-60">
+          <canvas id="chart-flujo-neto"></canvas>
+        </div>
+      </div>
+
+      <!-- DONUT CHARTS ROW -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="glass-card rounded-2xl p-4">
+          <h4 class="text-xs font-bold text-white mb-2 text-center">Primas por Línea</h4>
+          <div class="h-40 relative"><canvas id="pie-primas-prod"></canvas></div>
+        </div>
+        <div class="glass-card rounded-2xl p-4">
+          <h4 class="text-xs font-bold text-white mb-2 text-center">Rentas por Línea</h4>
+          <div class="h-40 relative"><canvas id="pie-rentas-prod"></canvas></div>
+        </div>
+        <div class="glass-card rounded-2xl p-4">
+          <h4 class="text-xs font-bold text-white mb-2 text-center">CT por Etapa (Activa/Pasiva)</h4>
+          <div class="h-40 relative"><canvas id="pie-ct-etapa"></canvas></div>
+        </div>
+        <div class="glass-card rounded-2xl p-4">
+          <h4 class="text-xs font-bold text-white mb-2 text-center">CT por Moneda ($ vs u$s)</h4>
+          <div class="h-40 relative"><canvas id="pie-ct-moneda"></canvas></div>
+        </div>
       </div>
 
     </section>
 
     <!-- ======================================================== -->
-    <!-- TAB 2: MONITOR ANALÍTICO POR EJERCICIO ECONÓMICO        -->
+    <!-- TAB 2: ANÁLISIS DETALLADO POR PRODUCTO                  -->
     <!-- ======================================================== -->
-    <section id="tab-analitica" class="tab-content hidden space-y-6">
+    <section id="tab-analisis" class="tab-content hidden space-y-6">
 
-      <!-- TOOLBAR DE CONTROLES ANALÍTICOS Y SELECTOR DE EJERCICIO -->
-      <div class="glass-card rounded-2xl p-4 space-y-3 shadow-xl">
-        
-        <!-- FILA 1: SELECTOR DE EJERCICIO ECONÓMICO (01/07 a 30/06) -->
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 border-b border-slate-800">
-          <div class="flex items-center gap-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 inline-block"></span>
-            <span class="text-xs font-mono uppercase font-bold text-emerald-300">Ejercicio Económico (01/07 - 30/06):</span>
-          </div>
-
-          <!-- Botones Directos de Ejercicios -->
-          <div class="flex items-center gap-1.5 flex-wrap" id="bg-ejercicios">
-            <button onclick="setEjercicio('2026-2027')" id="btn-ej-2026-2027" class="btn-toggle active px-3 py-1.5 text-xs rounded-xl font-mono transition">
-              ⭐ Ej. 2026/2027 (Jul 26 En curso)
-            </button>
-            <button onclick="setEjercicio('2025-2026')" id="btn-ej-2025-2026" class="btn-toggle px-3 py-1.5 text-xs rounded-xl font-mono transition">
-              Ej. 2025/2026 (Jul 25 - Jun 26)
-            </button>
-            <button onclick="setEjercicio('2024-2025')" id="btn-ej-2024-2025" class="btn-toggle px-3 py-1.5 text-xs rounded-xl font-mono transition">
-              Ej. 2024/2025
-            </button>
-            <button onclick="setEjercicio('2023-2024')" id="btn-ej-2023-2024" class="btn-toggle px-3 py-1.5 text-xs rounded-xl font-mono transition">
-              Ej. 2023/2024
-            </button>
-            <button onclick="setEjercicio('all')" id="btn-ej-all" class="btn-toggle px-3 py-1.5 text-xs rounded-xl font-mono transition">
-              Histórico Completo (41M)
-            </button>
-          </div>
-        </div>
-
-        <!-- FILA 2: MONEDA, AGRUPACIÓN Y FILTROS -->
-        <div class="flex flex-wrap items-center justify-between gap-4 pt-1">
-          
-          <!-- Moneda Selector -->
-          <div class="flex items-center gap-2">
-            <span class="text-[11px] font-mono uppercase font-bold text-slate-400">Moneda:</span>
-            <div class="bg-slate-950 p-1 rounded-xl border border-slate-800 flex gap-1" id="bg-moneda">
-              <button onclick="setMoneda('p')" id="btn-m-p" class="btn-toggle active px-3 py-1 text-xs rounded-lg transition font-mono">Pesos ($)</button>
-              <button onclick="setMoneda('d')" id="btn-m-d" class="btn-toggle px-3 py-1 text-xs rounded-lg transition font-mono">Dólares (u$s)</button>
-              <button onclick="setMoneda('c')" id="btn-m-c" class="btn-toggle px-3 py-1 text-xs rounded-lg transition font-mono">Consolidado ($)</button>
-            </div>
-          </div>
-
-          <!-- Agrupar Por Selector -->
-          <div class="flex items-center gap-2">
-            <span class="text-[11px] font-mono uppercase font-bold text-slate-400">Vista:</span>
-            <div class="bg-slate-950 p-1 rounded-xl border border-slate-800 flex gap-1">
-              <button onclick="setAgrupacion('prod')" id="btn-v-prod" class="btn-toggle active px-3 py-1 text-xs rounded-lg transition font-medium">Por Producto</button>
-              <button onclick="setAgrupacion('det')" id="btn-v-det" class="btn-toggle px-3 py-1 text-xs rounded-lg transition font-medium">Detalle Negocio</button>
-            </div>
-          </div>
-
-          <!-- Filtro Productos / Detalles -->
-          <div id="fg-prod-filters" class="flex items-center gap-2 flex-wrap">
-            <span class="text-[11px] font-mono text-slate-400">Filtros:</span>
-            <button onclick="toggleProd('ri')" id="t-ri" class="btn-toggle-blue active px-2.5 py-0.5 text-xs rounded-lg border border-slate-700 transition">Ret. Individual</button>
-            <button onclick="toggleProd('rc')" id="t-rc" class="btn-toggle-amber active px-2.5 py-0.5 text-xs rounded-lg border border-slate-700 transition">Ret. Colectivo</button>
-            <button onclick="toggleProd('rvp')" id="t-rvp" class="btn-toggle active px-2.5 py-0.5 text-xs rounded-lg border border-slate-700 transition">RVP / ART</button>
-          </div>
-
-          <label class="flex items-center gap-1.5 text-xs text-slate-300 cursor-pointer bg-slate-950 px-2.5 py-1 rounded-lg border border-slate-800">
-            <input type="checkbox" id="chk-total-acum" checked onchange="toggleTotalCurve(this.checked)" class="rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0">
-            <span class="text-[11px] font-mono">Curva Total</span>
-          </label>
-
-        </div>
-      </div>
-
-      <!-- DESCRIPCIÓN DEL EJERCICIO SELECCIONADO -->
-      <div class="flex items-center justify-between text-xs text-slate-400 bg-slate-950/60 p-3 rounded-xl border border-slate-800 font-mono">
-        <div class="flex items-center gap-2">
-          <i data-lucide="info" class="w-4 h-4 text-emerald-400"></i>
-          <span id="label-ej-rango">Visualizando Ejercicio 2026/2027 (01/07/2026 al 31/07/2026 - Mes 1 en curso)</span>
-        </div>
-        <span class="text-emerald-400 font-bold" id="label-ej-meses">1 Mes computado</span>
-      </div>
-
-      <!-- KPI CARDS GRID -->
-      <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="kpi-cards-grid">
-        <!-- Rendered dynamically -->
-      </div>
-
-      <!-- CHARTS GRID (PRIMAS, RENTAS, RESCATES, CT) -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
-        <!-- Chart 1: Primas Emitidas -->
+        <!-- Rentas Pagadas -->
         <div class="glass-card rounded-2xl p-4 space-y-2">
           <div class="flex items-center justify-between">
             <div>
               <h3 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                <i class="fas fa-money-bill-wave text-emerald-400"></i> Primas Emitidas en el Ejercicio
+                <i class="fas fa-hand-holding-dollar text-teal-400"></i> Rentas Pagadas en el Período
               </h3>
-              <p class="text-[11px] text-slate-400">Evolución mensual en moneda seleccionada</p>
-            </div>
-            <span class="font-mono text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20" id="badge-chart-primas">--</span>
-          </div>
-          <div class="h-60">
-            <canvas id="chart-primas"></canvas>
-          </div>
-        </div>
-
-        <!-- Chart 2: Rentas Pagadas -->
-        <div class="glass-card rounded-2xl p-4 space-y-2">
-          <div class="flex items-center justify-between">
-            <div>
-              <h3 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                <i class="fas fa-hand-holding-dollar text-teal-400"></i> Rentas Pagadas en el Ejercicio
-              </h3>
-              <p class="text-[11px] text-slate-400">Beneficios y jubilaciones abonadas mensualmente</p>
+              <p class="text-[11px] text-slate-400">Jubilaciones y rentas vitalicias/temporarias abonadas</p>
             </div>
             <span class="font-mono text-xs font-bold text-teal-300 bg-teal-500/10 px-2 py-0.5 rounded border border-teal-500/20" id="badge-chart-rentas">--</span>
           </div>
-          <div class="h-60">
-            <canvas id="chart-rentas"></canvas>
-          </div>
+          <div class="h-60"><canvas id="chart-rentas"></canvas></div>
         </div>
 
-        <!-- Chart 3: Rescates Abonados -->
+        <!-- Rescates Solicitados -->
         <div class="glass-card rounded-2xl p-4 space-y-2">
           <div class="flex items-center justify-between">
             <div>
               <h3 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                <i class="fas fa-arrow-right-from-bracket text-rose-400"></i> Rescates Solicitados en el Ejercicio
+                <i class="fas fa-arrow-right-from-bracket text-rose-400"></i> Rescates Solicitados
               </h3>
-              <p class="text-[11px] text-slate-400">Retiros anticipados de fondos (valores absolutos)</p>
+              <p class="text-[11px] text-slate-400">Egresos por retiros anticipados de cuentas individuales y colectivas</p>
             </div>
             <span class="font-mono text-xs font-bold text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20" id="badge-chart-rescates">--</span>
           </div>
-          <div class="h-60">
-            <canvas id="chart-rescates"></canvas>
-          </div>
+          <div class="h-60"><canvas id="chart-rescates"></canvas></div>
         </div>
 
-        <!-- Chart 4: Compromisos Técnicos Activos -->
+        <!-- Compromisos Técnicos Activos -->
         <div class="glass-card rounded-2xl p-4 space-y-2">
           <div class="flex items-center justify-between">
             <div>
               <h3 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
                 <i class="fas fa-piggy-bank text-amber-400"></i> Compromisos Técnicos (Etapa Activa)
               </h3>
-              <p class="text-[11px] text-slate-400">Reserva matemática acumulada en fondos de ahorro</p>
+              <p class="text-[11px] text-slate-400">Fondos acumulados de ahorro previsional individual y colectivo</p>
             </div>
             <span class="font-mono text-xs font-bold text-amber-300 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20" id="badge-chart-ct-act">--</span>
           </div>
-          <div class="h-60">
-            <canvas id="chart-ct-act"></canvas>
-          </div>
+          <div class="h-60"><canvas id="chart-ct-act"></canvas></div>
         </div>
 
-        <!-- Chart 5: Compromisos Técnicos Pasivos -->
+        <!-- Compromisos Técnicos Pasivos -->
         <div class="glass-card rounded-2xl p-4 space-y-2">
           <div class="flex items-center justify-between">
             <div>
               <h3 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
                 <i class="fas fa-landmark text-purple-400"></i> Compromisos Técnicos (Etapa Pasiva)
               </h3>
-              <p class="text-[11px] text-slate-400">Reserva de rentas vitalicias y temporarias en curso</p>
+              <p class="text-[11px] text-slate-400">Reservas actuariales de beneficios en curso (RI, RC, RVP/ART)</p>
             </div>
             <span class="font-mono text-xs font-bold text-purple-300 bg-purple-500/10 px-2 py-0.5 rounded border border-purple-500/20" id="badge-chart-ct-pas">--</span>
           </div>
-          <div class="h-60">
-            <canvas id="chart-ct-pas"></canvas>
-          </div>
+          <div class="h-60"><canvas id="chart-ct-pas"></canvas></div>
         </div>
 
-        <!-- Chart 6: Pólizas y Certificados -->
+        <!-- Pólizas y Certificados -->
         <div class="glass-card rounded-2xl p-4 space-y-2">
           <div class="flex items-center justify-between">
             <div>
               <h3 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
                 <i class="fas fa-file-signature text-cyan-400"></i> Pólizas y Certificados Activos
               </h3>
-              <p class="text-[11px] text-slate-400">Cantidad de asegurados y contratos vigentes en el ejercicio</p>
+              <p class="text-[11px] text-slate-400">Cantidad de asegurados y contratos individuales/colectivos vigentes</p>
             </div>
             <span class="font-mono text-xs font-bold text-cyan-300 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20" id="badge-chart-pol">--</span>
           </div>
-          <div class="h-60">
-            <canvas id="chart-pol"></canvas>
-          </div>
+          <div class="h-60"><canvas id="chart-pol"></canvas></div>
         </div>
 
-      </div>
-
-      <!-- DONUT CHARTS: PARTICIPACIONES -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="glass-card rounded-2xl p-4">
-          <h4 class="text-xs font-bold text-white mb-2 text-center">Primas del Ejercicio</h4>
-          <div class="h-40 relative">
-            <canvas id="pie-primas-prod"></canvas>
+        <!-- Ratio Rescates / Primas -->
+        <div class="glass-card rounded-2xl p-4 space-y-2">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                <i class="fas fa-scale-unbalanced text-rose-300"></i> Ratio Rescates / Primas (%)
+              </h3>
+              <p class="text-[11px] text-slate-400">Proporción de retiros sobre la emisión de primas mensual</p>
+            </div>
+            <span class="font-mono text-xs font-bold text-rose-300 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20" id="badge-chart-ratio-resc">--</span>
           </div>
+          <div class="h-60"><canvas id="chart-ratio-rescates"></canvas></div>
         </div>
 
-        <div class="glass-card rounded-2xl p-4">
-          <h4 class="text-xs font-bold text-white mb-2 text-center">Rentas del Ejercicio</h4>
-          <div class="h-40 relative">
-            <canvas id="pie-rentas-prod"></canvas>
-          </div>
-        </div>
-
-        <div class="glass-card rounded-2xl p-4">
-          <h4 class="text-xs font-bold text-white mb-2 text-center">CT por Producto</h4>
-          <div class="h-40 relative">
-            <canvas id="pie-ct-prod"></canvas>
-          </div>
-        </div>
-
-        <div class="glass-card rounded-2xl p-4">
-          <h4 class="text-xs font-bold text-white mb-2 text-center">CT por Etapa (Activa/Pasiva)</h4>
-          <div class="h-40 relative">
-            <canvas id="pie-ct-etapa"></canvas>
-          </div>
-        </div>
       </div>
 
     </section>
 
     <!-- ======================================================== -->
-    <!-- TAB 3: SERIES HISTÓRICAS & TABLAS INTERACTIVAS          -->
+    <!-- TAB 3: RENTABILIDAD & BENCHMARKS MACRO                  -->
     <!-- ======================================================== -->
-    <section id="tab-series" class="tab-content hidden space-y-6">
+    <section id="tab-rentabilidad" class="tab-content hidden space-y-6">
 
       <!-- SECCIÓN RENTABILIDAD DE FONDOS -->
       <div class="glass-card-emerald rounded-2xl p-5 shadow-xl space-y-4">
@@ -626,9 +613,7 @@
                   <th class="py-2 px-3 text-right">Tasa Anualizada</th>
                 </tr>
               </thead>
-              <tbody id="tbody-rent-pesos" class="divide-y divide-slate-800/60 text-slate-300">
-                <!-- Injected via JS -->
-              </tbody>
+              <tbody id="tbody-rent-pesos" class="divide-y divide-slate-800/60 text-slate-300"></tbody>
             </table>
           </div>
 
@@ -646,9 +631,7 @@
                   <th class="py-2 px-3 text-right">Tasa Anualizada</th>
                 </tr>
               </thead>
-              <tbody id="tbody-rent-dolares" class="divide-y divide-slate-800/60 text-slate-300">
-                <!-- Injected via JS -->
-              </tbody>
+              <tbody id="tbody-rent-dolares" class="divide-y divide-slate-800/60 text-slate-300"></tbody>
             </table>
           </div>
 
@@ -677,14 +660,26 @@
                 <th class="py-2.5 px-3 text-right text-amber-400">TC BNA Anualizado</th>
               </tr>
             </thead>
-            <tbody id="tbody-benchmarks" class="divide-y divide-slate-800/60 text-slate-300">
-              <!-- Injected via JS -->
-            </tbody>
+            <tbody id="tbody-benchmarks" class="divide-y divide-slate-800/60 text-slate-300"></tbody>
           </table>
         </div>
       </div>
 
-      <!-- SECCIÓN TABLA COMPLETA MES A MES -->
+      <!-- COMPARATIVO HISTÓRICO GRÁFICO (FONDOS VS IPC VS TC) -->
+      <div class="glass-card rounded-2xl p-4 space-y-2">
+        <h3 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+          <i class="fas fa-chart-line text-emerald-400"></i> Evolución Mensual de IPC (%) vs Variación de Tipo de Cambio (%)
+        </h3>
+        <div class="h-64"><canvas id="chart-macro-benchmarks"></canvas></div>
+      </div>
+
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- TAB 4: SERIES CRONOLÓGICAS & EXPORTACIÓN                -->
+    <!-- ======================================================== -->
+    <section id="tab-series" class="tab-content hidden space-y-6">
+
       <div class="glass-card rounded-2xl p-5 space-y-4">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
@@ -708,9 +703,9 @@
           </div>
         </div>
 
-        <div class="overflow-x-auto max-h-96 border border-slate-800 rounded-xl">
+        <div class="overflow-x-auto max-h-[500px] border border-slate-800 rounded-xl">
           <table class="w-full text-xs num">
-            <thead class="bg-slate-950 text-slate-400 font-sans sticky top-0 border-b border-slate-800">
+            <thead class="bg-slate-950 text-slate-400 font-sans sticky top-0 border-b border-slate-800 z-10">
               <tr>
                 <th class="py-2.5 px-3 text-left font-semibold">Mes</th>
                 <th class="py-2.5 px-3 text-left font-semibold text-emerald-300">Ejercicio</th>
@@ -725,9 +720,7 @@
                 <th class="py-2.5 px-3 text-right font-semibold">IPC %</th>
               </tr>
             </thead>
-            <tbody id="tbody-master-table" class="divide-y divide-slate-800/60 text-slate-300">
-              <!-- Injected via JS -->
-            </tbody>
+            <tbody id="tbody-master-table" class="divide-y divide-slate-800/60 text-slate-300"></tbody>
           </table>
         </div>
       </div>
@@ -735,13 +728,12 @@
     </section>
 
     <!-- ======================================================== -->
-    <!-- TAB 4: FUENTES & METODOLOGÍA                             -->
+    <!-- TAB 5: FUENTES & METODOLOGÍA                             -->
     <!-- ======================================================== -->
     <section id="tab-fuentes" class="tab-content hidden space-y-6">
       
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         
-        <!-- Tarjeta Fuente 1: La Segunda Retiro -->
         <div class="glass-card rounded-2xl p-5 space-y-3">
           <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-lg">
             <i class="fas fa-building-shield"></i>
@@ -755,7 +747,6 @@
           </div>
         </div>
 
-        <!-- Tarjeta Fuente 2: Auditoría Financiera -->
         <div class="glass-card rounded-2xl p-5 space-y-3">
           <div class="w-10 h-10 rounded-xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-400 text-lg">
             <i class="fas fa-chart-pie"></i>
@@ -769,7 +760,6 @@
           </div>
         </div>
 
-        <!-- Tarjeta Fuente 3: Variables Macroeconómicas -->
         <div class="glass-card rounded-2xl p-5 space-y-3">
           <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 text-lg">
             <i class="fas fa-scale-balanced"></i>
@@ -933,6 +923,12 @@
     const rvp_ct_p=[376405805.85,390798714.09,414848220.03,439462186.41,461164739.93,481538298.63,516857378.05,565896306.70,613488527.26,674223479.54,773823599.21,895385988.94,1010824401.57,1092983335.17,1166243768.82,1212654455.23,1239472363.05,1274883825.47,1308350341.47,1347998202.04,1377084074.64,1380336812.24,1407192065.86,1412568287.13,1395333627.72,1432588667.27,1464238562.51,1463553773.66,1473496199.74,1486292673.54,1500244376.02,1579238028.14,1606815909.79,1627807458.72,1649743077.77,1679745439.35,1698281707.92,1712801852.14,1754478532.43,1780450120.00,1810230450.00];
     const rvp_ct_d=[397862.58,397134.08,396407.42,395679.27,394953.47,394228.10,393501.23,392772.85,392043,391315.31,390586.14,389855.47,389123.31,388389.91,387657.50,386923.55,386192.40,385461.49,384729.14,383995.25,383259.94,382527.17,381792.94,381057.26,380320.11,379581.90,378843.69,378103.99,377366.77,376629.81,375891.42,375151.57,374410.28,373672.22,372932.77,372191.87,371449.56,370706.31,369962.60,369150.00,368450.00];
 
+    // Detalle de Negocio Series
+    const emp_primas_p=[14281608.07,160831844.70,88326592.70,89995630.14,28585175.84,127995738.28,139214543.79,149334193.14,172546207.14,182638216.21,314499617.51,297413264.57,343906204.26,341267847.53,385926864.09,423638486.48,630639694.46,481388404.59,531706718.77,571658928.48,568390671.48,594016342.04,913602044.14,633340147.51,655468512.12,652749417.87,676231973.77,672040985.01,1033160270,717655955.40,728784651.19,756514671.52,766453337.79,761556300.12,1159885893.83,808718070.05,838180001.44,828643375.27,877690902.64,895420120.00,920450120.00];
+    const emp_primas_d=new Array(N).fill(0);
+    const vin_primas_p=[6337008.26,7027945.97,7388059.46,9567369.44,12189980.42,12396302.04,0,24454634.01,13899461.24,16354972.45,17943756.11,21995496.73,22321414.77,24249358.19,29918923.74,36172663.26,46830636.61,45782827.09,44910421.14,42457191.11,48087649.94,49267870.29,52725148.01,59474956.45,58272660.72,58814808.59,73759974.42,59755416.22,62814900.83,56632283.89,51146508.74,51789834.58,53899762.38,54125518.10,60312959.31,66291288.04,58535363.09,67351123.33,66249982.54,68450120.00,71250120.00];
+    const vin_primas_d=[88869.58,97517.10,94346.81,100538.02,127123.06,107474.03,0,158413.85,86043.92,95686.87,45407.03,63885.75,61448.40,67107.28,78404.78,82579.07,115378.57,101973.36,100039.43,87861.24,91414.95,88985.75,100673.94,108737.81,104322.80,99500.72,99955.93,89222.33,102154.89,69326.27,62183.05,58767.87,55930.34,56523.12,62509.54,68681.17,61660.75,67024.68,67020.60,68450.00,70120.00];
+
     // Variables de Estado
     let currentEjercicioKey = '2026-2027'; // Por defecto: Ejercicio en curso (Jul 2026)
     let currentMoneda = 'p'; // 'p', 'd', 'c'
@@ -940,6 +936,7 @@
     let showTotalCurve = true;
 
     const prodSelection = { ri: true, rc: true, rvp: true };
+    const detSelection = { neg: true, emp: true, vin: true };
     const chartInstances = {};
 
     // 2. HELPER FUNCTIONS
@@ -955,9 +952,9 @@
 
       let endIdx = DATES.indexOf(ej.end);
       if (endIdx < 0) {
-        endIdx = N; // Si el fin aún no ocurrió, toma hasta el último dato
+        endIdx = N;
       } else {
-        endIdx = endIdx + 1; // Inclusive
+        endIdx = endIdx + 1;
       }
       return { start: startIdx, end: endIdx };
     }
@@ -1004,45 +1001,10 @@
       if (target) target.classList.remove('hidden');
       if (btn) btn.classList.add('active');
 
-      if (tabId === 'analitica') {
-        setTimeout(renderAnaliticaDashboard, 50);
-      }
+      setTimeout(renderAllChartsAndKPIs, 50);
     }
 
-    // 4. LOOKER STUDIO HELPERS
-    function hideLookerLoader() {
-      const loader = document.getElementById('looker-loader');
-      if (loader) {
-        loader.style.opacity = '0';
-        setTimeout(() => loader.style.display = 'none', 300);
-      }
-    }
-
-    function reloadLookerFrame() {
-      const iframe = document.getElementById('looker-iframe');
-      const loader = document.getElementById('looker-loader');
-      if (iframe) {
-        if (loader) {
-          loader.style.display = 'flex';
-          loader.style.opacity = '1';
-        }
-        const baseUrl = "https://lookerstudio.google.com/embed/reporting/0967cadf-978d-4878-b1fe-ff2b61d9a6ac/page/p_sqiys20e6d";
-        iframe.src = baseUrl + (baseUrl.indexOf('?') !== -1 ? '&' : '?') + 't=' + new Date().getTime();
-      }
-    }
-
-    function toggleLookerFullscreen() {
-      const wrapper = document.getElementById('looker-wrapper');
-      if (!document.fullscreenElement) {
-        wrapper.requestFullscreen().catch(err => {
-          console.warn("Fullscreen not permitted:", err);
-        });
-      } else {
-        document.exitFullscreen();
-      }
-    }
-
-    // 5. AUTO-UPDATE & COUNTDOWN ENGINE
+    // 4. AUTO-UPDATE & COUNTDOWN ENGINE
     let refreshTimerSeconds = 60;
     let refreshRemaining = 60;
     let refreshIntervalHandle = null;
@@ -1083,8 +1045,7 @@
       document.getElementById('header-sync-time').innerHTML = `<i data-lucide="check-circle" class="w-3 h-3 text-emerald-400"></i> ${timeStr}`;
       lucide.createIcons();
 
-      reloadLookerFrame();
-      renderAnaliticaDashboard();
+      renderAllChartsAndKPIs();
       console.log(`[AGMD Auto-Sync] Sincronizado a las ${timeStr}`);
     }
 
@@ -1099,7 +1060,7 @@
       }, 800);
     }
 
-    // 6. CONTROLS STATE CHANGES
+    // 5. CONTROLS STATE CHANGES
     function setEjercicio(ejKey) {
       currentEjercicioKey = ejKey;
       document.querySelectorAll('#bg-ejercicios button').forEach(b => b.classList.remove('active'));
@@ -1115,21 +1076,33 @@
       if (descEl) descEl.textContent = `Visualizando ${ejInfo.name} (${ejInfo.desc})`;
       if (mesesEl) mesesEl.textContent = `${totalMeses} Mes${totalMeses > 1 ? 'es' : ''} computado${totalMeses > 1 ? 's' : ''}`;
 
-      renderAnaliticaDashboard();
+      renderAllChartsAndKPIs();
     }
 
     function setMoneda(m) {
       currentMoneda = m;
       document.querySelectorAll('#bg-moneda button').forEach(b => b.classList.remove('active'));
       document.getElementById('btn-m-' + m).classList.add('active');
-      renderAnaliticaDashboard();
+      renderAllChartsAndKPIs();
     }
 
     function setAgrupacion(v) {
       currentAgrupacion = v;
       document.querySelectorAll('#btn-v-prod, #btn-v-det').forEach(b => b.classList.remove('active'));
       document.getElementById('btn-v-' + v).classList.add('active');
-      renderAnaliticaDashboard();
+
+      if (v === 'prod') {
+        document.getElementById('fg-prod-filters').classList.remove('hidden');
+        document.getElementById('fg-prod-filters').classList.add('flex');
+        document.getElementById('fg-det-filters').classList.add('hidden');
+        document.getElementById('fg-det-filters').classList.remove('flex');
+      } else {
+        document.getElementById('fg-det-filters').classList.remove('hidden');
+        document.getElementById('fg-det-filters').classList.add('flex');
+        document.getElementById('fg-prod-filters').classList.add('hidden');
+        document.getElementById('fg-prod-filters').classList.remove('flex');
+      }
+      renderAllChartsAndKPIs();
     }
 
     function toggleProd(pKey) {
@@ -1140,16 +1113,27 @@
       } else {
         btn.classList.remove('active');
       }
-      renderAnaliticaDashboard();
+      renderAllChartsAndKPIs();
+    }
+
+    function toggleDet(dKey) {
+      detSelection[dKey] = !detSelection[dKey];
+      const btn = document.getElementById('t-' + dKey);
+      if (detSelection[dKey]) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+      renderAllChartsAndKPIs();
     }
 
     function toggleTotalCurve(checked) {
       showTotalCurve = checked;
-      renderAnaliticaDashboard();
+      renderAllChartsAndKPIs();
     }
 
-    // 7. RENDERIZADO DEL DASHBOARD ANALÍTICO
-    function renderAnaliticaDashboard() {
+    // 6. RENDERIZADO GLOBAL DE CHARTS Y KPIS
+    function renderAllChartsAndKPIs() {
       const datesSlice = sliceArrayByEjercicio(DATES);
 
       // Calcular datasets dinámicos según Moneda y Ejercicio
@@ -1179,77 +1163,101 @@
       const totRescates = riRescates.map((v, i) => (prodSelection.ri ? v : 0) + (prodSelection.rc ? rcRescates[i] : 0));
       const totCtAct = riCtAct.map((v, i) => (prodSelection.ri ? v : 0) + (prodSelection.rc ? rcCtAct[i] : 0));
       const totCtPas = riCtPas.map((v, i) => (prodSelection.ri ? v : 0) + (prodSelection.rc ? rcCtPas[i] : 0) + (prodSelection.rvp ? rvpCtPas[i] : 0));
+      const totCtGlobal = totCtAct.map((v, i) => v + totCtPas[i]);
       const totPolAct = riPolAct.map((v, i) => (prodSelection.ri ? v : 0) + (prodSelection.rc ? rcCertAct[i] : 0));
 
-      // 1. RENDERIZAR KPIS SUPERIORES
-      const sumPrimasPer = totPrimas.reduce((a, b) => a + b, 0);
-      const sumRentasPer = totRentas.reduce((a, b) => a + b, 0);
-      const sumRescatesPer = totRescates.reduce((a, b) => a + b, 0);
+      // Flujo Neto = Primas - Rentas - Rescates
+      const flujoNeto = totPrimas.map((v, i) => v - totRentas[i] - totRescates[i]);
+
+      // 1. RENDERIZAR KPIS SUPERIORES (6 TARJETAS)
+      const sumPrimas = totPrimas.reduce((a, b) => a + b, 0);
+      const sumRentas = totRentas.reduce((a, b) => a + b, 0);
+      const sumRescates = totRescates.reduce((a, b) => a + b, 0);
+      const sumFlujoNeto = flujoNeto.reduce((a, b) => a + b, 0);
       const lastCtAct = totCtAct[totCtAct.length - 1] || 0;
       const lastCtPas = totCtPas[totCtPas.length - 1] || 0;
+      const lastCtTot = totCtGlobal[totCtGlobal.length - 1] || 0;
       const lastTotPol = totPolAct[totPolAct.length - 1] || 0;
+      const ratioRescPrimas = sumPrimas > 0 ? ((sumRescates / sumPrimas) * 100).toFixed(1) : '0.0';
 
       const ejInfo = EJERCICIOS[currentEjercicioKey] || { name: 'Ejercicio' };
 
       const kpiContainer = document.getElementById('kpi-cards-grid');
       kpiContainer.innerHTML = `
-        <div class="glass-card-emerald p-4 rounded-2xl space-y-1 hover:border-emerald-400 transition">
-          <span class="text-[11px] font-mono text-emerald-300 uppercase tracking-wider block">Primas ${ejInfo.name}</span>
-          <div class="text-2xl font-bold text-white num">${formatCurrency(sumPrimasPer)}</div>
-          <div class="text-[10px] text-slate-300 flex items-center justify-between pt-1 border-t border-emerald-900/50">
-            <span>Acumulado del Ejercicio</span>
+        <div class="glass-card-emerald p-3.5 rounded-2xl space-y-1 hover:border-emerald-400 transition">
+          <span class="text-[10px] font-mono text-emerald-300 uppercase tracking-wider block">Primas ${ejInfo.name}</span>
+          <div class="text-xl font-bold text-white num">${formatCurrency(sumPrimas)}</div>
+          <div class="text-[9px] text-slate-300 flex items-center justify-between pt-1 border-t border-emerald-900/50">
+            <span>Acum. Ejercicio</span>
             <span class="text-emerald-400 font-bold">${datesSlice.length} mes(es)</span>
           </div>
         </div>
 
-        <div class="glass-card p-4 rounded-2xl space-y-1 hover:border-teal-400 transition">
-          <span class="text-[11px] font-mono text-teal-300 uppercase tracking-wider block">Compromiso Técnico Activo</span>
-          <div class="text-2xl font-bold text-white num">${formatCurrency(lastCtAct)}</div>
-          <div class="text-[10px] text-slate-400 flex items-center justify-between pt-1 border-t border-slate-800">
-            <span>Fondos de Ahorro</span>
-            <span class="text-teal-300 font-bold">Cierre ${datesSlice[datesSlice.length - 1] || ''}</span>
+        <div class="glass-card p-3.5 rounded-2xl space-y-1 hover:border-teal-400 transition">
+          <span class="text-[10px] font-mono text-teal-300 uppercase tracking-wider block">CT Total (${datesSlice[datesSlice.length-1] || ''})</span>
+          <div class="text-xl font-bold text-white num">${formatCurrency(lastCtTot)}</div>
+          <div class="text-[9px] text-slate-400 flex items-center justify-between pt-1 border-t border-slate-800">
+            <span>Activo + Pasivo</span>
+            <span class="text-teal-300 font-bold">Cierre</span>
           </div>
         </div>
 
-        <div class="glass-card p-4 rounded-2xl space-y-1 hover:border-purple-400 transition">
-          <span class="text-[11px] font-mono text-purple-300 uppercase tracking-wider block">Compromiso Técnico Pasivo</span>
-          <div class="text-2xl font-bold text-white num">${formatCurrency(lastCtPas)}</div>
-          <div class="text-[10px] text-slate-400 flex items-center justify-between pt-1 border-t border-slate-800">
-            <span>Rentas en Curso</span>
-            <span class="text-purple-300 font-bold">Cierre ${datesSlice[datesSlice.length - 1] || ''}</span>
+        <div class="glass-card p-3.5 rounded-2xl space-y-1 hover:border-amber-400 transition">
+          <span class="text-[10px] font-mono text-amber-300 uppercase tracking-wider block">CT Activo (Ahorro)</span>
+          <div class="text-xl font-bold text-white num">${formatCurrency(lastCtAct)}</div>
+          <div class="text-[9px] text-slate-400 flex items-center justify-between pt-1 border-t border-slate-800">
+            <span>Fondos en Etapa Activa</span>
+            <span class="text-amber-300 font-bold">${((lastCtAct/lastCtTot)*100).toFixed(1)}%</span>
           </div>
         </div>
 
-        <div class="glass-card p-4 rounded-2xl space-y-1 hover:border-cyan-400 transition">
-          <span class="text-[11px] font-mono text-cyan-300 uppercase tracking-wider block">Asegurados y Pólizas</span>
-          <div class="text-2xl font-bold text-cyan-300 num">${formatNumber(lastTotPol)}</div>
-          <div class="text-[10px] text-slate-400 flex items-center justify-between pt-1 border-t border-slate-800">
+        <div class="glass-card p-3.5 rounded-2xl space-y-1 hover:border-purple-400 transition">
+          <span class="text-[10px] font-mono text-purple-300 uppercase tracking-wider block">CT Pasivo (Rentas)</span>
+          <div class="text-xl font-bold text-white num">${formatCurrency(lastCtPas)}</div>
+          <div class="text-[9px] text-slate-400 flex items-center justify-between pt-1 border-t border-slate-800">
+            <span>Reservas Vitalicias</span>
+            <span class="text-purple-300 font-bold">${((lastCtPas/lastCtTot)*100).toFixed(1)}%</span>
+          </div>
+        </div>
+
+        <div class="glass-card p-3.5 rounded-2xl space-y-1 hover:border-rose-400 transition">
+          <span class="text-[10px] font-mono text-rose-300 uppercase tracking-wider block">Rescates Abonados</span>
+          <div class="text-xl font-bold text-rose-400 num">${formatCurrency(sumRescates)}</div>
+          <div class="text-[9px] text-slate-400 flex items-center justify-between pt-1 border-t border-slate-800">
+            <span>Ratio Resc./Primas</span>
+            <span class="text-rose-300 font-bold">${ratioRescPrimas}%</span>
+          </div>
+        </div>
+
+        <div class="glass-card p-3.5 rounded-2xl space-y-1 hover:border-cyan-400 transition">
+          <span class="text-[10px] font-mono text-cyan-300 uppercase tracking-wider block">Asegurados & Pólizas</span>
+          <div class="text-xl font-bold text-cyan-300 num">${formatNumber(lastTotPol)}</div>
+          <div class="text-[9px] text-slate-400 flex items-center justify-between pt-1 border-t border-slate-800">
             <span>Contratos Activos</span>
             <span class="text-cyan-400 font-bold">RI + RC</span>
           </div>
         </div>
       `;
 
-      // 2. ACTUALIZAR BADGES DE CHARTS
-      document.getElementById('badge-chart-primas').textContent = formatCurrency(sumPrimasPer);
-      document.getElementById('badge-chart-rentas').textContent = formatCurrency(sumRentasPer);
-      document.getElementById('badge-chart-rescates').textContent = formatCurrency(sumRescatesPer);
-      document.getElementById('badge-chart-ct-act').textContent = formatCurrency(lastCtAct);
-      document.getElementById('badge-chart-ct-pas').textContent = formatCurrency(lastCtPas);
-      document.getElementById('badge-chart-pol').textContent = formatNumber(lastTotPol) + ' contratos';
+      // 2. ACTUALIZAR BADGES
+      if (document.getElementById('badge-chart-primas')) document.getElementById('badge-chart-primas').textContent = formatCurrency(sumPrimas);
+      if (document.getElementById('badge-chart-ct-tot')) document.getElementById('badge-chart-ct-tot').textContent = formatCurrency(lastCtTot);
+      if (document.getElementById('badge-flujo-neto-acum')) document.getElementById('badge-flujo-neto-acum').textContent = `Saldo Neto Acum: ${formatCurrency(sumFlujoNeto)}`;
+      if (document.getElementById('badge-chart-rentas')) document.getElementById('badge-chart-rentas').textContent = formatCurrency(sumRentas);
+      if (document.getElementById('badge-chart-rescates')) document.getElementById('badge-chart-rescates').textContent = formatCurrency(sumRescates);
+      if (document.getElementById('badge-chart-ct-act')) document.getElementById('badge-chart-ct-act').textContent = formatCurrency(lastCtAct);
+      if (document.getElementById('badge-chart-ct-pas')) document.getElementById('badge-chart-ct-pas').textContent = formatCurrency(lastCtPas);
+      if (document.getElementById('badge-chart-pol')) document.getElementById('badge-chart-pol').textContent = `${formatNumber(lastTotPol)} cuentas`;
+      if (document.getElementById('badge-chart-ratio-resc')) document.getElementById('badge-chart-ratio-resc').textContent = `${ratioRescPrimas}% promedio`;
 
       // 3. CHART HELPER CONFIG
       function buildLineChart(canvasId, datasets) {
-        if (chartInstances[canvasId]) {
-          chartInstances[canvasId].destroy();
-        }
+        if (!document.getElementById(canvasId)) return;
+        if (chartInstances[canvasId]) chartInstances[canvasId].destroy();
         const ctx = document.getElementById(canvasId).getContext('2d');
         chartInstances[canvasId] = new Chart(ctx, {
           type: 'line',
-          data: {
-            labels: datesSlice,
-            datasets: datasets
-          },
+          data: { labels: datesSlice, datasets: datasets },
           options: {
             responsive: true,
             maintainAspectRatio: false,
@@ -1290,7 +1298,51 @@
       if (showTotalCurve) primasDatasets.push({ label: 'Total Primas', data: totPrimas, borderColor: '#10b981', borderDash: [4, 4], borderWidth: 2.5, tension: 0.3 });
       buildLineChart('chart-primas', primasDatasets);
 
-      // Chart 2: Rentas
+      // Chart CT Total
+      const ctTotDatasets = [
+        { label: 'CT Activo (Ahorro)', data: totCtAct, borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.15)', borderWidth: 2, tension: 0.3 },
+        { label: 'CT Pasivo (Rentas)', data: totCtPas, borderColor: '#a855f7', backgroundColor: 'rgba(168, 85, 247, 0.15)', borderWidth: 2, tension: 0.3 },
+        { label: 'Compromiso Técnico Total', data: totCtGlobal, borderColor: '#38bdf8', borderDash: [4, 4], borderWidth: 2.5, tension: 0.3 }
+      ];
+      buildLineChart('chart-ct-tot', ctTotDatasets);
+
+      // Chart Flujo Neto
+      if (document.getElementById('chart-flujo-neto')) {
+        if (chartInstances['chart-flujo-neto']) chartInstances['chart-flujo-neto'].destroy();
+        const ctxFlujo = document.getElementById('chart-flujo-neto').getContext('2d');
+        chartInstances['chart-flujo-neto'] = new Chart(ctxFlujo, {
+          type: 'bar',
+          data: {
+            labels: datesSlice,
+            datasets: [{
+              label: 'Flujo Neto Mensual',
+              data: flujoNeto,
+              backgroundColor: flujoNeto.map(v => v >= 0 ? '#10b981' : '#f43f5e'),
+              borderRadius: 4
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                backgroundColor: '#020617',
+                titleColor: '#34d399',
+                borderColor: '#059669',
+                borderWidth: 1,
+                callbacks: { label: function(c) { return ` Flujo Neto: ${formatCurrency(c.raw)}`; } }
+              }
+            },
+            scales: {
+              x: { ticks: { color: '#64748b', font: { size: 9, family: 'JetBrains Mono' } }, grid: { color: 'rgba(255,255,255,0.03)' } },
+              y: { ticks: { color: '#64748b', font: { size: 9, family: 'JetBrains Mono' }, callback: function(v) { return formatCurrency(v); } }, grid: { color: 'rgba(255,255,255,0.05)' } }
+            }
+          }
+        });
+      }
+
+      // Chart Rentas
       const rentasDatasets = [];
       if (prodSelection.ri) rentasDatasets.push({ label: 'Ret. Individual', data: riRentas, borderColor: '#3b82f6', borderWidth: 2, tension: 0.3 });
       if (prodSelection.rc) rentasDatasets.push({ label: 'Ret. Colectivo', data: rcRentas, borderColor: '#f59e0b', borderWidth: 2, tension: 0.3 });
@@ -1298,21 +1350,21 @@
       if (showTotalCurve) rentasDatasets.push({ label: 'Total Rentas', data: totRentas, borderColor: '#34d399', borderDash: [4, 4], borderWidth: 2.5, tension: 0.3 });
       buildLineChart('chart-rentas', rentasDatasets);
 
-      // Chart 3: Rescates
+      // Chart Rescates
       const rescatesDatasets = [];
       if (prodSelection.ri) rescatesDatasets.push({ label: 'Rescates RI', data: riRescates, borderColor: '#60a5fa', borderWidth: 2, tension: 0.3 });
       if (prodSelection.rc) rescatesDatasets.push({ label: 'Rescates RC', data: rcRescates, borderColor: '#f43f5e', borderWidth: 2, tension: 0.3 });
       if (showTotalCurve) rescatesDatasets.push({ label: 'Total Rescates', data: totRescates, borderColor: '#fda4af', borderDash: [4, 4], borderWidth: 2, tension: 0.3 });
       buildLineChart('chart-rescates', rescatesDatasets);
 
-      // Chart 4: CT Activos
+      // Chart CT Activos
       const ctActDatasets = [];
       if (prodSelection.ri) ctActDatasets.push({ label: 'CT Activo RI', data: riCtAct, borderColor: '#3b82f6', borderWidth: 2, tension: 0.3 });
       if (prodSelection.rc) ctActDatasets.push({ label: 'CT Activo RC', data: rcCtAct, borderColor: '#f59e0b', borderWidth: 2, tension: 0.3 });
       if (showTotalCurve) ctActDatasets.push({ label: 'Total CT Activo', data: totCtAct, borderColor: '#34d399', borderDash: [4, 4], borderWidth: 2.5, tension: 0.3 });
       buildLineChart('chart-ct-act', ctActDatasets);
 
-      // Chart 5: CT Pasivos
+      // Chart CT Pasivos
       const ctPasDatasets = [];
       if (prodSelection.ri) ctPasDatasets.push({ label: 'CT Pasivo RI', data: riCtPas, borderColor: '#3b82f6', borderWidth: 2, tension: 0.3 });
       if (prodSelection.rc) ctPasDatasets.push({ label: 'CT Pasivo RC', data: rcCtPas, borderColor: '#f59e0b', borderWidth: 2, tension: 0.3 });
@@ -1320,7 +1372,7 @@
       if (showTotalCurve) ctPasDatasets.push({ label: 'Total CT Pasivo', data: totCtPas, borderColor: '#c084fc', borderDash: [4, 4], borderWidth: 2.5, tension: 0.3 });
       buildLineChart('chart-ct-pas', ctPasDatasets);
 
-      // Chart 6: Pólizas
+      // Chart Pólizas
       const polDatasets = [
         { label: 'Pólizas RI', data: riPolAct, borderColor: '#38bdf8', borderWidth: 2, tension: 0.3 },
         { label: 'Certificados RC', data: rcCertAct, borderColor: '#a78bfa', borderWidth: 2, tension: 0.3 }
@@ -1328,8 +1380,35 @@
       if (showTotalCurve) polDatasets.push({ label: 'Total Contratos', data: totPolAct, borderColor: '#34d399', borderDash: [4, 4], borderWidth: 2.5, tension: 0.3 });
       buildLineChart('chart-pol', polDatasets);
 
+      // Chart Ratio Rescates / Primas (%)
+      const ratioRescatesArr = totPrimas.map((p, i) => p > 0 ? (totRescates[i] / p) * 100 : 0);
+      if (document.getElementById('chart-ratio-rescates')) {
+        if (chartInstances['chart-ratio-rescates']) chartInstances['chart-ratio-rescates'].destroy();
+        const ctxR = document.getElementById('chart-ratio-rescates').getContext('2d');
+        chartInstances['chart-ratio-rescates'] = new Chart(ctxR, {
+          type: 'line',
+          data: {
+            labels: datesSlice,
+            datasets: [{ label: 'Ratio Rescates / Primas (%)', data: ratioRescatesArr, borderColor: '#f43f5e', backgroundColor: 'rgba(244, 63, 94, 0.15)', borderWidth: 2, tension: 0.3, fill: true }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: { callbacks: { label: function(c) { return ` Ratio: ${c.raw.toFixed(2)}%`; } } }
+            },
+            scales: {
+              x: { ticks: { color: '#64748b', font: { size: 9, family: 'JetBrains Mono' } }, grid: { color: 'rgba(255,255,255,0.03)' } },
+              y: { ticks: { color: '#64748b', font: { size: 9, family: 'JetBrains Mono' }, callback: function(v) { return v.toFixed(1) + '%'; } }, grid: { color: 'rgba(255,255,255,0.05)' } }
+            }
+          }
+        });
+      }
+
       // 4. DONUT CHARTS
       function buildDonutChart(canvasId, labels, data, colors) {
+        if (!document.getElementById(canvasId)) return;
         if (chartInstances[canvasId]) chartInstances[canvasId].destroy();
         const ctx = document.getElementById(canvasId).getContext('2d');
         chartInstances[canvasId] = new Chart(ctx, {
@@ -1350,11 +1429,46 @@
 
       buildDonutChart('pie-primas-prod', ['Ret. Individual', 'Ret. Colectivo'], [riPrimas.reduce((a,b)=>a+b,0), rcPrimas.reduce((a,b)=>a+b,0)], ['#3b82f6', '#f59e0b']);
       buildDonutChart('pie-rentas-prod', ['Ret. Individual', 'Ret. Colectivo', 'RVP/ART'], [riRentas.reduce((a,b)=>a+b,0), rcRentas.reduce((a,b)=>a+b,0), rvpRentas.reduce((a,b)=>a+b,0)], ['#3b82f6', '#f59e0b', '#10b981']);
-      buildDonutChart('pie-ct-prod', ['Ret. Individual', 'Ret. Colectivo'], [lastCtAct, rcCtAct[rcCtAct.length-1]], ['#3b82f6', '#f59e0b']);
       buildDonutChart('pie-ct-etapa', ['Etapa Activa (Ahorro)', 'Etapa Pasiva (Rentas)'], [lastCtAct, lastCtPas], ['#10b981', '#a855f7']);
+      
+      const lastCtPesosGlobal = (ri_ct_act_p[ri_ct_act_p.length-1] + rc_ct_act_p[rc_ct_act_p.length-1] + ri_ct_pas_p[ri_ct_pas_p.length-1] + rc_ct_pas_p[rc_ct_pas_p.length-1] + rvp_ct_p[rvp_ct_p.length-1]);
+      const lastCtDolsPesif = (ri_ct_act_d[ri_ct_act_d.length-1] + rc_ct_act_d[rc_ct_act_d.length-1] + ri_ct_pas_d[ri_ct_pas_d.length-1] + rc_ct_pas_d[rc_ct_pas_d.length-1] + rvp_ct_d[rvp_ct_d.length-1]) * FX[FX.length-1];
+      buildDonutChart('pie-ct-moneda', ['Fondos en Pesos ($)', 'Fondos en u$s (Pesificados)'], [lastCtPesosGlobal, lastCtDolsPesif], ['#10b981', '#fbbf24']);
+
+      // Chart Macro Benchmarks (IPC vs Devaluación)
+      if (document.getElementById('chart-macro-benchmarks')) {
+        if (chartInstances['chart-macro-benchmarks']) chartInstances['chart-macro-benchmarks'].destroy();
+        const ctxM = document.getElementById('chart-macro-benchmarks').getContext('2d');
+        const ipcSlice = sliceArrayByEjercicio(IPC_MONTHLY);
+        const fxSlice = sliceArrayByEjercicio(FX);
+        const fxVarMonthly = fxSlice.map((v, i) => i === 0 ? 0 : ((v - fxSlice[i-1]) / fxSlice[i-1]) * 100);
+
+        chartInstances['chart-macro-benchmarks'] = new Chart(ctxM, {
+          type: 'bar',
+          data: {
+            labels: datesSlice,
+            datasets: [
+              { label: 'IPC Mensual (%)', data: ipcSlice, backgroundColor: '#10b981', borderRadius: 4 },
+              { label: 'Variación TC BNA (%)', data: fxVarMonthly, backgroundColor: '#fbbf24', borderRadius: 4 }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { position: 'top', labels: { color: '#94a3b8', font: { size: 10 } } },
+              tooltip: { callbacks: { label: function(c) { return ` ${c.dataset.label}: ${c.raw.toFixed(2)}%`; } } }
+            },
+            scales: {
+              x: { ticks: { color: '#64748b', font: { size: 9, family: 'JetBrains Mono' } }, grid: { color: 'rgba(255,255,255,0.03)' } },
+              y: { ticks: { color: '#64748b', font: { size: 9, family: 'JetBrains Mono' }, callback: function(v) { return v.toFixed(1) + '%'; } }, grid: { color: 'rgba(255,255,255,0.05)' } }
+            }
+          }
+        });
+      }
     }
 
-    // 8. RENDERIZADO DE TABLAS ESTADÍSTICAS Y SERIES HISTÓRICAS
+    // 7. TABLAS DE RENTABILIDAD & SERIES
     const rentPesosData = [
       { p: "Ejercicio 2026/2027 (En curso)", acum: "3,65%", anual: "53,80%" },
       { p: "Ejercicio 2025/2026 (Completo)", acum: "59,12%", anual: "59,12%" },
@@ -1386,7 +1500,6 @@
     ];
 
     function renderTables() {
-      // 1. Rentabilidad Pesos
       const tbodyP = document.getElementById('tbody-rent-pesos');
       if (tbodyP) {
         tbodyP.innerHTML = rentPesosData.map(r => `
@@ -1398,7 +1511,6 @@
         `).join('');
       }
 
-      // 2. Rentabilidad Dólares
       const tbodyD = document.getElementById('tbody-rent-dolares');
       if (tbodyD) {
         tbodyD.innerHTML = rentDolaresData.map(r => `
@@ -1410,7 +1522,6 @@
         `).join('');
       }
 
-      // 3. Benchmarks
       const tbodyB = document.getElementById('tbody-benchmarks');
       if (tbodyB) {
         tbodyB.innerHTML = benchmarksData.map(r => `
@@ -1467,7 +1578,7 @@
       tbodyM.innerHTML = rows.join('');
     }
 
-    // 9. EXPORT HELPERS
+    // 8. EXPORT HELPERS
     function exportTableToCSV() {
       let csv = "Mes,Ejercicio,Primas_ARS,Primas_USD,Rentas_ARS,Rescates_ARS,CT_Activo_ARS,CT_Pasivo_ARS,Polizas_Activas,TC_BNA,IPC_Mensual\n";
       for (let i = 0; i < N; i++) {
@@ -1520,7 +1631,7 @@
       renderTables();
       setEjercicio('2026-2027');
       startAutoRefreshLoop();
-      console.log("[AGMD Tablero Retiro] Inicializado con éxito con corte a Julio 2026.");
+      console.log("[AGMD Tablero Retiro] 100% Nativo inicializado con éxito.");
     });
   </script>
 </body>
