@@ -11,9 +11,11 @@
       "primas_pesos": 1933937911.00,
       "primas_usd": 229991.00,
       "primas_consolidado_pesos": 2275474323.00,
+      "primas_consolidado_millones": 2275,
       "rentas_pesos": 150551010.00,
       "rescates_pesos": -356570460.00,
-      "flujo_neto_pesos": 1426816441.00
+      "flujo_neto_pesos": 1426816441.00,
+      "total_asegurados_polizas": 8003
     }
   },
   "ejercicios": [
@@ -23,7 +25,15 @@
       "rango": "01/07/2026 al 30/06/2027",
       "estado": "En curso",
       "meses_computados": 1,
-      "primas_consolidado_acumuladas": 2275474323.00
+      "primas_consolidado_millones": 2275,
+      "total_asegurados": 8003
+    },
+    {
+      "id": "12m",
+      "nombre": "Últimos 12 Meses (L12M)",
+      "rango": "01/08/2025 al 31/07/2026",
+      "estado": "Móvil",
+      "meses_computados": 12
     },
     {
       "id": "2025-2026",
