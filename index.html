@@ -254,6 +254,82 @@
       50% { opacity: 0.5; transform: scale(1.08); }
     }
     .pulse-dot { animation: pulseGlow 2.5s infinite ease-in-out; }
+  
+    /* ======================================================== */
+    /* ESTILOS DE ALTA LEGIBILIDAD PARA TABLAS (MODO CLARO/DARK) */
+    /* ======================================================== */
+    .table-modern {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+    .table-modern th {
+      padding: 12px 14px;
+      font-family: 'Sora', sans-serif;
+      font-weight: 700;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .table-modern td {
+      padding: 10px 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    
+    /* Modo Claro */
+    html:not(.dark) .table-modern th {
+      background-color: #F1F5F9;
+      color: #0F172A;
+      border-bottom: 2px solid #CBD5E1;
+    }
+    html:not(.dark) .table-modern tr:nth-child(even) {
+      background-color: #F8FAFC;
+    }
+    html:not(.dark) .table-modern tr:hover {
+      background-color: #EFF6FF;
+    }
+    html:not(.dark) .table-modern td {
+      border-bottom: 1px solid #E2E8F0;
+    }
+    html:not(.dark) .t-col-date { color: #0F172A !important; font-weight: 700 !important; font-family: 'Sora', sans-serif !important; }
+    html:not(.dark) .t-col-tc { color: #1E293B !important; font-weight: 600 !important; }
+    html:not(.dark) .t-col-ipc { color: #047857 !important; font-weight: 700 !important; }
+    html:not(.dark) .t-col-primas { color: #065F46 !important; font-weight: 700 !important; }
+    html:not(.dark) .t-col-rentas { color: #1D4ED8 !important; font-weight: 700 !important; }
+    html:not(.dark) .t-col-rescates { color: #DC2626 !important; font-weight: 700 !important; }
+    html:not(.dark) .t-col-ctact { color: #047857 !important; font-weight: 700 !important; }
+    html:not(.dark) .t-col-ctpas { color: #991B1B !important; font-weight: 700 !important; }
+    html:not(.dark) .t-col-cttot { color: #E20039 !important; font-weight: 800 !important; }
+    html:not(.dark) .t-col-gold { color: #B45309 !important; font-weight: 700 !important; }
+
+    /* Modo Oscuro */
+    html.dark .table-modern th {
+      background-color: #161822;
+      color: #F8FAFC;
+      border-bottom: 2px solid #282D3D;
+    }
+    html.dark .table-modern tr:nth-child(even) {
+      background-color: rgba(255, 255, 255, 0.015);
+    }
+    html.dark .table-modern tr:hover {
+      background-color: rgba(255, 255, 255, 0.04);
+    }
+    html.dark .table-modern td {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    html.dark .t-col-date { color: #FFFFFF !important; font-weight: 700 !important; font-family: 'Sora', sans-serif !important; }
+    html.dark .t-col-tc { color: #CBD5E1 !important; font-weight: 600 !important; }
+    html.dark .t-col-ipc { color: #3AC792 !important; font-weight: 700 !important; }
+    html.dark .t-col-primas { color: #3AC792 !important; font-weight: 700 !important; }
+    html.dark .t-col-rentas { color: #4183CA !important; font-weight: 700 !important; }
+    html.dark .t-col-rescates { color: #FF593E !important; font-weight: 700 !important; }
+    html.dark .t-col-ctact { color: #3AC792 !important; font-weight: 700 !important; }
+    html.dark .t-col-ctpas { color: #FF4C60 !important; font-weight: 700 !important; }
+    html.dark .t-col-cttot { color: #FF4C60 !important; font-weight: 800 !important; }
+    html.dark .t-col-gold { color: #F8CC59 !important; font-weight: 700 !important; }
+
   </style>
 </head>
 
@@ -651,7 +727,7 @@
             <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-green-100 dark:bg-green-950 text-green-700 dark:text-green-300 font-semibold">Auditada</span>
           </div>
           <div class="overflow-x-auto">
-            <table class="w-full text-xs font-mono">
+            <table class="table-modern">
               <thead>
                 <tr class="border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-sans text-left">
                   <th class="py-2 px-3">Período / Ejercicio</th>
@@ -676,7 +752,7 @@
             <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 font-semibold">Auditada</span>
           </div>
           <div class="overflow-x-auto">
-            <table class="w-full text-xs font-mono">
+            <table class="table-modern">
               <thead>
                 <tr class="border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-sans text-left">
                   <th class="py-2 px-3">Período / Ejercicio</th>
@@ -703,7 +779,7 @@
           <span class="text-[10px] font-mono text-slate-500">Fuente: FACPCE / BNA</span>
         </div>
         <div class="overflow-x-auto">
-          <table class="w-full text-xs font-mono">
+          <table class="table-modern">
             <thead>
               <tr class="border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-sans text-left">
                 <th class="py-2 px-3">Período / Ejercicio</th>
@@ -751,7 +827,7 @@
         </div>
 
         <div class="overflow-x-auto max-h-[500px]">
-          <table class="w-full text-xs font-mono">
+          <table class="table-modern">
             <thead class="sticky top-0 bg-slate-100 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 font-sans text-slate-600 dark:text-slate-400">
               <tr>
                 <th class="py-2.5 px-3 text-left">Período</th>
@@ -1894,10 +1970,10 @@
       const tbodyP = document.getElementById('tbody-rent-pesos');
       if (tbodyP) {
         tbodyP.innerHTML = rentPesosData.map(r => `
-          <tr class="hover:bg-slate-100 dark:hover:bg-slate-800/50 transition">
-            <td class="py-2.5 px-3 font-medium font-sans text-slate-800 dark:text-slate-200">${r.p}</td>
-            <td class="py-2.5 px-3 text-right text-brand-green font-bold">${r.acum}</td>
-            <td class="py-2.5 px-3 text-right text-brand-green font-semibold">${r.anual}</td>
+          <tr>
+            <td class="t-col-date">${r.p}</td>
+            <td class="text-right t-col-primas">${r.acum}</td>
+            <td class="text-right t-col-primas">${r.anual}</td>
           </tr>
         `).join('');
       }
@@ -1905,10 +1981,10 @@
       const tbodyD = document.getElementById('tbody-rent-dolares');
       if (tbodyD) {
         tbodyD.innerHTML = rentDolaresData.map(r => `
-          <tr class="hover:bg-slate-100 dark:hover:bg-slate-800/50 transition">
-            <td class="py-2.5 px-3 font-medium font-sans text-slate-800 dark:text-slate-200">${r.p}</td>
-            <td class="py-2.5 px-3 text-right text-brand-blue font-bold">${r.acum}</td>
-            <td class="py-2.5 px-3 text-right text-brand-blue font-semibold">${r.anual}</td>
+          <tr>
+            <td class="t-col-date">${r.p}</td>
+            <td class="text-right t-col-rentas">${r.acum}</td>
+            <td class="text-right t-col-rentas">${r.anual}</td>
           </tr>
         `).join('');
       }
@@ -1916,12 +1992,12 @@
       const tbodyB = document.getElementById('tbody-benchmarks');
       if (tbodyB) {
         tbodyB.innerHTML = benchmarksData.map(r => `
-          <tr class="hover:bg-slate-100 dark:hover:bg-slate-800/50 transition">
-            <td class="py-2.5 px-3 font-medium font-sans text-slate-800 dark:text-slate-200">${r.p}</td>
-            <td class="py-2.5 px-3 text-right text-brand-green font-bold">${r.ipc_a}</td>
-            <td class="py-2.5 px-3 text-right text-brand-green">${r.ipc_an}</td>
-            <td class="py-2.5 px-3 text-right text-brand-gold font-bold">${r.tc_a}</td>
-            <td class="py-2.5 px-3 text-right text-brand-gold">${r.tc_an}</td>
+          <tr>
+            <td class="t-col-date">${r.p}</td>
+            <td class="text-right t-col-ipc">${r.ipc_a}</td>
+            <td class="text-right t-col-ipc">${r.ipc_an}</td>
+            <td class="text-right t-col-gold">${r.tc_a}</td>
+            <td class="text-right t-col-gold">${r.tc_an}</td>
           </tr>
         `).join('');
       }
@@ -1942,18 +2018,21 @@
           const ctActTot = ctActSeries[i] || 0;
           const ctPasTot = ctPasSeries[i] || 0;
           const ctTot = ctActTot + ctPasTot;
+          
+          const rawIpc = IPC_MONTHLY[i];
+          const ipcDisplay = (rawIpc === null || rawIpc === undefined || rawIpc === 0 || isNaN(rawIpc)) ? 'S/D' : Number(rawIpc).toFixed(2) + '%';
 
           rows += `
-            <tr class="hover:bg-slate-100 dark:hover:bg-slate-800/50 transition">
-              <td class="py-2.5 px-3 font-semibold text-slate-900 dark:text-white">${DATES[i]}</td>
-              <td class="py-2.5 px-3 text-right text-slate-600 dark:text-slate-300 font-mono">${formatNumber(FX[i], 2)}</td>
-              <td class="py-2.5 px-3 text-right text-brand-green font-semibold font-mono">${Number(IPC_MONTHLY[i] || 0).toFixed(2)}%</td>
-              <td class="py-2.5 px-3 text-right text-brand-green font-mono">${formatInMillions(primasTot)}</td>
-              <td class="py-2.5 px-3 text-right text-brand-blue font-mono">${formatInMillions(rentasTot)}</td>
-              <td class="py-2.5 px-3 text-right text-brand-coral font-mono">${formatInMillions(rescatesTot)}</td>
-              <td class="py-2.5 px-3 text-right text-brand-green font-mono">${formatInMillions(ctActTot)}</td>
-              <td class="py-2.5 px-3 text-right text-brand-redDark font-mono">${formatInMillions(ctPasTot)}</td>
-              <td class="py-2.5 px-3 text-right font-bold text-brand-red font-mono">${formatInMillions(ctTot)}</td>
+            <tr>
+              <td class="t-col-date">${DATES[i]}</td>
+              <td class="text-right t-col-tc">${formatNumber(FX[i], 2)}</td>
+              <td class="text-right t-col-ipc">${ipcDisplay}</td>
+              <td class="text-right t-col-primas">${formatInMillions(primasTot)}</td>
+              <td class="text-right t-col-rentas">${formatInMillions(rentasTot)}</td>
+              <td class="text-right t-col-rescates">${formatInMillions(rescatesTot)}</td>
+              <td class="text-right t-col-ctact">${formatInMillions(ctActTot)}</td>
+              <td class="text-right t-col-ctpas">${formatInMillions(ctPasTot)}</td>
+              <td class="text-right t-col-cttot">${formatInMillions(ctTot)}</td>
             </tr>
           `;
         }
