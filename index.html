@@ -892,11 +892,13 @@
       const _z = new Array(N).fill(0);
       const add2 = (a, b) => (a || _z).map((v, i) => v + ((b && b[i]) || 0));
 
+      const absArr = arr => (arr || _z).map(v => Math.abs(v));
+
       const map = {
         ri: {
           primas: [s.ri_primas_p || _z, s.ri_primas_d || _z],
           rentas: [s.ri_rentas_p || _z, s.ri_rentas_d || _z],
-          rescates: [s.ri_rescates_p || _z, s.ri_rescates_d || _z],
+          rescates: [absArr(s.ri_rescates_p), absArr(s.ri_rescates_d)],
           ct_act: [s.ri_ct_act_p || _z, s.ri_ct_act_d || _z],
           ct_pas: [s.ri_ct_pas_p || _z, s.ri_ct_pas_d || _z],
           aseg_act: add2(s.ri_pol_act_p || _z, s.ri_pol_act_d || _z),
@@ -905,7 +907,7 @@
         rc: {
           primas: [s.rc_primas_p || _z, s.rc_primas_d || _z],
           rentas: [s.rc_rentas_p || _z, s.rc_rentas_d || _z],
-          rescates: [s.rc_rescates_p || _z, s.rc_rescates_d || _z],
+          rescates: [absArr(s.rc_rescates_p), absArr(s.rc_rescates_d)],
           ct_act: [s.rc_ct_act_p || _z, s.rc_ct_act_d || _z],
           ct_pas: [s.rc_ct_pas_p || _z, s.rc_ct_pas_d || _z],
           aseg_act: add2(s.rc_cert_act_p || _z, s.rc_cert_act_d || _z),
@@ -923,7 +925,7 @@
         emp: {
           primas: [s.emp_primas_p || _z, s.emp_primas_d || _z],
           rentas: [s.emp_rentas_p || _z, s.emp_rentas_d || _z],
-          rescates: [s.emp_rescates_p || _z, s.emp_rescates_d || _z],
+          rescates: [absArr(s.emp_rescates_p), absArr(s.emp_rescates_d)],
           ct_act: [s.emp_ct_act_p || _z, s.emp_ct_act_d || _z],
           ct_pas: [s.emp_ct_pas_p || _z, s.emp_ct_pas_d || _z],
           aseg_act: add2(s.emp_cert_act_p || _z, s.emp_cert_act_d || _z),
@@ -932,7 +934,7 @@
         vin: {
           primas: [s.vin_primas_p || _z, s.vin_primas_d || _z],
           rentas: [s.vin_rentas_p || _z, s.vin_rentas_d || _z],
-          rescates: [s.vin_rescates_p || _z, s.vin_rescates_d || _z],
+          rescates: [absArr(s.vin_rescates_p), absArr(s.vin_rescates_d)],
           ct_act: [s.vin_ct_act_p || _z, s.vin_ct_act_d || _z],
           ct_pas: [s.vin_ct_pas_p || _z, s.vin_ct_pas_d || _z],
           aseg_act: add2(s.vin_cert_act_p || _z, s.vin_cert_act_d || _z),
