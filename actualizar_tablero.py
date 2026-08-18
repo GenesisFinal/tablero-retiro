@@ -157,13 +157,16 @@ def parse_excel_dataset(excel_path):
     return data_map
 
 def compute_official_tables(series):
-    dates = series["DATES"]
+    raw_dates = series["DATES"]
+    dates = [str(d).strip().lower() for d in raw_dates]
     date_to_idx = {d: i for i, d in enumerate(dates)}
-    last_idx = len(dates) - 1
+    N = len(dates)
+    last_idx = N - 1
 
     rent_p = np.array(series["ri_rent_p"])
     rent_d = np.array(series["ri_rent_d"])
     ipc_arr = np.array([x / 100.0 for x in series["IPC_MONTHLY"]])
+    tt_arr = np.array(series.get("ri_tt_p", series.get("rc_tt_p", [0]*N)))
     fx_arr = np.array(series["FX"])
 
     def calc_compound_perf(rate_series, start_idx, end_idx):
@@ -175,39 +178,42 @@ def compute_official_tables(series):
         return f"{prod*100:,.2f}%".replace('.', ','), f"{anual*100:,.2f}%".replace('.', ',')
 
     def calc_fx_perf(fx_series, start_idx, end_idx):
-        base_idx = start_idx - 1
         m = end_idx - start_idx + 1
-        base_val = fx_series[0] if base_idx < 0 else fx_series[base_idx]
+        base_val = fx_series[0] if start_idx == 0 else fx_series[start_idx - 1]
         end_val = fx_series[end_idx]
         prod = (end_val - base_val) / base_val
         anual = ((1.0 + prod) ** (12.0 / m)) - 1.0 if m > 0 else 0.0
         return f"{prod*100:,.2f}%".replace('.', ','), f"{anual*100:,.2f}%".replace('.', ',')
 
-    last_date = dates[last_idx]
+    periods_def = [
+        ("Último mes (Julio 2026 / L1M)", last_idx, last_idx),
+        ("Últimos 3 meses (L3M)", max(0, last_idx - 2), last_idx),
+        ("Últimos 6 meses (L6M)", max(0, last_idx - 5), last_idx),
+    ]
+
+    last_date = raw_dates[last_idx]
     y_last = int(last_date.split('-')[0])
     m_last = int(last_date.split('-')[1])
 
-    periods_def = []
-    
-    start_ej_cur = f"{y_last if m_last >= 7 else y_last-1}-07"
+    start_ej_cur = f"jul-{str(y_last)[-2:] if m_last >= 7 else str(y_last-1)[-2:]}"
     if start_ej_cur in date_to_idx:
         periods_def.append((f"Ejercicio {y_last if m_last >= 7 else y_last-1}/{y_last+1 if m_last >= 7 else y_last} (En curso)", date_to_idx[start_ej_cur], last_idx))
 
     prev_y = (y_last if m_last >= 7 else y_last-1) - 1
-    s_p = f"{prev_y}-07"
-    e_p = f"{prev_y+1}-06"
+    s_p = f"jul-{str(prev_y)[-2:]}"
+    e_p = f"jun-{str(prev_y+1)[-2:]}"
     if s_p in date_to_idx and e_p in date_to_idx:
         periods_def.append((f"Ejercicio {prev_y}/{prev_y+1} (Completo)", date_to_idx[s_p], date_to_idx[e_p]))
 
     prev_y2 = prev_y - 1
-    s_p2 = f"{prev_y2}-07"
-    e_p2 = f"{prev_y2+1}-06"
+    s_p2 = f"jul-{str(prev_y2)[-2:]}"
+    e_p2 = f"jun-{str(prev_y2+1)[-2:]}"
     if s_p2 in date_to_idx and e_p2 in date_to_idx:
         periods_def.append((f"Ejercicio {prev_y2}/{prev_y2+1} (Completo)", date_to_idx[s_p2], date_to_idx[e_p2]))
 
     prev_y3 = prev_y2 - 1
-    s_p3 = f"{prev_y3}-07"
-    e_p3 = f"{prev_y3+1}-06"
+    s_p3 = f"jul-{str(prev_y3)[-2:]}"
+    e_p3 = f"jun-{str(prev_y3+1)[-2:]}"
     if s_p3 in date_to_idx and e_p3 in date_to_idx:
         periods_def.append((f"Ejercicio {prev_y3}/{prev_y3+1} (Completo)", date_to_idx[s_p3], date_to_idx[e_p3]))
 
@@ -230,8 +236,17 @@ def compute_official_tables(series):
         rent_dolares_table.append({"p": name, "acum": d_acum, "anual": d_anual})
         
         ipc_a, ipc_an = calc_compound_perf(ipc_arr, s_idx, e_idx)
+        tt_a, tt_an = calc_compound_perf(tt_arr, s_idx, e_idx)
         tc_a, tc_an = calc_fx_perf(fx_arr, s_idx, e_idx)
-        benchmarks_table.append({"p": name, "ipc_a": ipc_a, "ipc_an": ipc_an, "tc_a": tc_a, "tc_an": tc_an})
+        benchmarks_table.append({
+            "p": name,
+            "ipc_a": ipc_a,
+            "ipc_an": ipc_an,
+            "tt_a": tt_a,
+            "tt_an": tt_an,
+            "tc_a": tc_a,
+            "tc_an": tc_an
+        })
 
     return {
         "rent_pesos": rent_pesos_table,
