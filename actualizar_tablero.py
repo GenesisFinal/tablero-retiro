@@ -189,40 +189,14 @@ def compute_official_tables(series):
         ("Último mes (Julio 2026 / L1M)", last_idx, last_idx),
         ("Últimos 3 meses (L3M)", max(0, last_idx - 2), last_idx),
         ("Últimos 6 meses (L6M)", max(0, last_idx - 5), last_idx),
+        ("Ejercicio 2025/2026 (Cerrado)", date_to_idx.get('jul-25', 0), date_to_idx.get('jun-26', 0)),
+        ("Ejercicio 2024/2025 (Cerrado)", date_to_idx.get('jul-24', 0), date_to_idx.get('jun-25', 0)),
+        ("Ejercicio 2023/2024 (Cerrado)", date_to_idx.get('jul-23', 0), date_to_idx.get('jun-24', 0)),
+        ("Ejercicio 2026/2027 (En curso)", date_to_idx.get('jul-26', last_idx), last_idx),
+        ("Últimos 12 meses (L12M)", max(0, last_idx - 11), last_idx),
+        ("Últimos 24 meses (L24M)", max(0, last_idx - 23), last_idx),
+        ("Últimos 36 meses (L36M)", max(0, last_idx - 35), last_idx),
     ]
-
-    last_date = raw_dates[last_idx]
-    y_last = int(last_date.split('-')[0])
-    m_last = int(last_date.split('-')[1])
-
-    start_ej_cur = f"jul-{str(y_last)[-2:] if m_last >= 7 else str(y_last-1)[-2:]}"
-    if start_ej_cur in date_to_idx:
-        periods_def.append((f"Ejercicio {y_last if m_last >= 7 else y_last-1}/{y_last+1 if m_last >= 7 else y_last} (En curso)", date_to_idx[start_ej_cur], last_idx))
-
-    prev_y = (y_last if m_last >= 7 else y_last-1) - 1
-    s_p = f"jul-{str(prev_y)[-2:]}"
-    e_p = f"jun-{str(prev_y+1)[-2:]}"
-    if s_p in date_to_idx and e_p in date_to_idx:
-        periods_def.append((f"Ejercicio {prev_y}/{prev_y+1} (Completo)", date_to_idx[s_p], date_to_idx[e_p]))
-
-    prev_y2 = prev_y - 1
-    s_p2 = f"jul-{str(prev_y2)[-2:]}"
-    e_p2 = f"jun-{str(prev_y2+1)[-2:]}"
-    if s_p2 in date_to_idx and e_p2 in date_to_idx:
-        periods_def.append((f"Ejercicio {prev_y2}/{prev_y2+1} (Completo)", date_to_idx[s_p2], date_to_idx[e_p2]))
-
-    prev_y3 = prev_y2 - 1
-    s_p3 = f"jul-{str(prev_y3)[-2:]}"
-    e_p3 = f"jun-{str(prev_y3+1)[-2:]}"
-    if s_p3 in date_to_idx and e_p3 in date_to_idx:
-        periods_def.append((f"Ejercicio {prev_y3}/{prev_y3+1} (Completo)", date_to_idx[s_p3], date_to_idx[e_p3]))
-
-    if last_idx >= 11:
-        periods_def.append(("Últimos 12 meses (L12M)", last_idx - 11, last_idx))
-    if last_idx >= 23:
-        periods_def.append(("Últimos 24 meses (L24M)", last_idx - 23, last_idx))
-    if last_idx >= 35:
-        periods_def.append(("Últimos 36 meses (L36M)", last_idx - 35, last_idx))
 
     rent_pesos_table = []
     rent_dolares_table = []
