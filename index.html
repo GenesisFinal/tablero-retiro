@@ -1116,6 +1116,30 @@
       return pArr.map((v, i) => v + ((dArr[i] || 0) * (FX[i] || 1)));
     }
 
+    function formatNumber(val, decimals = 0) {
+      if (val === null || val === undefined || isNaN(val)) return '0';
+      return Number(val).toLocaleString('es-AR', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+    }
+
+    function formatCurrency(val, isChartAxis = false) {
+      if (val === null || val === undefined || isNaN(val)) return '0';
+      if (currentMoneda === 'd') {
+        const absVal = Math.abs(val);
+        if (absVal >= 1e6) {
+          return 'u$s ' + (val / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' M';
+        }
+        return 'u$s ' + Number(val).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      } else {
+        const inMillions = val / 1e6;
+        return '$ ' + inMillions.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' M';
+      }
+    }
+
+    function formatInMillions(val, decimals = 2) {
+      if (val === null || val === undefined || isNaN(val)) return '0';
+      return (val / 1e6).toLocaleString('es-AR', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+    }
+
     function getGrandTotal(metric) {
       const ri = getRawArr('ri', metric);
       const rc = getRawArr('rc', metric);
