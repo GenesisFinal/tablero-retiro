@@ -1913,8 +1913,9 @@
       buildDonutChart('pie-rentas-prod', ['Ret. Individual', 'Ret. Colectivo', 'RVP/ART'], [sliceArrayByEjercicio(fullRiRentas).reduce((a,b)=>a+b,0), sliceArrayByEjercicio(fullRcRentas).reduce((a,b)=>a+b,0), sliceArrayByEjercicio(fullRvpRentas).reduce((a,b)=>a+b,0)], ['#3b82f6', '#f59e0b', '#10b981']);
       buildDonutChart('pie-ct-etapa', ['Etapa Activa (Ahorro)', 'Etapa Pasiva (Rentas)'], [varCtAct.currentVal, varCtPas.currentVal], ['#10b981', '#a855f7']);
       
-      const lastCtPesosGlobal = (ri_ct_act_p[N-1] + rc_ct_act_p[N-1] + ri_ct_pas_p[N-1] + rc_ct_pas_p[N-1] + rvp_ct_p[N-1]);
-      const lastCtDolsPesif = (ri_ct_act_d[N-1] + rc_ct_act_d[N-1] + ri_ct_pas_d[N-1] + rc_ct_pas_d[N-1] + rvp_ct_d[N-1]) * FX[N-1];
+      const sSeries = DB.series || {};
+      const lastCtPesosGlobal = ((sSeries.ri_ct_act_p ? sSeries.ri_ct_act_p[N-1] : 0) + (sSeries.rc_ct_act_p ? sSeries.rc_ct_act_p[N-1] : 0) + (sSeries.ri_ct_pas_p ? sSeries.ri_ct_pas_p[N-1] : 0) + (sSeries.rc_ct_pas_p ? sSeries.rc_ct_pas_p[N-1] : 0) + (sSeries.rvp_ct_p ? sSeries.rvp_ct_p[N-1] : 0));
+      const lastCtDolsPesif = ((sSeries.ri_ct_act_d ? sSeries.ri_ct_act_d[N-1] : 0) + (sSeries.rc_ct_act_d ? sSeries.rc_ct_act_d[N-1] : 0) + (sSeries.ri_ct_pas_d ? sSeries.ri_ct_pas_d[N-1] : 0) + (sSeries.rc_ct_pas_d ? sSeries.rc_ct_pas_d[N-1] : 0) + (sSeries.rvp_ct_d ? sSeries.rvp_ct_d[N-1] : 0)) * (FX[N-1] || 1);
       buildDonutChart('pie-ct-moneda', ['Fondos en Pesos ($)', 'Fondos en u$s (Pesificados)'], [lastCtPesosGlobal, lastCtDolsPesif], ['#10b981', '#fbbf24']);
 
       // Tab 2 Charts
