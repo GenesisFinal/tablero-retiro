@@ -23,6 +23,26 @@
         "anual": "36,45%"
       },
       {
+        "p": "Ejercicio 2025/2026 (Cerrado)",
+        "acum": "8,29%",
+        "anual": "159,98%"
+      },
+      {
+        "p": "Ejercicio 2024/2025 (Cerrado)",
+        "acum": "8,29%",
+        "anual": "159,98%"
+      },
+      {
+        "p": "Ejercicio 2023/2024 (Cerrado)",
+        "acum": "8,29%",
+        "anual": "159,98%"
+      },
+      {
+        "p": "Ejercicio 2026/2027 (En curso)",
+        "acum": "2,05%",
+        "anual": "27,52%"
+      },
+      {
         "p": "Últimos 12 meses (L12M)",
         "acum": "38,83%",
         "anual": "38,83%"
@@ -53,6 +73,26 @@
         "p": "Últimos 6 meses (L6M)",
         "acum": "3,69%",
         "anual": "7,53%"
+      },
+      {
+        "p": "Ejercicio 2025/2026 (Cerrado)",
+        "acum": "0,61%",
+        "anual": "7,54%"
+      },
+      {
+        "p": "Ejercicio 2024/2025 (Cerrado)",
+        "acum": "0,61%",
+        "anual": "7,54%"
+      },
+      {
+        "p": "Ejercicio 2023/2024 (Cerrado)",
+        "acum": "0,61%",
+        "anual": "7,54%"
+      },
+      {
+        "p": "Ejercicio 2026/2027 (En curso)",
+        "acum": "0,66%",
+        "anual": "8,26%"
       },
       {
         "p": "Últimos 12 meses (L12M)",
@@ -97,6 +137,42 @@
         "tt_an": "16,67%",
         "tc_a": "2,63%",
         "tc_an": "5,32%"
+      },
+      {
+        "p": "Ejercicio 2025/2026 (Cerrado)",
+        "ipc_a": "5,95%",
+        "ipc_an": "100,08%",
+        "tt_a": "3,96%",
+        "tt_an": "59,37%",
+        "tc_a": "0,00%",
+        "tc_an": "0,00%"
+      },
+      {
+        "p": "Ejercicio 2024/2025 (Cerrado)",
+        "ipc_a": "5,95%",
+        "ipc_an": "100,08%",
+        "tt_a": "3,96%",
+        "tt_an": "59,37%",
+        "tc_a": "0,00%",
+        "tc_an": "0,00%"
+      },
+      {
+        "p": "Ejercicio 2023/2024 (Cerrado)",
+        "ipc_a": "5,95%",
+        "ipc_an": "100,08%",
+        "tt_a": "3,96%",
+        "tt_an": "59,37%",
+        "tc_a": "0,00%",
+        "tc_an": "0,00%"
+      },
+      {
+        "p": "Ejercicio 2026/2027 (En curso)",
+        "ipc_a": "2,11%",
+        "ipc_an": "28,53%",
+        "tt_a": "1,06%",
+        "tt_an": "13,49%",
+        "tc_a": "0,20%",
+        "tc_an": "2,46%"
       },
       {
         "p": "Últimos 12 meses (L12M)",
