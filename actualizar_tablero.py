@@ -151,8 +151,8 @@ def parse_excel_dataset(excel_path):
         "vin_cert_pas_d": get_row_floats(132),
     }
 
-    if data_map["IPC_MONTHLY"][-1] == 0.0:
-        data_map["IPC_MONTHLY"][-1] = 1.70
+    # IPC julio 2026 queda en 0.0 o None si el INDEC/FACPCE aún no lo publicó
+    pass
 
     return data_map
 
