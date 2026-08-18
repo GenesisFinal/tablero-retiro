@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tablero Seguros de Retiro • La Segunda (AGMD Style)</title>
+  <title>Tablero Seguros de Retiro • La Segunda</title>
   
   <!-- Cache Control -->
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -13,12 +13,12 @@
   <!-- Favicons Vectoriales -->
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="apple-touch-icon" href="favicon.svg">
-  <meta name="theme-color" content="#064e3b">
+  <meta name="theme-color" content="#E20039">
 
   <!-- Google Fonts: Inter & JetBrains Mono (AGMD Style) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
   <!-- FontAwesome & Lucide Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -33,26 +33,22 @@
       theme: {
         extend: {
           fontFamily: {
-            sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+            sans: ['"Sora"', 'ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
             mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace']
           },
           colors: {
             brand: {
-              50: '#ecfdf5',
-              100: '#d1fae5',
-              200: '#a7f3d0',
-              300: '#6ee7b7',
-              400: '#34d399',
-              500: '#10b981',
-              600: '#059669',
-              700: '#047857',
-              800: '#065f46',
-              900: '#064e3b',
-              950: '#022c22'
-            },
-            darkBg: '#020617',
-            darkCard: '#0b0f19',
-            darkBorder: 'rgba(16, 185, 129, 0.18)'
+              red: '#E20039',        // Rojo Seguro (Pantone 192 C/U)
+              redDark: '#B91F38',    // Pantone 193 C/U
+              redVibrant: '#F42C4B', // Pantone 191 C/U
+              redLight: '#FF4C60',   // Pantone 190 C/U
+              gold: '#F8CC59',       // Amarillo Brandbook
+              coral: '#FF593E',      // Coral Brandbook
+              burgundy: '#512420',   // Borgoña Brandbook
+              charcoal: '#30302D',   // Carbón Oscuro Brandbook
+              green: '#3AC792',      // Verde Brandbook
+              blue: '#4183CA'        // Azul Corporativo Brandbook
+            }
           }
         }
       }
@@ -61,109 +57,133 @@
 
   <style>
     body {
-      font-family: 'Inter', sans-serif;
-      background-color: #020617;
-      color: #f1f5f9;
+      font-family: 'Sora', sans-serif;
+      transition: background-color 0.25s ease, color 0.25s ease;
       overflow-x: hidden;
     }
+
+    /* MODO CLARO */
+    html:not(.dark) body {
+      background-color: #F8FAFC;
+      color: #0F172A;
+    }
+    html:not(.dark) .glass-card {
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+    html:not(.dark) .glass-card:hover {
+      border-color: #CBD5E1;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.07);
+    }
+    html:not(.dark) .glass-card-emerald {
+      background: linear-gradient(135deg, #FFF5F6 0%, #FFFFFF 100%);
+      border: 1px solid #FECDD3;
+      border-left: 4px solid #E20039;
+    }
+    html:not(.dark) .tab-btn {
+      color: #64748B;
+    }
+    html:not(.dark) .tab-btn:hover {
+      color: #0F172A;
+      background: #F1F5F9;
+    }
+    html:not(.dark) .tab-btn.active {
+      background: #E20039;
+      color: #FFFFFF;
+      border-color: #E20039;
+      box-shadow: 0 2px 8px rgba(226, 0, 57, 0.25);
+    }
+    html:not(.dark) .btn-toggle.active {
+      background: #E20039;
+      border-color: #E20039;
+      color: #FFFFFF;
+    }
+
+    /* MODO OSCURO */
+    html.dark body {
+      background-color: #0D0E12;
+      color: #F8FAFC;
+    }
+    html.dark .glass-card {
+      background: #161822;
+      border: 1px solid #232734;
+    }
+    html.dark .glass-card:hover {
+      border-color: #333948;
+    }
+    html.dark .glass-card-emerald {
+      background: linear-gradient(135deg, rgba(226, 0, 57, 0.15) 0%, rgba(22, 24, 34, 0.95) 100%);
+      border: 1px solid rgba(226, 0, 57, 0.35);
+      border-left: 4px solid #E20039;
+    }
+    html.dark .tab-btn {
+      color: #94A3B8;
+    }
+    html.dark .tab-btn:hover {
+      color: #FFFFFF;
+      background: #1E222D;
+    }
+    html.dark .tab-btn.active {
+      background: linear-gradient(135deg, #E20039 0%, #B91F38 100%);
+      color: #FFFFFF;
+      border-color: #FF4C60;
+      box-shadow: 0 0 20px rgba(226, 0, 57, 0.35);
+    }
+    html.dark .btn-toggle.active {
+      background: rgba(226, 0, 57, 0.25);
+      border-color: #FF4C60;
+      color: #FF4C60;
+    }
+
     .num, .code-font, .tabular-nums {
       font-family: 'JetBrains Mono', monospace;
       font-feature-settings: "tnum";
     }
-    .glass-card {
-      background: rgba(11, 15, 25, 0.82);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border: 1px solid rgba(16, 185, 129, 0.18);
+
+    /* Mosaico Institucional La Segunda */
+    .brand-mosaic-bar {
+      display: flex;
+      height: 4px;
+      width: 100%;
     }
-    .glass-card:hover {
-      border-color: rgba(52, 211, 153, 0.38);
-    }
-    .glass-card-emerald {
-      background: radial-gradient(circle at top right, rgba(6, 78, 59, 0.45), rgba(11, 15, 25, 0.92));
-      border: 1px solid rgba(52, 211, 153, 0.32);
-    }
-    .tab-btn.active {
-      background: linear-gradient(135deg, rgba(6, 78, 59, 0.95), rgba(4, 120, 87, 0.75));
-      border-color: #34d399;
-      color: #ecfdf5;
-      box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
-    }
-    .btn-toggle.active {
-      background: rgba(16, 185, 129, 0.25);
-      border-color: #34d399;
-      color: #34d399;
-      font-weight: 600;
-    }
+    .mosaic-block-1 { background-color: #E20039; flex: 2; }
+    .mosaic-block-2 { background-color: #F42C4B; flex: 1; }
+    .mosaic-block-3 { background-color: #B91F38; flex: 1.5; }
+    .mosaic-block-4 { background-color: #FF4C60; flex: 1; }
+
     .btn-toggle-blue.active {
-      background: rgba(59, 130, 246, 0.25);
-      border-color: #60a5fa;
-      color: #60a5fa;
-      font-weight: 600;
+      background: rgba(65, 131, 202, 0.25) !important;
+      border-color: #4183CA !important;
+      color: #4183CA !important;
     }
     .btn-toggle-purple.active {
-      background: rgba(168, 85, 247, 0.25);
-      border-color: #c084fc;
-      color: #c084fc;
-      font-weight: 600;
+      background: rgba(168, 85, 247, 0.25) !important;
+      border-color: #c084fc !important;
+      color: #c084fc !important;
     }
     .btn-toggle-amber.active {
-      background: rgba(245, 158, 11, 0.25);
-      border-color: #fbbf24;
-      color: #fbbf24;
-      font-weight: 600;
+      background: rgba(248, 204, 89, 0.25) !important;
+      border-color: #F8CC59 !important;
+      color: #F8CC59 !important;
     }
     .btn-toggle-cyan.active {
-      background: rgba(6, 182, 212, 0.25);
-      border-color: #22d3ee;
-      color: #22d3ee;
-      font-weight: 600;
+      background: rgba(58, 199, 146, 0.25) !important;
+      border-color: #3AC792 !important;
+      color: #3AC792 !important;
     }
-    .bg-glow-emerald {
-      position: fixed;
-      top: -150px;
-      left: 20%;
-      width: 650px;
-      height: 650px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, rgba(2, 44, 34, 0) 70%);
-      filter: blur(90px);
-      z-index: -1;
-      pointer-events: none;
-    }
-    .bg-glow-teal {
-      position: fixed;
-      bottom: -150px;
-      right: 10%;
-      width: 700px;
-      height: 700px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(5, 150, 105, 0.07) 0%, rgba(2, 6, 23, 0) 70%);
-      filter: blur(100px);
-      z-index: -1;
-      pointer-events: none;
-    }
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #020617;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #1e293b;
-      border-radius: 4px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #059669;
-    }
+
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    html:not(.dark) ::-webkit-scrollbar-track { background: #F1F5F9; }
+    html:not(.dark) ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
+    html.dark ::-webkit-scrollbar-track { background: #0D0E12; }
+    html.dark ::-webkit-scrollbar-thumb { background: #232734; border-radius: 4px; }
+
     @keyframes pulseGlow {
       0%, 100% { opacity: 1; transform: scale(1); }
       50% { opacity: 0.6; transform: scale(1.05); }
     }
-    .pulse-dot {
-      animation: pulseGlow 2.5s infinite ease-in-out;
-    }
+    .pulse-dot { animation: pulseGlow 2.5s infinite ease-in-out; }
   </style>
 </head>
 
@@ -174,7 +194,16 @@
   <!-- ======================================================== -->
   <!-- 1. BARRA SUPERIOR: ECOSISTEMA GITHUB & ACCESOS CRUZADOS  -->
   <!-- ======================================================== -->
-  <div class="bg-slate-950/95 border-b border-emerald-900/30 text-xs py-1.5 px-4 sticky top-0 z-50 backdrop-blur-md">
+  <!-- Mosaico Institucional Superior -->
+  <div class="brand-mosaic-bar sticky top-0 z-50">
+    <div class="mosaic-block-1"></div>
+    <div class="mosaic-block-2"></div>
+    <div class="mosaic-block-3"></div>
+    <div class="mosaic-block-4"></div>
+  </div>
+
+  <!-- 1. BARRA SUPERIOR: ECOSISTEMA GITHUB & ACCESOS CRUZADOS -->
+  <div class="bg-white/95 dark:bg-[#13151B]/95 border-b border-slate-200 dark:border-slate-800 text-xs py-1.5 px-4 sticky top-1 z-40 backdrop-blur-md transition-colors">
     <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
       
       <!-- Ecosistema Dropdown / Navigation -->
@@ -214,6 +243,12 @@
           <span class="text-emerald-300 font-bold">Semanal</span>
           <span id="last-sync-badge" class="text-[10px] text-slate-400"></span>
         </div>
+
+        <!-- Toggle Modo Claro / Modo Oscuro -->
+        <button id="btn-theme-toggle" onclick="toggleTheme()" class="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 rounded-xl transition text-xs font-semibold shadow-sm" title="Alternar Modo Claro / Modo Oscuro">
+          <span id="theme-toggle-icon">🌙</span>
+          <span id="theme-toggle-text" class="hidden sm:inline font-sans">Modo Oscuro</span>
+        </button>
 
         <!-- Prominent Manual Refresh Button -->
         <button onclick="manualRefresh()" id="btn-refresh-manual" class="flex items-center gap-2 px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-semibold rounded-xl transition text-xs font-mono shadow-md shadow-emerald-950/40">
@@ -2299,7 +2334,61 @@
       a.click();
     }
 
+    
+    // =========================================================================
+    // GESTIÓN DE TEMA (MODO CLARO / MODO OSCURO BRANDBOOK LA SEGUNDA)
+    // =========================================================================
+    function getPreferredTheme() {
+      const saved = localStorage.getItem('tablero_theme');
+      if (saved) return saved;
+      return window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+    }
+
+    function applyTheme(theme) {
+      const isDark = (theme === 'dark');
+      document.documentElement.classList.toggle('dark', isDark);
+      localStorage.setItem('tablero_theme', theme);
+
+      const icon = document.getElementById('theme-toggle-icon');
+      const text = document.getElementById('theme-toggle-text');
+      if (icon) icon.textContent = isDark ? '🌙' : '☀️';
+      if (text) text.textContent = isDark ? 'Modo Oscuro' : 'Modo Claro';
+
+      updateAllChartThemes();
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+      const next = (current === 'dark') ? 'light' : 'dark';
+      applyTheme(next);
+    }
+
+    function updateAllChartThemes() {
+      const isDark = document.documentElement.classList.contains('dark');
+      const textColor = isDark ? '#94A3B8' : '#64748B';
+      const gridColor = isDark ? 'rgba(255, 255, 255, 0.04)' : 'rgba(0, 0, 0, 0.05)';
+
+      Object.values(chartInstances).forEach(chart => {
+        if (!chart || !chart.options) return;
+        if (chart.options.scales) {
+          if (chart.options.scales.x) {
+            if (chart.options.scales.x.ticks) chart.options.scales.x.ticks.color = textColor;
+            if (chart.options.scales.x.grid) chart.options.scales.x.grid.color = gridColor;
+          }
+          if (chart.options.scales.y) {
+            if (chart.options.scales.y.ticks) chart.options.scales.y.ticks.color = textColor;
+            if (chart.options.scales.y.grid) chart.options.scales.y.grid.color = gridColor;
+          }
+        }
+        if (chart.options.plugins && chart.options.plugins.legend && chart.options.plugins.legend.labels) {
+          chart.options.plugins.legend.labels.color = textColor;
+        }
+        chart.update();
+      });
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
+      applyTheme(getPreferredTheme());
       renderTables();
       setEjercicio('12m');
       loadExternalDatasetAndRender();
