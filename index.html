@@ -285,7 +285,7 @@
               LA SEGUNDA
               <span class="text-[10px] font-semibold px-1.5 py-0.2 rounded bg-red-100 text-red-700 dark:bg-red-950/80 dark:text-red-300 dark:border dark:border-red-800/60 uppercase">Retiro</span>
             </div>
-            <div class="text-[10px] text-slate-500 dark:text-slate-400 font-medium">Tablero Actuarial • Primero lo que importa</div>
+            
           </div>
         </div>
 
@@ -330,10 +330,7 @@
           <span>Actualizar</span>
         </button>
 
-        <!-- GitHub Repo -->
-        <a href="https://github.com/GenesisFinal/tablero-retiro" target="_blank" class="px-2.5 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 rounded-lg transition text-xs font-mono shadow-sm">
-          <i class="fab fa-github"></i>
-        </a>
+        
       </div>
 
     </div>
@@ -365,11 +362,7 @@
         </button>
       </div>
 
-      <!-- Tagline Oficial La Segunda -->
-      <div class="hidden lg:flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 font-medium">
-        <span class="w-1.5 h-1.5 rounded-full bg-brand-red"></span>
-        <span>Primero las personas. Lo primero sos vos.</span>
-      </div>
+      
     </div>
 
     <!-- ======================================================== -->
@@ -415,9 +408,9 @@
             Línea de Producto:
           </span>
           <div class="flex gap-1.5 flex-wrap">
-            <button id="t-ri" onclick="toggleProd('ri')" class="btn-filter btn-toggle-blue active px-2.5 py-1 rounded-lg text-xs transition">Ret. Individual</button>
-            <button id="t-rc" onclick="toggleProd('rc')" class="btn-filter btn-toggle-gold active px-2.5 py-1 rounded-lg text-xs transition">Ret. Colectivo</button>
-            <button id="t-rvp" onclick="toggleProd('rvp')" class="btn-filter btn-toggle-green active px-2.5 py-1 rounded-lg text-xs transition">RVP y ART</button>
+            <button id="t-ri" onclick="toggleProd('ri')" class="btn-filter active px-2.5 py-1 rounded-lg text-xs transition">Ret. Individual</button>
+            <button id="t-rc" onclick="toggleProd('rc')" class="btn-filter active px-2.5 py-1 rounded-lg text-xs transition">Ret. Colectivo</button>
+            <button id="t-rvp" onclick="toggleProd('rvp')" class="btn-filter active px-2.5 py-1 rounded-lg text-xs transition">RVP y ART</button>
           </div>
         </div>
 
@@ -428,9 +421,9 @@
             Segmento de Negocio:
           </span>
           <div class="flex gap-1.5 flex-wrap">
-            <button id="t-neg" onclick="toggleDet('neg')" class="btn-filter btn-toggle-red active px-2.5 py-1 rounded-lg text-xs transition">Negocio Propio</button>
-            <button id="t-emp" onclick="toggleDet('emp')" class="btn-filter btn-toggle-blue active px-2.5 py-1 rounded-lg text-xs transition">Plan Empleados</button>
-            <button id="t-vin" onclick="toggleDet('vin')" class="btn-filter btn-toggle-gold active px-2.5 py-1 rounded-lg text-xs transition">Plan Vinculados</button>
+            <button id="t-neg" onclick="toggleDet('neg')" class="btn-filter active px-2.5 py-1 rounded-lg text-xs transition">Negocio Propio</button>
+            <button id="t-emp" onclick="toggleDet('emp')" class="btn-filter active px-2.5 py-1 rounded-lg text-xs transition">Plan Empleados</button>
+            <button id="t-vin" onclick="toggleDet('vin')" class="btn-filter active px-2.5 py-1 rounded-lg text-xs transition">Plan Vinculados</button>
           </div>
         </div>
 
@@ -566,22 +559,22 @@
         <!-- Donut 1: Primas por Producto -->
         <div class="glass-card p-4 rounded-2xl space-y-2">
           <div class="text-xs font-bold text-slate-800 dark:text-slate-200">Primas por Producto</div>
-          <div class="h-44 w-full"><canvas id="pie-primas-prod"></canvas></div>
+          <div class="h-48 w-full"><canvas id="pie-primas-prod"></canvas></div>
         </div>
         <!-- Donut 2: Rentas por Producto -->
         <div class="glass-card p-4 rounded-2xl space-y-2">
           <div class="text-xs font-bold text-slate-800 dark:text-slate-200">Rentas por Producto</div>
-          <div class="h-44 w-full"><canvas id="pie-rentas-prod"></canvas></div>
+          <div class="h-48 w-full"><canvas id="pie-rentas-prod"></canvas></div>
         </div>
         <!-- Donut 3: CT por Etapa -->
         <div class="glass-card p-4 rounded-2xl space-y-2">
           <div class="text-xs font-bold text-slate-800 dark:text-slate-200">CT por Etapa</div>
-          <div class="h-44 w-full"><canvas id="pie-ct-etapa"></canvas></div>
+          <div class="h-48 w-full"><canvas id="pie-ct-etapa"></canvas></div>
         </div>
         <!-- Donut 4: CT por Moneda -->
         <div class="glass-card p-4 rounded-2xl space-y-2">
           <div class="text-xs font-bold text-slate-800 dark:text-slate-200">CT por Moneda</div>
-          <div class="h-44 w-full"><canvas id="pie-ct-moneda"></canvas></div>
+          <div class="h-48 w-full"><canvas id="pie-ct-moneda"></canvas></div>
         </div>
       </div>
 
@@ -1191,6 +1184,10 @@
         if (chart.options.plugins && chart.options.plugins.legend && chart.options.plugins.legend.labels) {
           chart.options.plugins.legend.labels.color = textColor;
         }
+        if (chart.config && chart.config.type === 'doughnut') {
+          const cardBorder = isDark ? '#161822' : '#FFFFFF';
+          chart.data.datasets.forEach(ds => { ds.borderColor = cardBorder; });
+        }
         chart.update();
       });
     }
@@ -1661,14 +1658,14 @@
       const fullRcRentas = getRawArr('rc', 'rentas');
       const fullRvpRentas = getRawArr('rvp', 'rentas');
 
-      buildDonutChart('pie-primas-prod', ['Ret. Individual', 'Ret. Colectivo'], [sliceArrayByEjercicio(fullRiPrimas).reduce((a,b)=>a+b,0), sliceArrayByEjercicio(fullRcPrimas).reduce((a,b)=>a+b,0)], ['#4183CA', '#F8CC59']);
-      buildDonutChart('pie-rentas-prod', ['Ret. Individual', 'Ret. Colectivo', 'RVP/ART'], [sliceArrayByEjercicio(fullRiRentas).reduce((a,b)=>a+b,0), sliceArrayByEjercicio(fullRcRentas).reduce((a,b)=>a+b,0), sliceArrayByEjercicio(fullRvpRentas).reduce((a,b)=>a+b,0)], ['#4183CA', '#F8CC59', '#3AC792']);
-      buildDonutChart('pie-ct-etapa', ['Etapa Activa (Ahorro)', 'Etapa Pasiva (Rentas)'], [varCtAct.currentVal, varCtPas.currentVal], ['#3AC792', '#B91F38']);
+      buildDonutChart('pie-primas-prod', ['Ret. Individual', 'Ret. Colectivo'], [sliceArrayByEjercicio(fullRiPrimas).reduce((a,b)=>a+b,0), sliceArrayByEjercicio(fullRcPrimas).reduce((a,b)=>a+b,0)], ['#4183CA', '#E20039']);
+      buildDonutChart('pie-rentas-prod', ['Ret. Individual', 'Ret. Colectivo', 'RVP y ART'], [sliceArrayByEjercicio(fullRiRentas).reduce((a,b)=>a+b,0), sliceArrayByEjercicio(fullRcRentas).reduce((a,b)=>a+b,0), sliceArrayByEjercicio(fullRvpRentas).reduce((a,b)=>a+b,0)], ['#4183CA', '#B91F38', '#3AC792']);
+      buildDonutChart('pie-ct-etapa', ['Etapa Activa (Ahorro)', 'Etapa Pasiva (Rentas)'], [varCtAct.currentVal, varCtPas.currentVal], ['#3AC792', '#E20039']);
       
       const sSeries = DB.series || {};
       const lastCtPesosGlobal = ((sSeries.ri_ct_act_p ? sSeries.ri_ct_act_p[N-1] : 0) + (sSeries.rc_ct_act_p ? sSeries.rc_ct_act_p[N-1] : 0) + (sSeries.ri_ct_pas_p ? sSeries.ri_ct_pas_p[N-1] : 0) + (sSeries.rc_ct_pas_p ? sSeries.rc_ct_pas_p[N-1] : 0) + (sSeries.rvp_ct_p ? sSeries.rvp_ct_p[N-1] : 0));
       const lastCtDolsPesif = ((sSeries.ri_ct_act_d ? sSeries.ri_ct_act_d[N-1] : 0) + (sSeries.rc_ct_act_d ? sSeries.rc_ct_act_d[N-1] : 0) + (sSeries.ri_ct_pas_d ? sSeries.ri_ct_pas_d[N-1] : 0) + (sSeries.rc_ct_pas_d ? sSeries.rc_ct_pas_d[N-1] : 0) + (sSeries.rvp_ct_d ? sSeries.rvp_ct_d[N-1] : 0)) * (FX[N-1] || 1);
-      buildDonutChart('pie-ct-moneda', ['Fondos en Pesos ($)', 'Fondos en u$s (Pesificados)'], [lastCtPesosGlobal, lastCtDolsPesif], ['#3AC792', '#F8CC59']);
+      buildDonutChart('pie-ct-moneda', ['Fondos en Pesos ($)', 'Fondos en u$s (Pesificados)'], [lastCtPesosGlobal, lastCtDolsPesif], ['#E20039', '#4183CA']);
 
       const fullRiRescates = getRawArr('ri', 'rescates').map(v => Math.abs(v));
       const fullRcRescates = getRawArr('rc', 'rescates').map(v => Math.abs(v));
@@ -1830,18 +1827,21 @@
     function buildDonutChart(canvasId, labels, data, colors) {
       if (!document.getElementById(canvasId)) return;
       if (chartInstances[canvasId]) chartInstances[canvasId].destroy();
+      const isDark = document.documentElement.classList.contains('dark');
+      const cardBorder = isDark ? '#161822' : '#FFFFFF';
+      const legendColor = isDark ? '#94A3B8' : '#64748B';
       const ctx = document.getElementById(canvasId).getContext('2d');
       chartInstances[canvasId] = new Chart(ctx, {
         type: 'doughnut',
         data: {
           labels: labels,
-          datasets: [{ data: data, backgroundColor: colors, borderColor: '#0D0E12', borderWidth: 2 }]
+          datasets: [{ data: data, backgroundColor: colors, borderColor: cardBorder, borderWidth: 2 }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
-            legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 9, family: 'Sora' }, boxWidth: 10 } },
+            legend: { position: 'bottom', labels: { color: legendColor, font: { size: 10, family: 'Sora' }, boxWidth: 10, padding: 8 } },
             tooltip: {
               callbacks: {
                 label: function(c) {
