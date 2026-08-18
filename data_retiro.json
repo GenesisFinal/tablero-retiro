@@ -8,24 +8,19 @@
   "tables": {
     "rent_pesos": [
       {
-        "p": "Ejercicio 2026/2027 (En curso)",
+        "p": "Último mes (Julio 2026 / L1M)",
         "acum": "2,05%",
         "anual": "27,52%"
       },
       {
-        "p": "Ejercicio 2025/2026 (Completo)",
-        "acum": "39,00%",
-        "anual": "39,00%"
+        "p": "Últimos 3 meses (L3M)",
+        "acum": "7,58%",
+        "anual": "33,93%"
       },
       {
-        "p": "Ejercicio 2024/2025 (Completo)",
-        "acum": "36,20%",
-        "anual": "36,20%"
-      },
-      {
-        "p": "Ejercicio 2023/2024 (Completo)",
-        "acum": "232,66%",
-        "anual": "232,66%"
+        "p": "Últimos 6 meses (L6M)",
+        "acum": "16,81%",
+        "anual": "36,45%"
       },
       {
         "p": "Últimos 12 meses (L12M)",
@@ -45,24 +40,19 @@
     ],
     "rent_dolares": [
       {
-        "p": "Ejercicio 2026/2027 (En curso)",
+        "p": "Último mes (Julio 2026 / L1M)",
         "acum": "0,66%",
         "anual": "8,26%"
       },
       {
-        "p": "Ejercicio 2025/2026 (Completo)",
-        "acum": "8,37%",
-        "anual": "8,37%"
+        "p": "Últimos 3 meses (L3M)",
+        "acum": "1,67%",
+        "anual": "6,85%"
       },
       {
-        "p": "Ejercicio 2024/2025 (Completo)",
-        "acum": "7,69%",
-        "anual": "7,69%"
-      },
-      {
-        "p": "Ejercicio 2023/2024 (Completo)",
-        "acum": "8,03%",
-        "anual": "8,03%"
+        "p": "Últimos 6 meses (L6M)",
+        "acum": "3,69%",
+        "anual": "7,53%"
       },
       {
         "p": "Últimos 12 meses (L12M)",
@@ -82,37 +72,38 @@
     ],
     "benchmarks": [
       {
-        "p": "Ejercicio 2026/2027 (En curso)",
+        "p": "Último mes (Julio 2026 / L1M)",
         "ipc_a": "2,11%",
         "ipc_an": "28,53%",
+        "tt_a": "1,06%",
+        "tt_an": "13,49%",
         "tc_a": "0,20%",
         "tc_an": "2,46%"
       },
       {
-        "p": "Ejercicio 2025/2026 (Completo)",
-        "ipc_a": "33,55%",
-        "ipc_an": "33,55%",
-        "tc_a": "22,99%",
-        "tc_an": "22,99%"
+        "p": "Últimos 3 meses (L3M)",
+        "ipc_a": "6,28%",
+        "ipc_an": "27,57%",
+        "tt_a": "3,54%",
+        "tt_an": "14,93%",
+        "tc_a": "6,76%",
+        "tc_an": "29,90%"
       },
       {
-        "p": "Ejercicio 2024/2025 (Completo)",
-        "ipc_a": "39,42%",
-        "ipc_an": "39,42%",
-        "tc_a": "32,13%",
-        "tc_an": "32,13%"
-      },
-      {
-        "p": "Ejercicio 2023/2024 (Completo)",
-        "ipc_a": "271,53%",
-        "ipc_an": "271,53%",
-        "tc_a": "255,28%",
-        "tc_an": "255,28%"
+        "p": "Últimos 6 meses (L6M)",
+        "ipc_a": "15,97%",
+        "ipc_an": "34,50%",
+        "tt_a": "8,01%",
+        "tt_an": "16,67%",
+        "tc_a": "2,63%",
+        "tc_an": "5,32%"
       },
       {
         "p": "Últimos 12 meses (L12M)",
         "ipc_a": "33,83%",
         "ipc_an": "33,83%",
+        "tt_a": "20,85%",
+        "tt_an": "20,85%",
         "tc_a": "8,08%",
         "tc_an": "8,08%"
       },
@@ -120,6 +111,8 @@
         "p": "Últimos 24 meses (L24M)",
         "ipc_a": "82,76%",
         "ipc_an": "35,19%",
+        "tt_a": "48,17%",
+        "tt_an": "21,72%",
         "tc_a": "59,33%",
         "tc_an": "26,23%"
       },
@@ -127,6 +120,8 @@
         "p": "Últimos 36 meses (L36M)",
         "ipc_a": "564,24%",
         "ipc_an": "87,98%",
+        "tt_a": "144,38%",
+        "tt_an": "34,70%",
         "tc_a": "439,51%",
         "tc_an": "75,39%"
       }
