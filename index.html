@@ -1304,6 +1304,7 @@
       currentMoneda = m;
       document.querySelectorAll('#bg-moneda button').forEach(b => b.classList.remove('active'));
       document.getElementById('btn-m-' + m).classList.add('active');
+      renderTables();
       renderAllChartsAndKPIs();
     }
 
@@ -1324,6 +1325,7 @@
       document.getElementById('t-rc').classList.toggle('active', prodSelection.rc);
       document.getElementById('t-rvp').classList.toggle('active', prodSelection.rvp);
 
+      renderTables();
       renderAllChartsAndKPIs();
     }
 
@@ -1344,6 +1346,7 @@
       document.getElementById('t-emp').classList.toggle('active', detSelection.emp);
       document.getElementById('t-vin').classList.toggle('active', detSelection.vin);
 
+      renderTables();
       renderAllChartsAndKPIs();
     }
 
@@ -1925,27 +1928,32 @@
 
       const tbodyM = document.getElementById('tbody-master-table');
       if (tbodyM) {
-        const s = DB.series || {};
+        const primasSeries = getFilteredMetricSeries('primas');
+        const rentasSeries = getFilteredMetricSeries('rentas');
+        const rescatesSeries = getFilteredMetricSeries('rescates');
+        const ctActSeries = getFilteredMetricSeries('ct_act');
+        const ctPasSeries = getFilteredMetricSeries('ct_pas');
+
         let rows = '';
         for (let i = N - 1; i >= 0; i--) {
-          const primasTot = (s.ri_primas_p ? s.ri_primas_p[i] : 0) + (s.rc_primas_p ? s.rc_primas_p[i] : 0);
-          const rentasTot = (s.ri_rentas_p ? s.ri_rentas_p[i] : 0) + (s.rc_rentas_p ? s.rc_rentas_p[i] : 0) + (s.rvp_rentas_p ? s.rvp_rentas_p[i] : 0);
-          const rescatesTot = (s.ri_rescates_p ? Math.abs(s.ri_rescates_p[i]) : 0) + (s.rc_rescates_p ? Math.abs(s.rc_rescates_p[i]) : 0);
-          const ctActTot = (s.ri_ct_act_p ? s.ri_ct_act_p[i] : 0) + (s.rc_ct_act_p ? s.rc_ct_act_p[i] : 0);
-          const ctPasTot = (s.ri_ct_pas_p ? s.ri_ct_pas_p[i] : 0) + (s.rc_ct_pas_p ? s.rc_ct_pas_p[i] : 0) + (s.rvp_ct_p ? s.rvp_ct_p[i] : 0);
+          const primasTot = primasSeries[i] || 0;
+          const rentasTot = rentasSeries[i] || 0;
+          const rescatesTot = rescatesSeries[i] || 0;
+          const ctActTot = ctActSeries[i] || 0;
+          const ctPasTot = ctPasSeries[i] || 0;
           const ctTot = ctActTot + ctPasTot;
 
           rows += `
             <tr class="hover:bg-slate-100 dark:hover:bg-slate-800/50 transition">
-              <td class="py-2 px-3 font-semibold text-slate-900 dark:text-white">${DATES[i]}</td>
-              <td class="py-2 px-3 text-right text-slate-600 dark:text-slate-300">${formatNumber(FX[i], 2)}</td>
-              <td class="py-2 px-3 text-right text-brand-green font-semibold">${Number(IPC_MONTHLY[i] || 0).toFixed(2)}%</td>
-              <td class="py-2 px-3 text-right text-brand-green">${formatInMillions(primasTot)}</td>
-              <td class="py-2 px-3 text-right text-brand-blue">${formatInMillions(rentasTot)}</td>
-              <td class="py-2 px-3 text-right text-brand-coral">${formatInMillions(rescatesTot)}</td>
-              <td class="py-2 px-3 text-right text-brand-green">${formatInMillions(ctActTot)}</td>
-              <td class="py-2 px-3 text-right text-brand-redDark">${formatInMillions(ctPasTot)}</td>
-              <td class="py-2 px-3 text-right font-bold text-brand-red">${formatInMillions(ctTot)}</td>
+              <td class="py-2.5 px-3 font-semibold text-slate-900 dark:text-white">${DATES[i]}</td>
+              <td class="py-2.5 px-3 text-right text-slate-600 dark:text-slate-300 font-mono">${formatNumber(FX[i], 2)}</td>
+              <td class="py-2.5 px-3 text-right text-brand-green font-semibold font-mono">${Number(IPC_MONTHLY[i] || 0).toFixed(2)}%</td>
+              <td class="py-2.5 px-3 text-right text-brand-green font-mono">${formatInMillions(primasTot)}</td>
+              <td class="py-2.5 px-3 text-right text-brand-blue font-mono">${formatInMillions(rentasTot)}</td>
+              <td class="py-2.5 px-3 text-right text-brand-coral font-mono">${formatInMillions(rescatesTot)}</td>
+              <td class="py-2.5 px-3 text-right text-brand-green font-mono">${formatInMillions(ctActTot)}</td>
+              <td class="py-2.5 px-3 text-right text-brand-redDark font-mono">${formatInMillions(ctPasTot)}</td>
+              <td class="py-2.5 px-3 text-right font-bold text-brand-red font-mono">${formatInMillions(ctTot)}</td>
             </tr>
           `;
         }
@@ -1954,14 +1962,19 @@
     }
 
     function exportTableToCSV() {
-      const s = DB.series || {};
+      const primasSeries = getFilteredMetricSeries('primas');
+      const rentasSeries = getFilteredMetricSeries('rentas');
+      const rescatesSeries = getFilteredMetricSeries('rescates');
+      const ctActSeries = getFilteredMetricSeries('ct_act');
+      const ctPasSeries = getFilteredMetricSeries('ct_pas');
+
       let csv = "Período,TC BNA ($),IPC Mensual (%),Primas Totales ($ M),Rentas Totales ($ M),Rescates Totales ($ M),CT Activo ($ M),CT Pasivo ($ M),CT Total Consolidado ($ M)\n";
       for (let i = 0; i < N; i++) {
-        const primasTot = (s.ri_primas_p ? s.ri_primas_p[i] : 0) + (s.rc_primas_p ? s.rc_primas_p[i] : 0);
-        const rentasTot = (s.ri_rentas_p ? s.ri_rentas_p[i] : 0) + (s.rc_rentas_p ? s.rc_rentas_p[i] : 0) + (s.rvp_rentas_p ? s.rvp_rentas_p[i] : 0);
-        const rescatesTot = (s.ri_rescates_p ? Math.abs(s.ri_rescates_p[i]) : 0) + (s.rc_rescates_p ? Math.abs(s.rc_rescates_p[i]) : 0);
-        const ctActTot = (s.ri_ct_act_p ? s.ri_ct_act_p[i] : 0) + (s.rc_ct_act_p ? s.rc_ct_act_p[i] : 0);
-        const ctPasTot = (s.ri_ct_pas_p ? s.ri_ct_pas_p[i] : 0) + (s.rc_ct_pas_p ? s.rc_ct_pas_p[i] : 0) + (s.rvp_ct_p ? s.rvp_ct_p[i] : 0);
+        const primasTot = primasSeries[i] || 0;
+        const rentasTot = rentasSeries[i] || 0;
+        const rescatesTot = rescatesSeries[i] || 0;
+        const ctActTot = ctActSeries[i] || 0;
+        const ctPasTot = ctPasSeries[i] || 0;
         const ctTot = ctActTot + ctPasTot;
 
         csv += `"${DATES[i]}",${FX[i] || 0},${IPC_MONTHLY[i] || 0},${(primasTot/1e6).toFixed(2)},${(rentasTot/1e6).toFixed(2)},${(rescatesTot/1e6).toFixed(2)},${(ctActTot/1e6).toFixed(2)},${(ctPasTot/1e6).toFixed(2)},${(ctTot/1e6).toFixed(2)}\n`;
