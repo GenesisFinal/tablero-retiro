@@ -1,860 +1,2498 @@
-<!DOCTYPE html>
-<html lang="es" class="dark">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tablero Seguros de Retiro • La Segunda</title>
-  
-  <!-- Cache Control -->
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Expires" content="0">
-
-  <!-- Favicons Vectoriales -->
-  <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <link rel="apple-touch-icon" href="favicon.svg">
-  <meta name="theme-color" content="#E20039">
-
-  <!-- Google Fonts: Sora (Oficial Brandbook La Segunda) & JetBrains Mono -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
-  <!-- FontAwesome & Lucide Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <!-- Tailwind CSS CDN con Paleta Oficial Brandbook La Segunda -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['"Sora"', 'ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
-            mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace']
-          },
-          colors: {
-            brand: {
-              red: '#E20039',        // Rojo Seguro (Pantone 192 C/U)
-              redDark: '#B91F38',    // Pantone 193 C/U
-              redVibrant: '#F42C4B', // Pantone 191 C/U
-              redLight: '#FF4C60',   // Pantone 190 C/U
-              gold: '#F8CC59',       // Amarillo Brandbook
-              coral: '#FF593E',      // Coral Brandbook
-              burgundy: '#512420',   // Borgoña Brandbook
-              charcoal: '#30302D',   // Carbón Oscuro Brandbook
-              green: '#3AC792',      // Verde Brandbook (Rentabilidad / Ahorro)
-              blue: '#4183CA'        // Azul Corporativo Brandbook (Individual / USD)
-            }
-          }
-        }
-      }
-    }
-  </script>
-
-  <style>
-    /* Tipografía Institucional Sora */
-    body {
-      font-family: 'Sora', sans-serif;
-      transition: background-color 0.25s ease, color 0.25s ease;
-      overflow-x: hidden;
-    }
-
-    /* MODO CLARO (LIGHT MODE) */
-    html:not(.dark) body {
-      background-color: #F4F6F9;
-      color: #0F172A;
-    }
-    html:not(.dark) .glass-card {
-      background: #FFFFFF;
-      border: 1px solid #E2E8F0;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-    }
-    html:not(.dark) .glass-card:hover {
-      border-color: #CBD5E1;
-      box-shadow: 0 4px 8px -2px rgba(0, 0, 0, 0.06);
-    }
-    html:not(.dark) .glass-card-primary {
-      background: linear-gradient(135deg, #FFF5F6 0%, #FFFFFF 100%);
-      border: 1px solid #FECDD3;
-      border-left: 4px solid #E20039;
-    }
-    html:not(.dark) .glass-card-green {
-      background: linear-gradient(135deg, #F0FDF4 0%, #FFFFFF 100%);
-      border: 1px solid #BBF7D0;
-      border-left: 4px solid #3AC792;
-    }
-    html:not(.dark) .glass-card-blue {
-      background: linear-gradient(135deg, #EFF6FF 0%, #FFFFFF 100%);
-      border: 1px solid #BFDBFE;
-      border-left: 4px solid #4183CA;
-    }
-    html:not(.dark) .glass-card-gold {
-      background: linear-gradient(135deg, #FEFCE8 0%, #FFFFFF 100%);
-      border: 1px solid #FEF08A;
-      border-left: 4px solid #F8CC59;
-    }
-    html:not(.dark) .tab-btn {
-      color: #64748B;
-    }
-    html:not(.dark) .tab-btn:hover {
-      color: #0F172A;
-      background: #F1F5F9;
-    }
-    html:not(.dark) .tab-btn.active {
-      background: #E20039;
-      color: #FFFFFF;
-      border-color: #E20039;
-      box-shadow: 0 2px 8px rgba(226, 0, 57, 0.25);
-    }
-
-    /* MODO OSCURO (DARK MODE) */
-    html.dark body {
-      background-color: #0D0E12;
-      color: #F8FAFC;
-    }
-    html.dark .glass-card {
-      background: #161822;
-      border: 1px solid #232734;
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-    }
-    html.dark .glass-card:hover {
-      border-color: #333948;
-    }
-    html.dark .glass-card-primary {
-      background: linear-gradient(135deg, rgba(226, 0, 57, 0.15) 0%, rgba(22, 24, 34, 0.95) 100%);
-      border: 1px solid rgba(226, 0, 57, 0.35);
-      border-left: 4px solid #E20039;
-    }
-    html.dark .glass-card-green {
-      background: linear-gradient(135deg, rgba(58, 199, 146, 0.12) 0%, rgba(22, 24, 34, 0.95) 100%);
-      border: 1px solid rgba(58, 199, 146, 0.3);
-      border-left: 4px solid #3AC792;
-    }
-    html.dark .glass-card-blue {
-      background: linear-gradient(135deg, rgba(65, 131, 202, 0.12) 0%, rgba(22, 24, 34, 0.95) 100%);
-      border: 1px solid rgba(65, 131, 202, 0.3);
-      border-left: 4px solid #4183CA;
-    }
-    html.dark .glass-card-gold {
-      background: linear-gradient(135deg, rgba(248, 204, 89, 0.12) 0%, rgba(22, 24, 34, 0.95) 100%);
-      border: 1px solid rgba(248, 204, 89, 0.3);
-      border-left: 4px solid #F8CC59;
-    }
-    html.dark .tab-btn {
-      color: #94A3B8;
-    }
-    html.dark .tab-btn:hover {
-      color: #FFFFFF;
-      background: #1E222D;
-    }
-    html.dark .tab-btn.active {
-      background: linear-gradient(135deg, #E20039 0%, #B91F38 100%);
-      color: #FFFFFF;
-      border-color: #FF4C60;
-      box-shadow: 0 0 20px rgba(226, 0, 57, 0.35);
-    }
-
-    .num, .code-font, .tabular-nums {
-      font-family: 'JetBrains Mono', monospace;
-      font-feature-settings: "tnum";
-    }
-
-    /* Mosaico Institucional La Segunda */
-    .brand-mosaic-bar {
-      display: flex;
-      height: 4px;
-      width: 100%;
-    }
-    .mosaic-block-1 { background-color: #E20039; flex: 2; }
-    .mosaic-block-2 { background-color: #F42C4B; flex: 1; }
-    .mosaic-block-3 { background-color: #B91F38; flex: 1.5; }
-    .mosaic-block-4 { background-color: #FF4C60; flex: 1; }
-
-    /* BOTONES DE FILTRO GENERAL */
-    html:not(.dark) .btn-filter {
-      background: #FFFFFF;
-      border: 1px solid #CBD5E1;
-      color: #475569;
-    }
-    html:not(.dark) .btn-filter:hover {
-      background: #F8FAFC;
-      color: #0F172A;
-    }
-    html:not(.dark) .btn-filter.active {
-      background: #E20039;
-      border-color: #E20039;
-      color: #FFFFFF;
-      font-weight: 600;
-    }
-
-    html.dark .btn-filter {
-      background: #1A1D27;
-      border: 1px solid #282D3D;
-      color: #94A3B8;
-    }
-    html.dark .btn-filter:hover {
-      background: #232735;
-      color: #FFFFFF;
-    }
-    html.dark .btn-filter.active {
-      background: #E20039;
-      border-color: #FF4C60;
-      color: #FFFFFF;
-      font-weight: 600;
-    }
-
-    /* BOTONES DE FILTRO CON COLORES BRANDBOOK */
-    .btn-toggle-red.active {
-      background: rgba(226, 0, 57, 0.2) !important;
-      border-color: #E20039 !important;
-      color: #E20039 !important;
-      font-weight: 600;
-    }
-    .btn-toggle-green.active {
-      background: rgba(58, 199, 146, 0.2) !important;
-      border-color: #3AC792 !important;
-      color: #3AC792 !important;
-      font-weight: 600;
-    }
-    .btn-toggle-blue.active {
-      background: rgba(65, 131, 202, 0.2) !important;
-      border-color: #4183CA !important;
-      color: #4183CA !important;
-      font-weight: 600;
-    }
-    .btn-toggle-gold.active {
-      background: rgba(248, 204, 89, 0.2) !important;
-      border-color: #F8CC59 !important;
-      color: #F8CC59 !important;
-      font-weight: 600;
-    }
-    .btn-toggle-coral.active {
-      background: rgba(255, 89, 62, 0.2) !important;
-      border-color: #FF593E !important;
-      color: #FF593E !important;
-      font-weight: 600;
-    }
-
-    /* Scrollbars */
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    html:not(.dark) ::-webkit-scrollbar-track { background: #F1F5F9; }
-    html:not(.dark) ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
-    html:not(.dark) ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
-    html.dark ::-webkit-scrollbar-track { background: #0D0E12; }
-    html.dark ::-webkit-scrollbar-thumb { background: #232734; border-radius: 4px; }
-    html.dark ::-webkit-scrollbar-thumb:hover { background: #E20039; }
-
-    @keyframes pulseGlow {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.5; transform: scale(1.08); }
-    }
-    .pulse-dot { animation: pulseGlow 2.5s infinite ease-in-out; }
-  
-    /* ======================================================== */
-    /* ESTILOS DE ALTA LEGIBILIDAD PARA TABLAS (MODO CLARO/DARK) */
-    /* ======================================================== */
-    .table-modern {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-    }
-    .table-modern th {
-      padding: 12px 14px;
-      font-family: 'Sora', sans-serif;
-      font-weight: 700;
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-    .table-modern td {
-      padding: 10px 14px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 13px;
-      font-weight: 600;
-    }
-    
-    /* Modo Claro */
-    html:not(.dark) .table-modern th {
-      background-color: #F1F5F9;
-      color: #0F172A;
-      border-bottom: 2px solid #CBD5E1;
-    }
-    html:not(.dark) .table-modern tr:nth-child(even) {
-      background-color: #F8FAFC;
-    }
-    html:not(.dark) .table-modern tr:hover {
-      background-color: #EFF6FF;
-    }
-    html:not(.dark) .table-modern td {
-      border-bottom: 1px solid #E2E8F0;
-    }
-    html:not(.dark) .t-col-date { color: #0F172A !important; font-weight: 700 !important; font-family: 'Sora', sans-serif !important; }
-    html:not(.dark) .t-col-tc { color: #1E293B !important; font-weight: 600 !important; }
-    html:not(.dark) .t-col-ipc { color: #047857 !important; font-weight: 700 !important; }
-    html:not(.dark) .t-col-primas { color: #065F46 !important; font-weight: 700 !important; }
-    html:not(.dark) .t-col-rentas { color: #1D4ED8 !important; font-weight: 700 !important; }
-    html:not(.dark) .t-col-rescates { color: #DC2626 !important; font-weight: 700 !important; }
-    html:not(.dark) .t-col-ctact { color: #047857 !important; font-weight: 700 !important; }
-    html:not(.dark) .t-col-ctpas { color: #991B1B !important; font-weight: 700 !important; }
-    html:not(.dark) .t-col-cttot { color: #E20039 !important; font-weight: 800 !important; }
-    html:not(.dark) .t-col-gold { color: #B45309 !important; font-weight: 700 !important; }
-
-    /* Modo Oscuro */
-    html.dark .table-modern th {
-      background-color: #161822;
-      color: #F8FAFC;
-      border-bottom: 2px solid #282D3D;
-    }
-    html.dark .table-modern tr:nth-child(even) {
-      background-color: rgba(255, 255, 255, 0.015);
-    }
-    html.dark .table-modern tr:hover {
-      background-color: rgba(255, 255, 255, 0.04);
-    }
-    html.dark .table-modern td {
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    }
-    html.dark .t-col-date { color: #FFFFFF !important; font-weight: 700 !important; font-family: 'Sora', sans-serif !important; }
-    html.dark .t-col-tc { color: #CBD5E1 !important; font-weight: 600 !important; }
-    html.dark .t-col-ipc { color: #3AC792 !important; font-weight: 700 !important; }
-    html.dark .t-col-primas { color: #3AC792 !important; font-weight: 700 !important; }
-    html.dark .t-col-rentas { color: #4183CA !important; font-weight: 700 !important; }
-    html.dark .t-col-rescates { color: #FF593E !important; font-weight: 700 !important; }
-    html.dark .t-col-ctact { color: #3AC792 !important; font-weight: 700 !important; }
-    html.dark .t-col-ctpas { color: #FF4C60 !important; font-weight: 700 !important; }
-    html.dark .t-col-cttot { color: #FF4C60 !important; font-weight: 800 !important; }
-    html.dark .t-col-gold { color: #F8CC59 !important; font-weight: 700 !important; }
-
-  </style>
-</head>
-
-<body class="min-h-screen flex flex-col selection:bg-brand-red selection:text-white">
-
-  <!-- Mosaico Institucional Superior -->
-  <div class="brand-mosaic-bar sticky top-0 z-50">
-    <div class="mosaic-block-1"></div>
-    <div class="mosaic-block-2"></div>
-    <div class="mosaic-block-3"></div>
-    <div class="mosaic-block-4"></div>
-  </div>
-
-  <!-- ======================================================== -->
-  <!-- 1. BARRA SUPERIOR: ECOSISTEMA & CONTROLES INSTITUCIONALES-->
-  <!-- ======================================================== -->
-  <header class="bg-white/95 dark:bg-[#13151B]/95 border-b border-slate-200 dark:border-slate-800 text-xs py-2 px-4 sticky top-1 z-40 backdrop-blur-md transition-colors">
-    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
-      
-      <!-- Logo y Nombre Institucional -->
-      <div class="flex items-center gap-3">
-        <div class="flex items-center gap-2.5">
-          <!-- Monograma Oficial La Segunda -->
-          <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-[#E20039] to-[#B91F38] flex items-center justify-center text-white font-bold text-sm shadow-md shadow-red-500/20 tracking-tight">
-            2ª
-          </div>
-          <div>
-            <div class="font-bold text-sm tracking-tight text-slate-900 dark:text-white flex items-center gap-1.5">
-              LA SEGUNDA
-              <span class="text-[10px] font-semibold px-1.5 py-0.2 rounded bg-red-100 text-red-700 dark:bg-red-950/80 dark:text-red-300 dark:border dark:border-red-800/60 uppercase">Retiro</span>
-            </div>
-            
-          </div>
-        </div>
-
-
-      </div>
-
-      <!-- Acciones: Selector Tema Claro/Oscuro y Botón Actualizar -->
-      <div class="flex items-center gap-2">
-        <!-- Indicador de Frecuencia Semanal -->
-        <div class="hidden sm:flex items-center gap-2 bg-slate-100 dark:bg-slate-900 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 text-[11px] font-mono">
-          <span class="w-2 h-2 rounded-full bg-[#3AC792] animate-pulse"></span>
-          <span class="text-slate-500 dark:text-slate-400">Sync:</span>
-          <span class="text-slate-700 dark:text-slate-300 font-semibold">Semanal</span>
-          <span id="last-sync-badge" class="text-[10px] text-slate-400"></span>
-        </div>
-
-        <!-- Toggle Modo Claro / Modo Oscuro -->
-        <button id="btn-theme-toggle" onclick="toggleTheme()" class="px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold text-xs flex items-center gap-1.5 transition shadow-sm" title="Alternar Modo Claro / Modo Oscuro">
-          <span id="theme-toggle-icon">🌙</span>
-          <span id="theme-toggle-text" class="hidden sm:inline font-sans">Modo Oscuro</span>
-        </button>
-
-        <!-- Botón Actualizar Datos Semanal / A Demanda -->
-        <button id="btn-refresh-manual" onclick="manualRefresh()" class="px-3.5 py-1.5 rounded-lg bg-brand-red hover:bg-[#B91F38] text-white font-semibold text-xs flex items-center gap-1.5 transition shadow-sm shadow-red-500/20 active:scale-95">
-          <i id="icon-refresh" class="fas fa-sync-alt text-[10px]"></i>
-          <span>Actualizar</span>
-        </button>
-
-        
-      </div>
-
-    </div>
-  </header>
-
-  <!-- ======================================================== -->
-  <!-- 2. CONTENIDO PRINCIPAL CON SELECTORES & PESTAÑAS         -->
-  <!-- ======================================================== -->
-  <main class="max-w-7xl mx-auto px-4 py-6 flex-1 w-full space-y-6">
-
-    <!-- BARRA DE NAVEGACIÓN POR PESTAÑAS (TABS) -->
-    <div class="flex items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-3 flex-wrap">
-      <div class="flex items-center gap-2 overflow-x-auto py-1">
-        <button id="tab-btn-dashboard" onclick="switchTab('dashboard')" class="tab-btn active px-4 py-2 text-xs font-semibold rounded-xl border border-transparent transition whitespace-nowrap flex items-center gap-2">
-          <i class="fas fa-chart-pie text-xs"></i>
-          <span>1. Resumen Ejecutivo</span>
-        </button>
-        <button id="tab-btn-analisis" onclick="switchTab('analisis')" class="tab-btn px-4 py-2 text-xs font-semibold rounded-xl border border-transparent transition whitespace-nowrap flex items-center gap-2">
-          <i class="fas fa-layer-group text-xs"></i>
-          <span>2. Análisis de Cartera</span>
-        </button>
-        <button id="tab-btn-rentabilidad" onclick="switchTab('rentabilidad')" class="tab-btn px-4 py-2 text-xs font-semibold rounded-xl border border-transparent transition whitespace-nowrap flex items-center gap-2">
-          <i class="fas fa-percentage text-xs"></i>
-          <span>3. Rentabilidades & Tasas</span>
-        </button>
-        <button id="tab-btn-series" onclick="switchTab('series')" class="tab-btn px-4 py-2 text-xs font-semibold rounded-xl border border-transparent transition whitespace-nowrap flex items-center gap-2">
-          <i class="fas fa-table text-xs"></i>
-          <span>4. Series Cronológicas</span>
-        </button>
-      </div>
-
-      
-    </div>
-
-    <!-- ======================================================== -->
-    <!-- BARRA DE FILTROS GLOBALES ("O UNO O EL OTRO")           -->
-    <!-- ======================================================== -->
-    <div id="global-filters-container" class="glass-card p-4 rounded-2xl space-y-4">
-      
-      <!-- Fila 1: Selector de Tiempo (Default: Últimos 12 Meses) -->
-      <div class="flex flex-wrap items-center justify-between gap-4">
-        <div class="flex items-center gap-2">
-          <span class="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-            <i class="fas fa-calendar-alt text-brand-red"></i>
-            Período:
-          </span>
-          <div id="bg-ejercicios" class="flex flex-wrap gap-1.5">
-            <button id="btn-ej-12m" onclick="setEjercicio('12m')" class="btn-filter active px-3 py-1 text-xs rounded-lg transition">Últimos 12 Meses (L12M)</button>
-            <button id="btn-ej-2026-2027" onclick="setEjercicio('2026-2027')" class="btn-filter px-3 py-1 text-xs rounded-lg transition">Ej. 2026/2027</button>
-            <button id="btn-ej-2025-2026" onclick="setEjercicio('2025-2026')" class="btn-filter px-3 py-1 text-xs rounded-lg transition">Ej. 2025/2026</button>
-            <button id="btn-ej-2024-2025" onclick="setEjercicio('2024-2025')" class="btn-filter px-3 py-1 text-xs rounded-lg transition">Ej. 2024/2025</button>
-            <button id="btn-ej-2023-2024" onclick="setEjercicio('2023-2024')" class="btn-filter px-3 py-1 text-xs rounded-lg transition">Ej. 2023/2024</button>
-            <button id="btn-ej-all" onclick="setEjercicio('all')" class="btn-filter px-3 py-1 text-xs rounded-lg transition">Histórico Total (41 Meses)</button>
-          </div>
-        </div>
-
-        <!-- Selector de Moneda -->
-        <div class="flex items-center gap-2">
-          <span class="text-xs font-semibold text-slate-700 dark:text-slate-300">Moneda:</span>
-          <div id="bg-moneda" class="flex gap-1 bg-slate-200 dark:bg-slate-800 p-0.5 rounded-lg">
-            <button id="btn-m-c" onclick="setMoneda('c')" class="btn-filter active px-3 py-1 text-xs rounded-md transition font-medium">Consolidado ($)</button>
-            <button id="btn-m-p" onclick="setMoneda('p')" class="btn-filter px-3 py-1 text-xs rounded-md transition font-medium">Pesos Puro ($)</button>
-            <button id="btn-m-d" onclick="setMoneda('d')" class="btn-filter px-3 py-1 text-xs rounded-md transition font-medium">Dólares (u$s)</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Fila 2: Selectores Exclusivos de Línea y Negocio ("O uno o el otro") -->
-      <div class="pt-3 border-t border-slate-200 dark:border-slate-800 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-        
-        <!-- Líneas de Producto -->
-        <div class="flex items-center gap-2 flex-wrap">
-          <span class="font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1">
-            <i class="fas fa-cubes text-[#4183CA]"></i>
-            Línea de Producto:
-          </span>
-          <div class="flex gap-1.5 flex-wrap">
-            <button id="t-ri" onclick="toggleProd('ri')" class="btn-filter active px-2.5 py-1 rounded-lg text-xs transition">Ret. Individual</button>
-            <button id="t-rc" onclick="toggleProd('rc')" class="btn-filter active px-2.5 py-1 rounded-lg text-xs transition">Ret. Colectivo</button>
-            <button id="t-rvp" onclick="toggleProd('rvp')" class="btn-filter active px-2.5 py-1 rounded-lg text-xs transition">RVP y ART</button>
-          </div>
-        </div>
-
-        <!-- Segmentos de Negocio -->
-        <div class="flex items-center gap-2 flex-wrap">
-          <span class="font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1">
-            <i class="fas fa-briefcase text-[#3AC792]"></i>
-            Segmento de Negocio:
-          </span>
-          <div class="flex gap-1.5 flex-wrap">
-            <button id="t-neg" onclick="toggleDet('neg')" class="btn-filter active px-2.5 py-1 rounded-lg text-xs transition">Negocio Propio</button>
-            <button id="t-emp" onclick="toggleDet('emp')" class="btn-filter active px-2.5 py-1 rounded-lg text-xs transition">Plan Empleados</button>
-            <button id="t-vin" onclick="toggleDet('vin')" class="btn-filter active px-2.5 py-1 rounded-lg text-xs transition">Plan Vinculados</button>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Leyenda Dinámica de Filtro Activo -->
-      <div class="pt-2 border-t border-slate-100 dark:border-slate-800/60 flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 font-mono">
-        <div id="label-ej-rango">Visualizando Últimos 12 Meses (L12M)</div>
-        <div id="label-ej-meses">41 Períodos Auditados • Cifras en $ Millones</div>
-      </div>
-
-    </div>
-
-    <!-- ======================================================== -->
-    <!-- TAB 1: RESUMEN EJECUTIVO (DASHBOARD)                     -->
-    <!-- ======================================================== -->
-    <section id="tab-dashboard" class="tab-content space-y-6">
-
-      <!-- BLOQUE 1: COMPROMISOS TÉCNICOS (CT) -->
-      <div class="space-y-3">
-        <div class="flex items-center justify-between">
-          <h2 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-brand-red"></span>
-            Compromisos Técnicos Totales (Cierre Auditado Looker Studio)
-          </h2>
-          <div class="flex items-center gap-1 text-[11px] font-mono">
-            <button id="btn-ct-ipc-nom" onclick="setCtChartIpc(false)" class="px-2 py-0.5 rounded btn-filter active">Nominal</button>
-            <button id="btn-ct-ipc-real" onclick="setCtChartIpc(true)" class="px-2 py-0.5 rounded btn-filter">Ajustado IPC</button>
-          </div>
-        </div>
-
-        <!-- 3 Tarjetas Principales CT -->
-        <div id="kpi-ct-grid" class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <!-- Poblado dinámicamente con colores Brandbook -->
-        </div>
-
-        <!-- Gráfico Línea de Compromisos Técnicos (12 Meses Móviles) -->
-        <div class="glass-card p-4 rounded-2xl space-y-3">
-          <div class="flex items-center justify-between flex-wrap gap-2">
-            <div class="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
-              <i class="fas fa-chart-area text-brand-red"></i>
-              Evolución Mensual de Compromisos Técnicos (Últimos 12 Meses)
-            </div>
-            <div class="flex items-center gap-1 text-[11px]">
-              <button id="btn-ct-chart-all" onclick="setCtChartSeries('all')" class="btn-filter active px-2.5 py-0.5 rounded">Total</button>
-              <button id="btn-ct-chart-act" onclick="setCtChartSeries('act')" class="btn-filter px-2.5 py-0.5 rounded">Ahorro (Activo)</button>
-              <button id="btn-ct-chart-pas" onclick="setCtChartSeries('pas')" class="btn-filter px-2.5 py-0.5 rounded">Renta (Pasivo)</button>
-            </div>
-          </div>
-          <div class="h-64 w-full">
-            <canvas id="chart-ct-main"></canvas>
-          </div>
-        </div>
-      </div>
-
-      <!-- BLOQUE 2: FLUJOS OPERATIVOS (PRIMAS, RESCATES, RENTAS) -->
-      <div class="space-y-3 pt-2">
-        <div class="flex items-center justify-between">
-          <h2 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-[#3AC792]"></span>
-            Flujos Operativos del Período
-          </h2>
-          <div class="flex items-center gap-1 text-[11px] font-mono">
-            <button id="btn-fl-ipc-nom" onclick="setFlujosChartIpc(false)" class="px-2 py-0.5 rounded btn-filter active">Nominal</button>
-            <button id="btn-fl-ipc-real" onclick="setFlujosChartIpc(true)" class="px-2 py-0.5 rounded btn-filter">Ajustado IPC</button>
-          </div>
-        </div>
-
-        <!-- 6 Tarjetas de Flujos Operativos -->
-        <div id="kpi-flujos-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-          <!-- Poblado dinámicamente -->
-        </div>
-
-        <!-- Gráfico Línea de Flujos Operativos -->
-        <div class="glass-card p-4 rounded-2xl space-y-3">
-          <div class="flex items-center justify-between flex-wrap gap-2">
-            <div class="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
-              <i class="fas fa-exchange-alt text-[#3AC792]"></i>
-              Evolución de Flujos Operativos Mensuales
-            </div>
-            <div class="flex items-center gap-1 text-[11px]">
-              <button id="btn-fl-chart-all" onclick="setFlujosChartSeries('all')" class="btn-filter active px-2.5 py-0.5 rounded">Todos</button>
-              <button id="btn-fl-chart-primas" onclick="setFlujosChartSeries('primas')" class="btn-filter px-2.5 py-0.5 rounded">Primas</button>
-              <button id="btn-fl-chart-rescates" onclick="setFlujosChartSeries('rescates')" class="btn-filter px-2.5 py-0.5 rounded">Rescates</button>
-              <button id="btn-fl-chart-rentas" onclick="setFlujosChartSeries('rentas')" class="btn-filter px-2.5 py-0.5 rounded">Rentas</button>
-            </div>
-          </div>
-          <div class="h-64 w-full">
-            <canvas id="chart-flujos-main"></canvas>
-          </div>
-        </div>
-      </div>
-
-      <!-- BLOQUE 3: ASEGURADOS Y PÓLIZAS -->
-      <div class="space-y-3 pt-2">
-        <div class="flex items-center justify-between">
-          <h2 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-[#4183CA]"></span>
-            Asegurados y Cuentas Activas
-          </h2>
-          <div class="flex items-center gap-1 text-[11px]">
-            <button id="btn-as-chart-all" onclick="setAsegChartSeries('all')" class="btn-filter active px-2 py-0.5 rounded">Total</button>
-            <button id="btn-as-chart-act" onclick="setAsegChartSeries('act')" class="btn-filter px-2 py-0.5 rounded">Ahorro</button>
-            <button id="btn-as-chart-pas" onclick="setAsegChartSeries('pas')" class="btn-filter px-2 py-0.5 rounded">Renta</button>
-          </div>
-        </div>
-
-        <!-- 3 Tarjetas Asegurados -->
-        <div id="kpi-asegurados-grid" class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <!-- Poblado dinámicamente -->
-        </div>
-
-        <!-- Gráfico Línea de Asegurados -->
-        <div class="glass-card p-4 rounded-2xl space-y-3">
-          <div class="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
-            <i class="fas fa-users text-[#4183CA]"></i>
-            Evolución de Asegurados Totales
-          </div>
-          <div class="h-64 w-full">
-            <canvas id="chart-asegurados-main"></canvas>
-          </div>
-        </div>
-      </div>
-
-    </section>
-
-    <!-- ======================================================== -->
-    <!-- TAB 2: ANÁLISIS DETALLADO & GRÁFICOS DE CARTERA          -->
-    <!-- ======================================================== -->
-    <section id="tab-analisis" class="tab-content hidden space-y-6">
-
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <!-- Donut 1: Primas por Producto -->
-        <div class="glass-card p-4 rounded-2xl space-y-2">
-          <div class="text-xs font-bold text-slate-800 dark:text-slate-200">Primas por Producto</div>
-          <div class="h-48 w-full"><canvas id="pie-primas-prod"></canvas></div>
-        </div>
-        <!-- Donut 2: Rentas por Producto -->
-        <div class="glass-card p-4 rounded-2xl space-y-2">
-          <div class="text-xs font-bold text-slate-800 dark:text-slate-200">Rentas por Producto</div>
-          <div class="h-48 w-full"><canvas id="pie-rentas-prod"></canvas></div>
-        </div>
-        <!-- Donut 3: CT por Etapa -->
-        <div class="glass-card p-4 rounded-2xl space-y-2">
-          <div class="text-xs font-bold text-slate-800 dark:text-slate-200">CT por Etapa</div>
-          <div class="h-48 w-full"><canvas id="pie-ct-etapa"></canvas></div>
-        </div>
-        <!-- Donut 4: CT por Moneda -->
-        <div class="glass-card p-4 rounded-2xl space-y-2">
-          <div class="text-xs font-bold text-slate-800 dark:text-slate-200">CT por Moneda</div>
-          <div class="h-48 w-full"><canvas id="pie-ct-moneda"></canvas></div>
-        </div>
-      </div>
-
-      <!-- Gráficos de Análisis de Cartera -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="glass-card p-4 rounded-2xl space-y-2">
-          <div class="flex justify-between items-center text-xs font-bold text-slate-800 dark:text-slate-200">
-            <span>Rentas Pagadas por Producto</span>
-            <span id="badge-chart-rentas" class="text-brand-green font-mono"></span>
-          </div>
-          <div class="h-60 w-full"><canvas id="chart-rentas"></canvas></div>
-        </div>
-
-        <div class="glass-card p-4 rounded-2xl space-y-2">
-          <div class="flex justify-between items-center text-xs font-bold text-slate-800 dark:text-slate-200">
-            <span>Rescates Pagados por Producto</span>
-            <span id="badge-chart-rescates" class="text-brand-coral font-mono"></span>
-          </div>
-          <div class="h-60 w-full"><canvas id="chart-rescates"></canvas></div>
-        </div>
-
-        <div class="glass-card p-4 rounded-2xl space-y-2">
-          <div class="flex justify-between items-center text-xs font-bold text-slate-800 dark:text-slate-200">
-            <span>CT Activo (Etapa de Ahorro)</span>
-            <span id="badge-chart-ct-act" class="text-brand-green font-mono"></span>
-          </div>
-          <div class="h-60 w-full"><canvas id="chart-ct-act"></canvas></div>
-        </div>
-
-        <div class="glass-card p-4 rounded-2xl space-y-2">
-          <div class="flex justify-between items-center text-xs font-bold text-slate-800 dark:text-slate-200">
-            <span>CT Pasivo (Etapa de Rentas)</span>
-            <span id="badge-chart-ct-pas" class="text-brand-redDark font-mono"></span>
-          </div>
-          <div class="h-60 w-full"><canvas id="chart-ct-pas"></canvas></div>
-        </div>
-      </div>
-
-      <!-- Flujo Neto y Ratio Rescates -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="glass-card p-4 rounded-2xl space-y-2">
-          <div class="flex justify-between items-center text-xs font-bold text-slate-800 dark:text-slate-200">
-            <span>Flujo Neto Mensual (Primas - Rescates - Rentas)</span>
-            <span id="badge-chart-flujo-neto" class="font-mono font-bold"></span>
-          </div>
-          <div class="h-60 w-full"><canvas id="chart-flujo-neto-tab2"></canvas></div>
-        </div>
-
-        <div class="glass-card p-4 rounded-2xl space-y-2">
-          <div class="flex justify-between items-center text-xs font-bold text-slate-800 dark:text-slate-200">
-            <span>Ratio Rescates / Primas (%)</span>
-            <span id="badge-chart-ratio-resc" class="text-brand-coral font-mono"></span>
-          </div>
-          <div class="h-60 w-full"><canvas id="chart-ratio-rescates"></canvas></div>
-        </div>
-      </div>
-
-    </section>
-
-    <!-- ======================================================== -->
-    <!-- TAB 3: TABLAS OFICIALES DE RENTABILIDAD & BENCHMARKS     -->
-    <!-- ======================================================== -->
-    <section id="tab-rentabilidad" class="tab-content hidden space-y-6">
-      
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        
-        <!-- Tabla Rentabilidad en Pesos -->
-        <div class="glass-card p-4 rounded-2xl space-y-3">
-          <div class="flex items-center justify-between">
-            <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <span class="w-2.5 h-2.5 rounded-full bg-[#4183CA]"></span>
-            Rentabilidad de la Cartera en Pesos ($)
-            </h3>
-            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-green-100 dark:bg-green-950 text-green-700 dark:text-green-300 font-semibold">Auditada</span>
-          </div>
-          <div class="overflow-x-auto">
-            <table class="table-modern">
-              <thead>
-                <tr class="border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-sans text-left">
-                  <th class="py-2 px-3">Período / Ejercicio</th>
-                  <th class="py-2 px-3 text-right">Rent. Acumulada</th>
-                  <th class="py-2 px-3 text-right">Tasa Anualizada</th>
-                </tr>
-              </thead>
-              <tbody id="tbody-rent-pesos" class="divide-y divide-slate-100 dark:divide-slate-800/60 text-slate-700 dark:text-slate-200">
-                <!-- Poblado dinámicamente -->
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Tabla Rentabilidad en Dólares -->
-        <div class="glass-card p-4 rounded-2xl space-y-3">
-          <div class="flex items-center justify-between">
-            <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <span class="w-2.5 h-2.5 rounded-full bg-[#3AC792]"></span>
-            Rentabilidad de la Cartera en Dólares (u$s)
-            </h3>
-            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 font-semibold">Auditada</span>
-          </div>
-          <div class="overflow-x-auto">
-            <table class="table-modern">
-              <thead>
-                <tr class="border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-sans text-left">
-                  <th class="py-2 px-3">Período / Ejercicio</th>
-                  <th class="py-2 px-3 text-right">Rent. Acumulada</th>
-                  <th class="py-2 px-3 text-right">Tasa Anualizada</th>
-                </tr>
-              </thead>
-              <tbody id="tbody-rent-dolares" class="divide-y divide-slate-100 dark:divide-slate-800/60 text-slate-700 dark:text-slate-200">
-                <!-- Poblado dinámicamente -->
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Tabla Comparativa de Benchmarks Macroeconómicos -->
-      <div class="glass-card p-4 rounded-2xl space-y-3">
-        <div class="flex items-center justify-between">
-          <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-brand-gold"></span>
-            Benchmarks Macroeconómicos de Referencia (IPC vs. Tipo de Cambio BNA)
-          </h3>
-          <span class="text-[10px] font-mono text-slate-500">Fuente: FACPCE / BNA</span>
-        </div>
-        <div class="overflow-x-auto">
-          <table class="table-modern">
-            <thead>
-              <tr class="border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-sans text-left">
-                <th class="py-2.5 px-3">Período / Ejercicio</th>
-                <th class="py-2.5 px-3 text-right">IPC Acum.</th>
-                <th class="py-2.5 px-3 text-right">IPC Anual.</th>
-                <th class="py-2.5 px-3 text-right">Tasa Testigo Acum.</th>
-                <th class="py-2.5 px-3 text-right">Tasa Testigo Anual.</th>
-                <th class="py-2.5 px-3 text-right">Devaluación TC Acum.</th>
-                <th class="py-2.5 px-3 text-right">Devaluación TC Anual.</th>
-              </tr>
-            </thead>
-            <tbody id="tbody-benchmarks" class="divide-y divide-slate-100 dark:divide-slate-800/60 text-slate-700 dark:text-slate-200">
-              <!-- Poblado dinámicamente -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- Gráfico Macro Benchmarks -->
-      <div class="glass-card p-4 rounded-2xl space-y-2">
-        <div class="text-xs font-bold text-slate-800 dark:text-slate-200">Inflación Mensual (IPC) vs. Variación TC BNA (%)</div>
-        <div class="h-64 w-full"><canvas id="chart-macro-benchmarks"></canvas></div>
-      </div>
-
-    </section>
-
-    <!-- ======================================================== -->
-    <!-- TAB 4: SERIES CRONOLÓGICAS COMPLETAS                     -->
-    <!-- ======================================================== -->
-    <section id="tab-series" class="tab-content hidden space-y-4">
-      <div class="glass-card p-4 rounded-2xl space-y-3">
-        <div class="flex items-center justify-between flex-wrap gap-2">
-          <div>
-            <h3 class="text-sm font-bold text-slate-900 dark:text-white">Matriz Histórica de 38 Períodos Mensuales</h3>
-            <p class="text-xs text-slate-500">Dataset oficial auditado al cierre Julio 2026</p>
-          </div>
-          <div class="flex items-center gap-2">
-            <button onclick="exportTableToCSV()" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 transition flex items-center gap-1.5">
-              <i class="fas fa-file-csv text-brand-green"></i>
-              <span>Exportar CSV</span>
-            </button>
-            <button onclick="exportJSONDataset()" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 transition flex items-center gap-1.5">
-              <i class="fas fa-file-code text-brand-blue"></i>
-              <span>Exportar JSON</span>
-            </button>
-          </div>
-        </div>
-
-        <div class="overflow-x-auto max-h-[500px]">
-          <table class="table-modern">
-            <thead class="sticky top-0 bg-slate-100 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 font-sans text-slate-600 dark:text-slate-400">
-              <tr>
-                <th class="py-2.5 px-3 text-left">Período</th>
-                <th class="py-2.5 px-3 text-right">TC BNA ($)</th>
-                <th class="py-2.5 px-3 text-right">IPC (%)</th>
-                <th class="py-2.5 px-3 text-right">Primas ($ M)</th>
-                <th class="py-2.5 px-3 text-right">Rentas ($ M)</th>
-                <th class="py-2.5 px-3 text-right">Rescates ($ M)</th>
-                <th class="py-2.5 px-3 text-right">CT Ahorro ($ M)</th>
-                <th class="py-2.5 px-3 text-right">CT Renta ($ M)</th>
-                <th class="py-2.5 px-3 text-right font-bold text-brand-red">CT Total ($ M)</th>
-              </tr>
-            </thead>
-            <tbody id="tbody-master-table" class="divide-y divide-slate-100 dark:divide-slate-800/60 text-slate-700 dark:text-slate-200">
-              <!-- Poblado dinámicamente -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-  </main>
-
-  <!-- ======================================================== -->
-  <!-- 3. FOOTER INSTITUCIONAL LA SEGUNDA                       -->
-  <!-- ======================================================== -->
-  <footer class="mt-auto border-t border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-[#13151B]/80 text-xs py-4 px-4 backdrop-blur-md">
-    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3 text-slate-500 dark:text-slate-400 font-medium">
-      <div class="flex items-center gap-2">
-        <span class="w-2 h-2 rounded-full bg-brand-red"></span>
-        <span><strong>La Segunda Seguros de Retiro S.A.</strong> •</span>
-      </div>
-      <div class="text-[11px] font-mono">
-        Datos auditados al cierre de Julio 2026 • Sincronización semanal automática
-      </div>
-    </div>
-  </footer>
-
-  <!-- ======================================================== -->
-  <!-- 4. MOTOR JAVASCRIPT ACTUARIAL & GESTIÓN DE TEMAS         -->
-  <!-- ======================================================== -->
+<!DOCTYPE html>
+
+
+<html lang="es" class="dark">
+
+
+<head>
+
+
+  <meta charset="UTF-8">
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+  <title>Tablero Seguros de Retiro • La Segunda</title>
+
+
+  
+
+
+  <!-- Cache Control -->
+
+
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+
+
+  <meta http-equiv="Pragma" content="no-cache">
+
+
+  <meta http-equiv="Expires" content="0">
+
+
+
+
+
+  <!-- Favicons Vectoriales -->
+
+
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+
+
+  <link rel="apple-touch-icon" href="favicon.svg">
+
+
+  <meta name="theme-color" content="#E20039">
+
+
+
+
+
+  <!-- Google Fonts: Sora (Oficial Brandbook La Segunda) & JetBrains Mono -->
+
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+
+
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+
+
+
+
+  <!-- FontAwesome & Lucide Icons -->
+
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+
+
+
+  <!-- Tailwind CSS CDN con Paleta Oficial Brandbook La Segunda -->
+
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+
+  <script>
+
+
+    tailwind.config = {
+
+
+      darkMode: 'class',
+
+
+      theme: {
+
+
+        extend: {
+
+
+          fontFamily: {
+
+
+            sans: ['"Sora"', 'ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+
+
+            mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace']
+
+
+          },
+
+
+          colors: {
+
+
+            brand: {
+
+
+              red: '#E20039',        // Rojo Seguro (Pantone 192 C/U)
+
+
+              redDark: '#B91F38',    // Pantone 193 C/U
+
+
+              redVibrant: '#F42C4B', // Pantone 191 C/U
+
+
+              redLight: '#FF4C60',   // Pantone 190 C/U
+
+
+              gold: '#F8CC59',       // Amarillo Brandbook
+
+
+              coral: '#FF593E',      // Coral Brandbook
+
+
+              burgundy: '#512420',   // Borgoña Brandbook
+
+
+              charcoal: '#30302D',   // Carbón Oscuro Brandbook
+
+
+              green: '#3AC792',      // Verde Brandbook (Rentabilidad / Ahorro)
+
+
+              blue: '#4183CA'        // Azul Corporativo Brandbook (Individual / USD)
+
+
+            }
+
+
+          }
+
+
+        }
+
+
+      }
+
+
+    }
+
+
+  </script>
+
+
+
+
+
+  <style>
+
+
+    /* Tipografía Institucional Sora */
+
+
+    body {
+
+
+      font-family: 'Sora', sans-serif;
+
+
+      transition: background-color 0.25s ease, color 0.25s ease;
+
+
+      overflow-x: hidden;
+
+
+    }
+
+
+
+
+
+    /* MODO CLARO (LIGHT MODE) */
+
+
+    html:not(.dark) body {
+
+
+      background-color: #F4F6F9;
+
+
+      color: #0F172A;
+
+
+    }
+
+
+    html:not(.dark) .glass-card {
+
+
+      background: #FFFFFF;
+
+
+      border: 1px solid #E2E8F0;
+
+
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+
+
+    }
+
+
+    html:not(.dark) .glass-card:hover {
+
+
+      border-color: #CBD5E1;
+
+
+      box-shadow: 0 4px 8px -2px rgba(0, 0, 0, 0.06);
+
+
+    }
+
+
+    html:not(.dark) .glass-card-primary {
+
+
+      background: linear-gradient(135deg, #FFF5F6 0%, #FFFFFF 100%);
+
+
+      border: 1px solid #FECDD3;
+
+
+      border-left: 4px solid #E20039;
+
+
+    }
+
+
+    html:not(.dark) .glass-card-green {
+
+
+      background: linear-gradient(135deg, #F0FDF4 0%, #FFFFFF 100%);
+
+
+      border: 1px solid #BBF7D0;
+
+
+      border-left: 4px solid #3AC792;
+
+
+    }
+
+
+    html:not(.dark) .glass-card-blue {
+
+
+      background: linear-gradient(135deg, #EFF6FF 0%, #FFFFFF 100%);
+
+
+      border: 1px solid #BFDBFE;
+
+
+      border-left: 4px solid #4183CA;
+
+
+    }
+
+
+    html:not(.dark) .glass-card-gold {
+
+
+      background: linear-gradient(135deg, #FEFCE8 0%, #FFFFFF 100%);
+
+
+      border: 1px solid #FEF08A;
+
+
+      border-left: 4px solid #F8CC59;
+
+
+    }
+
+
+    html:not(.dark) .tab-btn {
+
+
+      color: #64748B;
+
+
+    }
+
+
+    html:not(.dark) .tab-btn:hover {
+
+
+      color: #0F172A;
+
+
+      background: #F1F5F9;
+
+
+    }
+
+
+    html:not(.dark) .tab-btn.active {
+
+
+      background: #E20039;
+
+
+      color: #FFFFFF;
+
+
+      border-color: #E20039;
+
+
+      box-shadow: 0 2px 8px rgba(226, 0, 57, 0.25);
+
+
+    }
+
+
+
+
+
+    /* MODO OSCURO (DARK MODE) */
+
+
+    html.dark body {
+
+
+      background-color: #0D0E12;
+
+
+      color: #F8FAFC;
+
+
+    }
+
+
+    html.dark .glass-card {
+
+
+      background: #161822;
+
+
+      border: 1px solid #232734;
+
+
+      backdrop-filter: blur(14px);
+
+
+      -webkit-backdrop-filter: blur(14px);
+
+
+    }
+
+
+    html.dark .glass-card:hover {
+
+
+      border-color: #333948;
+
+
+    }
+
+
+    html.dark .glass-card-primary {
+
+
+      background: linear-gradient(135deg, rgba(226, 0, 57, 0.15) 0%, rgba(22, 24, 34, 0.95) 100%);
+
+
+      border: 1px solid rgba(226, 0, 57, 0.35);
+
+
+      border-left: 4px solid #E20039;
+
+
+    }
+
+
+    html.dark .glass-card-green {
+
+
+      background: linear-gradient(135deg, rgba(58, 199, 146, 0.12) 0%, rgba(22, 24, 34, 0.95) 100%);
+
+
+      border: 1px solid rgba(58, 199, 146, 0.3);
+
+
+      border-left: 4px solid #3AC792;
+
+
+    }
+
+
+    html.dark .glass-card-blue {
+
+
+      background: linear-gradient(135deg, rgba(65, 131, 202, 0.12) 0%, rgba(22, 24, 34, 0.95) 100%);
+
+
+      border: 1px solid rgba(65, 131, 202, 0.3);
+
+
+      border-left: 4px solid #4183CA;
+
+
+    }
+
+
+    html.dark .glass-card-gold {
+
+
+      background: linear-gradient(135deg, rgba(248, 204, 89, 0.12) 0%, rgba(22, 24, 34, 0.95) 100%);
+
+
+      border: 1px solid rgba(248, 204, 89, 0.3);
+
+
+      border-left: 4px solid #F8CC59;
+
+
+    }
+
+
+    html.dark .tab-btn {
+
+
+      color: #94A3B8;
+
+
+    }
+
+
+    html.dark .tab-btn:hover {
+
+
+      color: #FFFFFF;
+
+
+      background: #1E222D;
+
+
+    }
+
+
+    html.dark .tab-btn.active {
+
+
+      background: linear-gradient(135deg, #E20039 0%, #B91F38 100%);
+
+
+      color: #FFFFFF;
+
+
+      border-color: #FF4C60;
+
+
+      box-shadow: 0 0 20px rgba(226, 0, 57, 0.35);
+
+
+    }
+
+
+
+
+
+    .num, .code-font, .tabular-nums {
+
+
+      font-family: 'JetBrains Mono', monospace;
+
+
+      font-feature-settings: "tnum";
+
+
+    }
+
+
+
+
+
+    /* Mosaico Institucional La Segunda */
+
+
+    .brand-mosaic-bar {
+
+
+      display: flex;
+
+
+      height: 4px;
+
+
+      width: 100%;
+
+
+    }
+
+
+    .mosaic-block-1 { background-color: #E20039; flex: 2; }
+
+
+    .mosaic-block-2 { background-color: #F42C4B; flex: 1; }
+
+
+    .mosaic-block-3 { background-color: #B91F38; flex: 1.5; }
+
+
+    .mosaic-block-4 { background-color: #FF4C60; flex: 1; }
+
+
+
+
+
+    /* BOTONES DE FILTRO GENERAL */
+
+
+    html:not(.dark) .btn-filter {
+
+
+      background: #FFFFFF;
+
+
+      border: 1px solid #CBD5E1;
+
+
+      color: #475569;
+
+
+    }
+
+
+    html:not(.dark) .btn-filter:hover {
+
+
+      background: #F8FAFC;
+
+
+      color: #0F172A;
+
+
+    }
+
+
+    html:not(.dark) .btn-filter.active {
+
+
+      background: #E20039;
+
+
+      border-color: #E20039;
+
+
+      color: #FFFFFF;
+
+
+      font-weight: 600;
+
+
+    }
+
+
+
+
+
+    html.dark .btn-filter {
+
+
+      background: #1A1D27;
+
+
+      border: 1px solid #282D3D;
+
+
+      color: #94A3B8;
+
+
+    }
+
+
+    html.dark .btn-filter:hover {
+
+
+      background: #232735;
+
+
+      color: #FFFFFF;
+
+
+    }
+
+
+    html.dark .btn-filter.active {
+
+
+      background: #E20039;
+
+
+      border-color: #FF4C60;
+
+
+      color: #FFFFFF;
+
+
+      font-weight: 600;
+
+
+    }
+
+
+
+
+
+    /* BOTONES DE FILTRO CON COLORES BRANDBOOK */
+
+
+    .btn-toggle-red.active {
+
+
+      background: rgba(226, 0, 57, 0.2) !important;
+
+
+      border-color: #E20039 !important;
+
+
+      color: #E20039 !important;
+
+
+      font-weight: 600;
+
+
+    }
+
+
+    .btn-toggle-green.active {
+
+
+      background: rgba(58, 199, 146, 0.2) !important;
+
+
+      border-color: #3AC792 !important;
+
+
+      color: #3AC792 !important;
+
+
+      font-weight: 600;
+
+
+    }
+
+
+    .btn-toggle-blue.active {
+
+
+      background: rgba(65, 131, 202, 0.2) !important;
+
+
+      border-color: #4183CA !important;
+
+
+      color: #4183CA !important;
+
+
+      font-weight: 600;
+
+
+    }
+
+
+    .btn-toggle-gold.active {
+
+
+      background: rgba(248, 204, 89, 0.2) !important;
+
+
+      border-color: #F8CC59 !important;
+
+
+      color: #F8CC59 !important;
+
+
+      font-weight: 600;
+
+
+    }
+
+
+    .btn-toggle-coral.active {
+
+
+      background: rgba(255, 89, 62, 0.2) !important;
+
+
+      border-color: #FF593E !important;
+
+
+      color: #FF593E !important;
+
+
+      font-weight: 600;
+
+
+    }
+
+
+
+
+
+    /* Scrollbars */
+
+
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+
+
+    html:not(.dark) ::-webkit-scrollbar-track { background: #F1F5F9; }
+
+
+    html:not(.dark) ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
+
+
+    html:not(.dark) ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+
+
+    html.dark ::-webkit-scrollbar-track { background: #0D0E12; }
+
+
+    html.dark ::-webkit-scrollbar-thumb { background: #232734; border-radius: 4px; }
+
+
+    html.dark ::-webkit-scrollbar-thumb:hover { background: #E20039; }
+
+
+
+
+
+    @keyframes pulseGlow {
+
+
+      0%, 100% { opacity: 1; transform: scale(1); }
+
+
+      50% { opacity: 0.5; transform: scale(1.08); }
+
+
+    }
+
+
+    .pulse-dot { animation: pulseGlow 2.5s infinite ease-in-out; }
+
+
+  
+
+
+    /* ======================================================== */
+
+
+    /* ESTILOS DE ALTA LEGIBILIDAD PARA TABLAS (MODO CLARO/DARK) */
+
+
+    /* ======================================================== */
+
+
+    .table-modern {
+
+
+      width: 100%;
+
+
+      border-collapse: separate;
+
+
+      border-spacing: 0;
+
+
+    }
+
+
+    .table-modern th {
+
+
+      padding: 12px 14px;
+
+
+      font-family: 'Sora', sans-serif;
+
+
+      font-weight: 700;
+
+
+      font-size: 12px;
+
+
+      text-transform: uppercase;
+
+
+      letter-spacing: 0.04em;
+
+
+    }
+
+
+    .table-modern td {
+
+
+      padding: 10px 14px;
+
+
+      font-family: 'JetBrains Mono', monospace;
+
+
+      font-size: 13px;
+
+
+      font-weight: 600;
+
+
+    }
+
+
+    
+
+
+    /* Modo Claro */
+
+
+    html:not(.dark) .table-modern th {
+
+
+      background-color: #F1F5F9;
+
+
+      color: #0F172A;
+
+
+      border-bottom: 2px solid #CBD5E1;
+
+
+    }
+
+
+    html:not(.dark) .table-modern tr:nth-child(even) {
+
+
+      background-color: #F8FAFC;
+
+
+    }
+
+
+    html:not(.dark) .table-modern tr:hover {
+
+
+      background-color: #EFF6FF;
+
+
+    }
+
+
+    html:not(.dark) .table-modern td {
+
+
+      border-bottom: 1px solid #E2E8F0;
+
+
+    }
+
+
+    html:not(.dark) .t-col-date { color: #0F172A !important; font-weight: 700 !important; font-family: 'Sora', sans-serif !important; }
+
+
+    html:not(.dark) .t-col-tc { color: #1E293B !important; font-weight: 600 !important; }
+
+
+    html:not(.dark) .t-col-ipc { color: #047857 !important; font-weight: 700 !important; }
+
+
+    html:not(.dark) .t-col-primas { color: #065F46 !important; font-weight: 700 !important; }
+
+
+    html:not(.dark) .t-col-rentas { color: #1D4ED8 !important; font-weight: 700 !important; }
+
+
+    html:not(.dark) .t-col-rescates { color: #DC2626 !important; font-weight: 700 !important; }
+
+
+    html:not(.dark) .t-col-ctact { color: #047857 !important; font-weight: 700 !important; }
+
+
+    html:not(.dark) .t-col-ctpas { color: #991B1B !important; font-weight: 700 !important; }
+
+
+    html:not(.dark) .t-col-cttot { color: #E20039 !important; font-weight: 800 !important; }
+
+
+    html:not(.dark) .t-col-gold { color: #B45309 !important; font-weight: 700 !important; }
+
+
+
+
+
+    /* Modo Oscuro */
+
+
+    html.dark .table-modern th {
+
+
+      background-color: #161822;
+
+
+      color: #F8FAFC;
+
+
+      border-bottom: 2px solid #282D3D;
+
+
+    }
+
+
+    html.dark .table-modern tr:nth-child(even) {
+
+
+      background-color: rgba(255, 255, 255, 0.015);
+
+
+    }
+
+
+    html.dark .table-modern tr:hover {
+
+
+      background-color: rgba(255, 255, 255, 0.04);
+
+
+    }
+
+
+    html.dark .table-modern td {
+
+
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+
+    }
+
+
+    html.dark .t-col-date { color: #FFFFFF !important; font-weight: 700 !important; font-family: 'Sora', sans-serif !important; }
+
+
+    html.dark .t-col-tc { color: #CBD5E1 !important; font-weight: 600 !important; }
+
+
+    html.dark .t-col-ipc { color: #3AC792 !important; font-weight: 700 !important; }
+
+
+    html.dark .t-col-primas { color: #3AC792 !important; font-weight: 700 !important; }
+
+
+    html.dark .t-col-rentas { color: #4183CA !important; font-weight: 700 !important; }
+
+
+    html.dark .t-col-rescates { color: #FF593E !important; font-weight: 700 !important; }
+
+
+    html.dark .t-col-ctact { color: #3AC792 !important; font-weight: 700 !important; }
+
+
+    html.dark .t-col-ctpas { color: #FF4C60 !important; font-weight: 700 !important; }
+
+
+    html.dark .t-col-cttot { color: #FF4C60 !important; font-weight: 800 !important; }
+
+
+    html.dark .t-col-gold { color: #F8CC59 !important; font-weight: 700 !important; }
+
+
+
+
+
+  </style>
+
+
+</head>
+
+
+
+
+
+<body class="min-h-screen flex flex-col selection:bg-brand-red selection:text-white">
+
+
+
+
+
+  <!-- Mosaico Institucional Superior -->
+
+
+  <div class="brand-mosaic-bar sticky top-0 z-50">
+
+
+    <div class="mosaic-block-1"></div>
+
+
+    <div class="mosaic-block-2"></div>
+
+
+    <div class="mosaic-block-3"></div>
+
+
+    <div class="mosaic-block-4"></div>
+
+
+  </div>
+
+
+
+
+
+  <!-- ======================================================== -->
+
+
+  <!-- 1. BARRA SUPERIOR: ECOSISTEMA & CONTROLES INSTITUCIONALES-->
+
+
+  <!-- ======================================================== -->
+
+
+  <header class="bg-white/95 dark:bg-[#13151B]/95 border-b border-slate-200 dark:border-slate-800 text-xs py-2 px-4 sticky top-1 z-40 backdrop-blur-md transition-colors">
+
+
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+
+
+      
+
+
+      <!-- Logo y Nombre Institucional -->
+
+
+      <div class="flex items-center gap-3">
+
+
+        <div class="flex items-center gap-2.5">
+
+
+          <!-- Monograma Oficial La Segunda -->
+
+
+          <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-[#E20039] to-[#B91F38] flex items-center justify-center text-white font-bold text-sm shadow-md shadow-red-500/20 tracking-tight">
+
+
+            2ª
+
+
+          </div>
+
+
+          <div>
+
+
+            <div class="font-bold text-sm tracking-tight text-slate-900 dark:text-white flex items-center gap-1.5">
+
+
+              LA SEGUNDA
+
+
+              <span class="text-[10px] font-semibold px-1.5 py-0.2 rounded bg-red-100 text-red-700 dark:bg-red-950/80 dark:text-red-300 dark:border dark:border-red-800/60 uppercase">Retiro</span>
+
+
+            </div>
+
+
+            
+
+
+          </div>
+
+
+        </div>
+
+
+
+
+
+
+
+
+      </div>
+
+
+
+
+
+      <!-- Acciones: Selector Tema Claro/Oscuro y Botón Actualizar -->
+
+
+      <div class="flex items-center gap-2">
+
+
+        <!-- Indicador de Frecuencia Semanal -->
+
+
+        <div class="hidden sm:flex items-center gap-2 bg-slate-100 dark:bg-slate-900 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 text-[11px] font-mono">
+
+
+          <span class="w-2 h-2 rounded-full bg-[#3AC792] animate-pulse"></span>
+
+
+          <span class="text-slate-500 dark:text-slate-400">Sync:</span>
+
+
+          <span class="text-slate-700 dark:text-slate-300 font-semibold">Semanal</span>
+
+
+          <span id="last-sync-badge" class="text-[10px] text-slate-400"></span>
+
+
+        </div>
+
+
+
+
+
+        <!-- Toggle Modo Claro / Modo Oscuro -->
+
+
+        <button id="btn-theme-toggle" onclick="toggleTheme()" class="px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold text-xs flex items-center gap-1.5 transition shadow-sm" title="Alternar Modo Claro / Modo Oscuro">
+
+
+          <span id="theme-toggle-icon">🌙</span>
+
+
+          <span id="theme-toggle-text" class="hidden sm:inline font-sans">Modo Oscuro</span>
+
+
+        </button>
+
+
+
+
+
+        <!-- Botón Actualizar Datos Semanal / A Demanda -->
+
+
+        <button id="btn-refresh-manual" onclick="manualRefresh()" class="px-3.5 py-1.5 rounded-lg bg-brand-red hover:bg-[#B91F38] text-white font-semibold text-xs flex items-center gap-1.5 transition shadow-sm shadow-red-500/20 active:scale-95">
+
+
+          <i id="icon-refresh" class="fas fa-sync-alt text-[10px]"></i>
+
+
+          <span>Actualizar</span>
+
+
+        </button>
+
+
+
+
+
+        
+
+
+      </div>
+
+
+
+
+
+    </div>
+
+
+  </header>
+
+
+
+
+
+  <!-- ======================================================== -->
+
+
+  <!-- 2. CONTENIDO PRINCIPAL CON SELECTORES & PESTAÑAS         -->
+
+
+  <!-- ======================================================== -->
+
+
+  <main class="max-w-7xl mx-auto px-4 py-6 flex-1 w-full space-y-6">
+
+
+
+
+
+    <!-- BARRA DE NAVEGACIÓN POR PESTAÑAS (TABS) -->
+
+
+    <div class="flex items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-3 flex-wrap">
+
+
+      <div class="flex items-center gap-2 overflow-x-auto py-1">
+
+
+        <button id="tab-btn-dashboard" onclick="switchTab('dashboard')" class="tab-btn active px-4 py-2 text-xs font-semibold rounded-xl border border-transparent transition whitespace-nowrap flex items-center gap-2">
+
+
+          <i class="fas fa-chart-pie text-xs"></i>
+
+
+          <span>1. Resumen Ejecutivo</span>
+
+
+        </button>
+
+
+        <button id="tab-btn-analisis" onclick="switchTab('analisis')" class="tab-btn px-4 py-2 text-xs font-semibold rounded-xl border border-transparent transition whitespace-nowrap flex items-center gap-2">
+
+
+          <i class="fas fa-layer-group text-xs"></i>
+
+
+          <span>2. Análisis de Cartera</span>
+
+
+        </button>
+
+
+        <button id="tab-btn-rentabilidad" onclick="switchTab('rentabilidad')" class="tab-btn px-4 py-2 text-xs font-semibold rounded-xl border border-transparent transition whitespace-nowrap flex items-center gap-2">
+
+
+          <i class="fas fa-percentage text-xs"></i>
+
+
+          <span>3. Rentabilidades & Tasas</span>
+
+
+        </button>
+
+
+        <button id="tab-btn-series" onclick="switchTab('series')" class="tab-btn px-4 py-2 text-xs font-semibold rounded-xl border border-transparent transition whitespace-nowrap flex items-center gap-2">
+
+
+          <i class="fas fa-table text-xs"></i>
+
+
+          <span>4. Series Cronológicas</span>
+
+
+        </button>
+
+
+      </div>
+
+
+
+
+
+      
+
+
+    </div>
+
+
+
+
+
+    <!-- ======================================================== -->
+
+
+    <!-- BARRA DE FILTROS GLOBALES ("O UNO O EL OTRO")           -->
+
+
+    <!-- ======================================================== -->
+
+
+    <div id="global-filters-container" class="glass-card p-4 rounded-2xl space-y-4">
+
+
+      
+
+
+      <!-- Fila 1: Selector de Tiempo (Default: Últimos 12 Meses) -->
+
+
+      <div class="flex flex-wrap items-center justify-between gap-4">
+
+
+        <div class="flex items-center gap-2">
+
+
+          <span class="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+
+
+            <i class="fas fa-calendar-alt text-brand-red"></i>
+
+
+            Período:
+
+
+          </span>
+
+
+          <div id="bg-ejercicios" class="flex flex-wrap gap-1.5">
+
+
+            <button id="btn-ej-12m" onclick="setEjercicio('12m')" class="btn-filter active px-3 py-1 text-xs rounded-lg transition">Últimos 12 Meses (L12M)</button>
+
+
+            <button id="btn-ej-2026-2027" onclick="setEjercicio('2026-2027')" class="btn-filter px-3 py-1 text-xs rounded-lg transition">Ej. 2026/2027</button>
+
+
+            <button id="btn-ej-2025-2026" onclick="setEjercicio('2025-2026')" class="btn-filter px-3 py-1 text-xs rounded-lg transition">Ej. 2025/2026</button>
+
+
+            <button id="btn-ej-2024-2025" onclick="setEjercicio('2024-2025')" class="btn-filter px-3 py-1 text-xs rounded-lg transition">Ej. 2024/2025</button>
+
+
+            <button id="btn-ej-2023-2024" onclick="setEjercicio('2023-2024')" class="btn-filter px-3 py-1 text-xs rounded-lg transition">Ej. 2023/2024</button>
+
+
+            <button id="btn-ej-all" onclick="setEjercicio('all')" class="btn-filter px-3 py-1 text-xs rounded-lg transition">Histórico Total (41 Meses)</button>
+
+
+          </div>
+
+
+        </div>
+
+
+
+
+
+        <!-- Selector de Moneda -->
+
+
+        <div class="flex items-center gap-2">
+
+
+          <span class="text-xs font-semibold text-slate-700 dark:text-slate-300">Moneda:</span>
+
+
+          <div id="bg-moneda" class="flex gap-1 bg-slate-200 dark:bg-slate-800 p-0.5 rounded-lg">
+
+
+            <button id="btn-m-c" onclick="setMoneda('c')" class="btn-filter active px-3 py-1 text-xs rounded-md transition font-medium">Consolidado ($)</button>
+
+
+            <button id="btn-m-p" onclick="setMoneda('p')" class="btn-filter px-3 py-1 text-xs rounded-md transition font-medium">Pesos Puro ($)</button>
+
+
+            <button id="btn-m-d" onclick="setMoneda('d')" class="btn-filter px-3 py-1 text-xs rounded-md transition font-medium">Dólares (u$s)</button>
+
+
+          </div>
+
+
+        </div>
+
+
+      </div>
+
+
+
+
+
+      <!-- Fila 2: Selectores Multidimensionales de Línea y Negocio (Combinables) -->
+      <div class="pt-3 border-t border-slate-200 dark:border-slate-800 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+        
+        <!-- Líneas de Producto -->
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1">
+            <i class="fas fa-cubes text-[#4183CA]"></i>
+            Línea de Producto:
+          </span>
+          <div class="flex gap-1.5 flex-wrap">
+            <button id="t-prod-all" onclick="selectProd('all')" class="btn-filter active px-2.5 py-1 rounded-lg text-xs transition">Todos</button>
+            <button id="t-ri" onclick="selectProd('ri')" class="btn-filter px-2.5 py-1 rounded-lg text-xs transition">Ret. Individual</button>
+            <button id="t-rc" onclick="selectProd('rc')" class="btn-filter px-2.5 py-1 rounded-lg text-xs transition">Ret. Colectivo</button>
+            <button id="t-rvp" onclick="selectProd('rvp')" class="btn-filter px-2.5 py-1 rounded-lg text-xs transition">RVP y ART</button>
+          </div>
+        </div>
+
+        <!-- Segmentos de Negocio -->
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1">
+            <i class="fas fa-briefcase text-[#3AC792]"></i>
+            Segmento de Negocio:
+          </span>
+          <div class="flex gap-1.5 flex-wrap" id="container-seg-buttons">
+            <button id="t-seg-all" onclick="selectDet('all')" class="btn-filter active px-2.5 py-1 rounded-lg text-xs transition">Todos</button>
+            <button id="t-neg" onclick="selectDet('neg')" class="btn-filter px-2.5 py-1 rounded-lg text-xs transition">Negocio Propio</button>
+            <button id="t-emp" onclick="selectDet('emp')" class="btn-filter px-2.5 py-1 rounded-lg text-xs transition">Plan Empleados</button>
+            <button id="t-vin" onclick="selectDet('vin')" class="btn-filter px-2.5 py-1 rounded-lg text-xs transition">Plan Vinculados</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Leyenda Dinámica de Filtro Activo -->
+      <div class="pt-2 border-t border-slate-100 dark:border-slate-800/60 flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 font-mono">
+        <div>Visualizando <span id="status-ej-label" class="font-bold text-slate-800 dark:text-slate-200">Últimos 12 Meses (L12M)</span> <span id="status-ej-sub" class="text-slate-400 dark:text-slate-500">(Agosto 2025 - Julio 2026)</span> <span id="status-filter-desc" class="ml-2 text-brand-red font-semibold"></span></div>
+        <div id="status-period-info">12 Meses computados • Cifras en $ Millones</div>
+      </div>
+
+    </div>
+
+    <!-- ======================================================== -->
+
+
+    <!-- TAB 1: RESUMEN EJECUTIVO (DASHBOARD)                     -->
+
+
+    <!-- ======================================================== -->
+
+
+    <section id="tab-dashboard" class="tab-content space-y-6">
+
+
+
+
+
+      <!-- BLOQUE 1: COMPROMISOS TÉCNICOS (CT) -->
+
+
+      <div class="space-y-3">
+
+
+        <div class="flex items-center justify-between">
+
+
+          <h2 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+
+
+            <span class="w-2.5 h-2.5 rounded-full bg-brand-red"></span>
+
+
+            Compromisos Técnicos Totales (Cierre Auditado Looker Studio)
+
+
+          </h2>
+
+
+          <div class="flex items-center gap-1 text-[11px] font-mono">
+
+
+            <button id="btn-ct-ipc-nom" onclick="setCtChartIpc(false)" class="px-2 py-0.5 rounded btn-filter active">Nominal</button>
+
+
+            <button id="btn-ct-ipc-real" onclick="setCtChartIpc(true)" class="px-2 py-0.5 rounded btn-filter">Ajustado IPC</button>
+
+
+          </div>
+
+
+        </div>
+
+
+
+
+
+        <!-- 3 Tarjetas Principales CT -->
+
+
+        <div id="kpi-ct-grid" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+
+          <!-- Poblado dinámicamente con colores Brandbook -->
+
+
+        </div>
+
+
+
+
+
+        <!-- Gráfico Línea de Compromisos Técnicos (12 Meses Móviles) -->
+
+
+        <div class="glass-card p-4 rounded-2xl space-y-3">
+
+
+          <div class="flex items-center justify-between flex-wrap gap-2">
+
+
+            <div class="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
+
+
+              <i class="fas fa-chart-area text-brand-red"></i>
+
+
+              Evolución Mensual de Compromisos Técnicos (Últimos 12 Meses)
+
+
+            </div>
+
+
+            <div class="flex items-center gap-1 text-[11px]">
+
+
+              <button id="btn-ct-chart-all" onclick="setCtChartSeries('all')" class="btn-filter active px-2.5 py-0.5 rounded">Total</button>
+
+
+              <button id="btn-ct-chart-act" onclick="setCtChartSeries('act')" class="btn-filter px-2.5 py-0.5 rounded">Ahorro (Activo)</button>
+
+
+              <button id="btn-ct-chart-pas" onclick="setCtChartSeries('pas')" class="btn-filter px-2.5 py-0.5 rounded">Renta (Pasivo)</button>
+
+
+            </div>
+
+
+          </div>
+
+
+          <div class="h-64 w-full">
+
+
+            <canvas id="chart-ct-main"></canvas>
+
+
+          </div>
+
+
+        </div>
+
+
+      </div>
+
+
+
+
+
+      <!-- BLOQUE 2: FLUJOS OPERATIVOS (PRIMAS, RESCATES, RENTAS) -->
+
+
+      <div class="space-y-3 pt-2">
+
+
+        <div class="flex items-center justify-between">
+
+
+          <h2 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+
+
+            <span class="w-2.5 h-2.5 rounded-full bg-[#3AC792]"></span>
+
+
+            Flujos Operativos del Período
+
+
+          </h2>
+
+
+          <div class="flex items-center gap-1 text-[11px] font-mono">
+
+
+            <button id="btn-fl-ipc-nom" onclick="setFlujosChartIpc(false)" class="px-2 py-0.5 rounded btn-filter active">Nominal</button>
+
+
+            <button id="btn-fl-ipc-real" onclick="setFlujosChartIpc(true)" class="px-2 py-0.5 rounded btn-filter">Ajustado IPC</button>
+
+
+          </div>
+
+
+        </div>
+
+
+
+
+
+        <!-- 6 Tarjetas de Flujos Operativos -->
+
+
+        <div id="kpi-flujos-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+
+
+          <!-- Poblado dinámicamente -->
+
+
+        </div>
+
+
+
+
+
+        <!-- Gráfico Línea de Flujos Operativos -->
+
+
+        <div class="glass-card p-4 rounded-2xl space-y-3">
+
+
+          <div class="flex items-center justify-between flex-wrap gap-2">
+
+
+            <div class="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
+
+
+              <i class="fas fa-exchange-alt text-[#3AC792]"></i>
+
+
+              Evolución de Flujos Operativos Mensuales
+
+
+            </div>
+
+
+            <div class="flex items-center gap-1 text-[11px]">
+
+
+              <button id="btn-fl-chart-all" onclick="setFlujosChartSeries('all')" class="btn-filter active px-2.5 py-0.5 rounded">Todos</button>
+
+
+              <button id="btn-fl-chart-primas" onclick="setFlujosChartSeries('primas')" class="btn-filter px-2.5 py-0.5 rounded">Primas</button>
+
+
+              <button id="btn-fl-chart-rescates" onclick="setFlujosChartSeries('rescates')" class="btn-filter px-2.5 py-0.5 rounded">Rescates</button>
+
+
+              <button id="btn-fl-chart-rentas" onclick="setFlujosChartSeries('rentas')" class="btn-filter px-2.5 py-0.5 rounded">Rentas</button>
+
+
+            </div>
+
+
+          </div>
+
+
+          <div class="h-64 w-full">
+
+
+            <canvas id="chart-flujos-main"></canvas>
+
+
+          </div>
+
+
+        </div>
+
+
+      </div>
+
+
+
+
+
+      <!-- BLOQUE 3: ASEGURADOS Y PÓLIZAS -->
+
+
+      <div class="space-y-3 pt-2">
+
+
+        <div class="flex items-center justify-between">
+
+
+          <h2 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+
+
+            <span class="w-2.5 h-2.5 rounded-full bg-[#4183CA]"></span>
+
+
+            Asegurados y Cuentas Activas
+
+
+          </h2>
+
+
+          <div class="flex items-center gap-1 text-[11px]">
+
+
+            <button id="btn-as-chart-all" onclick="setAsegChartSeries('all')" class="btn-filter active px-2 py-0.5 rounded">Total</button>
+
+
+            <button id="btn-as-chart-act" onclick="setAsegChartSeries('act')" class="btn-filter px-2 py-0.5 rounded">Ahorro</button>
+
+
+            <button id="btn-as-chart-pas" onclick="setAsegChartSeries('pas')" class="btn-filter px-2 py-0.5 rounded">Renta</button>
+
+
+          </div>
+
+
+        </div>
+
+
+
+
+
+        <!-- 3 Tarjetas Asegurados -->
+
+
+        <div id="kpi-asegurados-grid" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+
+          <!-- Poblado dinámicamente -->
+
+
+        </div>
+
+
+
+
+
+        <!-- Gráfico Línea de Asegurados -->
+
+
+        <div class="glass-card p-4 rounded-2xl space-y-3">
+
+
+          <div class="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
+
+
+            <i class="fas fa-users text-[#4183CA]"></i>
+
+
+            Evolución de Asegurados Totales
+
+
+          </div>
+
+
+          <div class="h-64 w-full">
+
+
+            <canvas id="chart-asegurados-main"></canvas>
+
+
+          </div>
+
+
+        </div>
+
+
+      </div>
+
+
+
+
+
+    </section>
+
+
+
+
+
+    <!-- ======================================================== -->
+
+
+    <!-- TAB 2: ANÁLISIS DETALLADO & GRÁFICOS DE CARTERA          -->
+
+
+    <!-- ======================================================== -->
+
+
+    <section id="tab-analisis" class="tab-content hidden space-y-6">
+
+
+
+
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+
+
+        <!-- Donut 1: Primas por Producto -->
+
+
+        <div class="glass-card p-4 rounded-2xl space-y-2">
+
+
+          <div class="text-xs font-bold text-slate-800 dark:text-slate-200">Primas por Producto</div>
+
+
+          <div class="h-48 w-full"><canvas id="pie-primas-prod"></canvas></div>
+
+
+        </div>
+
+
+        <!-- Donut 2: Rentas por Producto -->
+
+
+        <div class="glass-card p-4 rounded-2xl space-y-2">
+
+
+          <div class="text-xs font-bold text-slate-800 dark:text-slate-200">Rentas por Producto</div>
+
+
+          <div class="h-48 w-full"><canvas id="pie-rentas-prod"></canvas></div>
+
+
+        </div>
+
+
+        <!-- Donut 3: CT por Etapa -->
+
+
+        <div class="glass-card p-4 rounded-2xl space-y-2">
+
+
+          <div class="text-xs font-bold text-slate-800 dark:text-slate-200">CT por Etapa</div>
+
+
+          <div class="h-48 w-full"><canvas id="pie-ct-etapa"></canvas></div>
+
+
+        </div>
+
+
+        <!-- Donut 4: CT por Moneda -->
+
+
+        <div class="glass-card p-4 rounded-2xl space-y-2">
+
+
+          <div class="text-xs font-bold text-slate-800 dark:text-slate-200">CT por Moneda</div>
+
+
+          <div class="h-48 w-full"><canvas id="pie-ct-moneda"></canvas></div>
+
+
+        </div>
+
+
+      </div>
+
+
+
+
+
+      <!-- Gráficos de Análisis de Cartera -->
+
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+
+        <div class="glass-card p-4 rounded-2xl space-y-2">
+
+
+          <div class="flex justify-between items-center text-xs font-bold text-slate-800 dark:text-slate-200">
+
+
+            <span>Rentas Pagadas por Producto</span>
+
+
+            <span id="badge-chart-rentas" class="text-brand-green font-mono"></span>
+
+
+          </div>
+
+
+          <div class="h-60 w-full"><canvas id="chart-rentas"></canvas></div>
+
+
+        </div>
+
+
+
+
+
+        <div class="glass-card p-4 rounded-2xl space-y-2">
+
+
+          <div class="flex justify-between items-center text-xs font-bold text-slate-800 dark:text-slate-200">
+
+
+            <span>Rescates Pagados por Producto</span>
+
+
+            <span id="badge-chart-rescates" class="text-brand-coral font-mono"></span>
+
+
+          </div>
+
+
+          <div class="h-60 w-full"><canvas id="chart-rescates"></canvas></div>
+
+
+        </div>
+
+
+
+
+
+        <div class="glass-card p-4 rounded-2xl space-y-2">
+
+
+          <div class="flex justify-between items-center text-xs font-bold text-slate-800 dark:text-slate-200">
+
+
+            <span>CT Activo (Etapa de Ahorro)</span>
+
+
+            <span id="badge-chart-ct-act" class="text-brand-green font-mono"></span>
+
+
+          </div>
+
+
+          <div class="h-60 w-full"><canvas id="chart-ct-act"></canvas></div>
+
+
+        </div>
+
+
+
+
+
+        <div class="glass-card p-4 rounded-2xl space-y-2">
+
+
+          <div class="flex justify-between items-center text-xs font-bold text-slate-800 dark:text-slate-200">
+
+
+            <span>CT Pasivo (Etapa de Rentas)</span>
+
+
+            <span id="badge-chart-ct-pas" class="text-brand-redDark font-mono"></span>
+
+
+          </div>
+
+
+          <div class="h-60 w-full"><canvas id="chart-ct-pas"></canvas></div>
+
+
+        </div>
+
+
+      </div>
+
+
+
+
+
+      <!-- Flujo Neto y Ratio Rescates -->
+
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+
+        <div class="glass-card p-4 rounded-2xl space-y-2">
+
+
+          <div class="flex justify-between items-center text-xs font-bold text-slate-800 dark:text-slate-200">
+
+
+            <span>Flujo Neto Mensual (Primas - Rescates - Rentas)</span>
+
+
+            <span id="badge-chart-flujo-neto" class="font-mono font-bold"></span>
+
+
+          </div>
+
+
+          <div class="h-60 w-full"><canvas id="chart-flujo-neto-tab2"></canvas></div>
+
+
+        </div>
+
+
+
+
+
+        <div class="glass-card p-4 rounded-2xl space-y-2">
+
+
+          <div class="flex justify-between items-center text-xs font-bold text-slate-800 dark:text-slate-200">
+
+
+            <span>Ratio Rescates / Primas (%)</span>
+
+
+            <span id="badge-chart-ratio-resc" class="text-brand-coral font-mono"></span>
+
+
+          </div>
+
+
+          <div class="h-60 w-full"><canvas id="chart-ratio-rescates"></canvas></div>
+
+
+        </div>
+
+
+      </div>
+
+
+
+
+
+    </section>
+
+
+
+
+
+    <!-- ======================================================== -->
+
+
+    <!-- TAB 3: TABLAS OFICIALES DE RENTABILIDAD & BENCHMARKS     -->
+
+
+    <!-- ======================================================== -->
+
+
+    <section id="tab-rentabilidad" class="tab-content hidden space-y-6">
+
+
+      
+
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+
+        
+
+
+        <!-- Tabla Rentabilidad en Pesos -->
+
+
+        <div class="glass-card p-4 rounded-2xl space-y-3">
+
+
+          <div class="flex items-center justify-between">
+
+
+            <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+
+
+              <span class="w-2.5 h-2.5 rounded-full bg-[#4183CA]"></span>
+
+
+            Rentabilidad de la Cartera en Pesos ($)
+
+
+            </h3>
+
+
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-green-100 dark:bg-green-950 text-green-700 dark:text-green-300 font-semibold">Auditada</span>
+
+
+          </div>
+
+
+          <div class="overflow-x-auto">
+
+
+            <table class="table-modern">
+
+
+              <thead>
+
+
+                <tr class="border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-sans text-left">
+
+
+                  <th class="py-2 px-3">Período / Ejercicio</th>
+
+
+                  <th class="py-2 px-3 text-right">Rent. Acumulada</th>
+
+
+                  <th class="py-2 px-3 text-right">Tasa Anualizada</th>
+
+
+                </tr>
+
+
+              </thead>
+
+
+              <tbody id="tbody-rent-pesos" class="divide-y divide-slate-100 dark:divide-slate-800/60 text-slate-700 dark:text-slate-200">
+
+
+                <!-- Poblado dinámicamente -->
+
+
+              </tbody>
+
+
+            </table>
+
+
+          </div>
+
+
+        </div>
+
+
+
+
+
+        <!-- Tabla Rentabilidad en Dólares -->
+
+
+        <div class="glass-card p-4 rounded-2xl space-y-3">
+
+
+          <div class="flex items-center justify-between">
+
+
+            <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+
+
+              <span class="w-2.5 h-2.5 rounded-full bg-[#3AC792]"></span>
+
+
+            Rentabilidad de la Cartera en Dólares (u$s)
+
+
+            </h3>
+
+
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 font-semibold">Auditada</span>
+
+
+          </div>
+
+
+          <div class="overflow-x-auto">
+
+
+            <table class="table-modern">
+
+
+              <thead>
+
+
+                <tr class="border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-sans text-left">
+
+
+                  <th class="py-2 px-3">Período / Ejercicio</th>
+
+
+                  <th class="py-2 px-3 text-right">Rent. Acumulada</th>
+
+
+                  <th class="py-2 px-3 text-right">Tasa Anualizada</th>
+
+
+                </tr>
+
+
+              </thead>
+
+
+              <tbody id="tbody-rent-dolares" class="divide-y divide-slate-100 dark:divide-slate-800/60 text-slate-700 dark:text-slate-200">
+
+
+                <!-- Poblado dinámicamente -->
+
+
+              </tbody>
+
+
+            </table>
+
+
+          </div>
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+
+
+
+      <!-- Tabla Comparativa de Benchmarks Macroeconómicos -->
+
+
+      <div class="glass-card p-4 rounded-2xl space-y-3">
+
+
+        <div class="flex items-center justify-between">
+
+
+          <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+
+
+            <span class="w-2.5 h-2.5 rounded-full bg-brand-gold"></span>
+
+
+            Benchmarks Macroeconómicos de Referencia (IPC vs. Tipo de Cambio BNA)
+
+
+          </h3>
+
+
+          <span class="text-[10px] font-mono text-slate-500">Fuente: FACPCE / BNA</span>
+
+
+        </div>
+
+
+        <div class="overflow-x-auto">
+
+
+          <table class="table-modern">
+
+
+            <thead>
+
+
+              <tr class="border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-sans text-left">
+
+
+                <th class="py-2.5 px-3">Período / Ejercicio</th>
+
+
+                <th class="py-2.5 px-3 text-right">IPC Acum.</th>
+
+
+                <th class="py-2.5 px-3 text-right">IPC Anual.</th>
+
+
+                <th class="py-2.5 px-3 text-right">Tasa Testigo Acum.</th>
+
+
+                <th class="py-2.5 px-3 text-right">Tasa Testigo Anual.</th>
+
+
+                <th class="py-2.5 px-3 text-right">Devaluación TC Acum.</th>
+
+
+                <th class="py-2.5 px-3 text-right">Devaluación TC Anual.</th>
+
+
+              </tr>
+
+
+            </thead>
+
+
+            <tbody id="tbody-benchmarks" class="divide-y divide-slate-100 dark:divide-slate-800/60 text-slate-700 dark:text-slate-200">
+
+
+              <!-- Poblado dinámicamente -->
+
+
+            </tbody>
+
+
+          </table>
+
+
+        </div>
+
+
+      </div>
+
+
+
+
+
+      <!-- Gráfico Macro Benchmarks -->
+
+
+      <div class="glass-card p-4 rounded-2xl space-y-2">
+
+
+        <div class="text-xs font-bold text-slate-800 dark:text-slate-200">Inflación Mensual (IPC) vs. Variación TC BNA (%)</div>
+
+
+        <div class="h-64 w-full"><canvas id="chart-macro-benchmarks"></canvas></div>
+
+
+      </div>
+
+
+
+
+
+    </section>
+
+
+
+
+
+    <!-- ======================================================== -->
+
+
+    <!-- TAB 4: SERIES CRONOLÓGICAS COMPLETAS                     -->
+
+
+    <!-- ======================================================== -->
+
+
+    <section id="tab-series" class="tab-content hidden space-y-4">
+
+
+      <div class="glass-card p-4 rounded-2xl space-y-3">
+
+
+        <div class="flex items-center justify-between flex-wrap gap-2">
+
+
+          <div>
+
+
+            <h3 class="text-sm font-bold text-slate-900 dark:text-white">Matriz Histórica de 38 Períodos Mensuales</h3>
+
+
+            <p class="text-xs text-slate-500">Dataset oficial auditado al cierre Julio 2026</p>
+
+
+          </div>
+
+
+          <div class="flex items-center gap-2">
+
+
+            <button onclick="exportTableToCSV()" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 transition flex items-center gap-1.5">
+
+
+              <i class="fas fa-file-csv text-brand-green"></i>
+
+
+              <span>Exportar CSV</span>
+
+
+            </button>
+
+
+            <button onclick="exportJSONDataset()" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 transition flex items-center gap-1.5">
+
+
+              <i class="fas fa-file-code text-brand-blue"></i>
+
+
+              <span>Exportar JSON</span>
+
+
+            </button>
+
+
+          </div>
+
+
+        </div>
+
+
+
+
+
+        <div class="overflow-x-auto max-h-[500px]">
+
+
+          <table class="table-modern">
+
+
+            <thead class="sticky top-0 bg-slate-100 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 font-sans text-slate-600 dark:text-slate-400">
+
+
+              <tr>
+
+
+                <th class="py-2.5 px-3 text-left">Período</th>
+
+
+                <th class="py-2.5 px-3 text-right">TC BNA ($)</th>
+
+
+                <th class="py-2.5 px-3 text-right">IPC (%)</th>
+
+
+                <th class="py-2.5 px-3 text-right">Primas ($ M)</th>
+
+
+                <th class="py-2.5 px-3 text-right">Rentas ($ M)</th>
+
+
+                <th class="py-2.5 px-3 text-right">Rescates ($ M)</th>
+
+
+                <th class="py-2.5 px-3 text-right">CT Ahorro ($ M)</th>
+
+
+                <th class="py-2.5 px-3 text-right">CT Renta ($ M)</th>
+
+
+                <th class="py-2.5 px-3 text-right font-bold text-brand-red">CT Total ($ M)</th>
+
+
+              </tr>
+
+
+            </thead>
+
+
+            <tbody id="tbody-master-table" class="divide-y divide-slate-100 dark:divide-slate-800/60 text-slate-700 dark:text-slate-200">
+
+
+              <!-- Poblado dinámicamente -->
+
+
+            </tbody>
+
+
+          </table>
+
+
+        </div>
+
+
+      </div>
+
+
+    </section>
+
+
+
+
+
+  </main>
+
+
+
+
+
+  <!-- ======================================================== -->
+
+
+  <!-- 3. FOOTER INSTITUCIONAL LA SEGUNDA                       -->
+
+
+  <!-- ======================================================== -->
+
+
+  <footer class="mt-auto border-t border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-[#13151B]/80 text-xs py-4 px-4 backdrop-blur-md">
+
+
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3 text-slate-500 dark:text-slate-400 font-medium">
+
+
+      <div class="flex items-center gap-2">
+
+
+        <span class="w-2 h-2 rounded-full bg-brand-red"></span>
+
+
+        <span><strong>La Segunda Seguros de Retiro S.A.</strong> •</span>
+
+
+      </div>
+
+
+      <div class="text-[11px] font-mono">
+
+
+        Datos auditados al cierre de Julio 2026 • Sincronización semanal automática
+
+
+      </div>
+
+
+    </div>
+
+
+  </footer>
+
+
+
+
+
+  <!-- ======================================================== -->
+
+
+  <!-- 4. MOTOR JAVASCRIPT ACTUARIAL & GESTIÓN DE TEMAS         -->
+
+
+  <!-- ======================================================== -->
+
+
   <script>
     lucide.createIcons();
 
