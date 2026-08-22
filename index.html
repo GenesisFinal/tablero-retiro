@@ -2289,7 +2289,7 @@
           <div>
 
 
-            <h3 class="text-sm font-bold text-slate-900 dark:text-white">Matriz Histórica de 38 Períodos Mensuales</h3>
+            <h3 class="text-sm font-bold text-slate-900 dark:text-white">Matriz Histórica de 41 Períodos Mensuales</h3>
 
 
             <p class="text-xs text-slate-500">Dataset oficial auditado al cierre Julio 2026</p>
@@ -2337,45 +2337,23 @@
         <div class="overflow-x-auto max-h-[500px]">
 
 
-          <table class="table-modern">
-
-
-            <thead class="sticky top-0 bg-slate-100 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 font-sans text-slate-600 dark:text-slate-400">
-
-
+                    <table class="table-modern">
+            <thead class="sticky top-0 bg-slate-100 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 font-sans text-slate-600 dark:text-slate-400 text-xs">
               <tr>
-
-
                 <th class="py-2.5 px-3 text-left">Período</th>
-
-
-                <th class="py-2.5 px-3 text-right">TC BNA ($)</th>
-
-
-                <th class="py-2.5 px-3 text-right">IPC (%)</th>
-
-
-                <th class="py-2.5 px-3 text-right">Primas ($ M)</th>
-
-
-                <th class="py-2.5 px-3 text-right">Rentas ($ M)</th>
-
-
-                <th class="py-2.5 px-3 text-right">Rescates ($ M)</th>
-
-
-                <th class="py-2.5 px-3 text-right">CT Ahorro ($ M)</th>
-
-
-                <th class="py-2.5 px-3 text-right">CT Renta ($ M)</th>
-
-
                 <th class="py-2.5 px-3 text-right font-bold text-brand-red">CT Total ($ M)</th>
-
-
+                <th class="py-2.5 px-3 text-right text-[#047857] dark:text-[#3AC792]">CT Ahorro ($ M)</th>
+                <th class="py-2.5 px-3 text-right text-[#1D4ED8] dark:text-[#4183CA]">CT Rentas ($ M)</th>
+                <th class="py-2.5 px-3 text-right">Primas ($ M)</th>
+                <th class="py-2.5 px-3 text-right">Rentas ($ M)</th>
+                <th class="py-2.5 px-3 text-right text-[#DC2626] dark:text-[#FF4C60]">Rescates ($ M)</th>
+                <th class="py-2.5 px-3 text-right">Asegurados Activos</th>
+                <th class="py-2.5 px-3 text-right">Beneficiarios Pasivos</th>
+                <th class="py-2.5 px-3 text-right">TC BNA ($)</th>
+                <th class="py-2.5 px-3 text-right">IPC (%)</th>
+                <th class="py-2.5 px-3 text-right text-[#1D4ED8] dark:text-[#4183CA] font-bold">Rent. Pesos</th>
+                <th class="py-2.5 px-3 text-right text-[#047857] dark:text-[#3AC792] font-bold">Rent. USD</th>
               </tr>
-
-
             </thead>
 
 
@@ -3822,7 +3800,7 @@
       }
     }
 
-    // 11. TAB 4: SERIES CRONOLÓGICAS (MATRIZ MAESTRA)
+        // 11. TAB 4: SERIES CRONOLÓGICAS (MATRIZ MAESTRA)
     function renderSeriesTable() {
       const tbody = document.getElementById('tbody-master-table');
       if (!tbody) return;
@@ -3843,6 +3821,7 @@
       for (let i = N - 1; i >= 0; i--) {
         const dStr = DATES[i];
         const tc_i = FX[i] || 1.0;
+        const ipc_i = IPC_MONTHLY[i] || 0;
         const ctTot = fullTotCtGlobal[i] || 0;
         const ctAct = fullTotCtAct[i] || 0;
         const ctPas = fullTotCtPas[i] || 0;
@@ -3855,19 +3834,20 @@
         const rentD = rentDolarSeries[i] || 0;
 
         rowsHtml += `
-          <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
-            <td class="py-2.5 px-3 font-mono font-bold text-slate-900 dark:text-white">${dStr}</td>
-            <td class="py-2.5 px-3 text-right font-mono font-bold text-[#E20039]">$ ${formatNumber(ctTot / 1e6)} M</td>
-            <td class="py-2.5 px-3 text-right font-mono text-[#047857] dark:text-[#3AC792]">$ ${formatNumber(ctAct / 1e6)} M</td>
-            <td class="py-2.5 px-3 text-right font-mono text-[#1D4ED8] dark:text-[#4183CA]">$ ${formatNumber(ctPas / 1e6)} M</td>
-            <td class="py-2.5 px-3 text-right font-mono text-slate-700 dark:text-slate-200">$ ${formatNumber(primas / 1e6)} M</td>
-            <td class="py-2.5 px-3 text-right font-mono text-slate-700 dark:text-slate-200">$ ${formatNumber(rentas / 1e6)} M</td>
-            <td class="py-2.5 px-3 text-right font-mono text-[#DC2626] dark:text-[#FF4C60]">$ ${formatNumber(rescates / 1e6)} M</td>
-            <td class="py-2.5 px-3 text-right font-mono text-slate-600 dark:text-slate-300">${formatNumber(asegAct)}</td>
-            <td class="py-2.5 px-3 text-right font-mono text-slate-600 dark:text-slate-300">${formatNumber(asegPas)}</td>
-            <td class="py-2.5 px-3 text-right font-mono text-[#B45309] dark:text-[#F8CC59]">$ ${tc_i.toFixed(2)}</td>
-            <td class="py-2.5 px-3 text-right font-mono text-[#1D4ED8] dark:text-[#4183CA] font-bold">${formatPercent(rentP)}</td>
-            <td class="py-2.5 px-3 text-right font-mono text-[#047857] dark:text-[#3AC792] font-bold">${formatPercent(rentD)}</td>
+          <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors text-xs">
+            <td class="py-2.5 px-3 font-mono font-bold text-slate-900 dark:text-white whitespace-nowrap">${dStr}</td>
+            <td class="py-2.5 px-3 text-right font-mono font-bold text-[#E20039] whitespace-nowrap">$ ${formatNumber(ctTot / 1e6)} M</td>
+            <td class="py-2.5 px-3 text-right font-mono text-[#047857] dark:text-[#3AC792] whitespace-nowrap">$ ${formatNumber(ctAct / 1e6)} M</td>
+            <td class="py-2.5 px-3 text-right font-mono text-[#1D4ED8] dark:text-[#4183CA] whitespace-nowrap">$ ${formatNumber(ctPas / 1e6)} M</td>
+            <td class="py-2.5 px-3 text-right font-mono text-slate-700 dark:text-slate-200 whitespace-nowrap">$ ${formatNumber(primas / 1e6)} M</td>
+            <td class="py-2.5 px-3 text-right font-mono text-slate-700 dark:text-slate-200 whitespace-nowrap">$ ${formatNumber(rentas / 1e6)} M</td>
+            <td class="py-2.5 px-3 text-right font-mono text-[#DC2626] dark:text-[#FF4C60] whitespace-nowrap">$ ${formatNumber(rescates / 1e6)} M</td>
+            <td class="py-2.5 px-3 text-right font-mono text-slate-600 dark:text-slate-300 whitespace-nowrap">${formatNumber(asegAct)}</td>
+            <td class="py-2.5 px-3 text-right font-mono text-slate-600 dark:text-slate-300 whitespace-nowrap">${formatNumber(asegPas)}</td>
+            <td class="py-2.5 px-3 text-right font-mono text-[#B45309] dark:text-[#F8CC59] whitespace-nowrap">$ ${tc_i.toFixed(2)}</td>
+            <td class="py-2.5 px-3 text-right font-mono text-slate-600 dark:text-slate-300 whitespace-nowrap">${ipc_i.toFixed(2)}%</td>
+            <td class="py-2.5 px-3 text-right font-mono text-[#1D4ED8] dark:text-[#4183CA] font-bold whitespace-nowrap">${formatPercent(rentP)}</td>
+            <td class="py-2.5 px-3 text-right font-mono text-[#047857] dark:text-[#3AC792] font-bold whitespace-nowrap">${formatPercent(rentD)}</td>
           </tr>
         `;
       }
@@ -3877,7 +3857,7 @@
     // 12. EXPORTADORES
     function exportTableToCSV(filename = 'tablero_retiro_series.csv') {
       const rows = [];
-      rows.push(['Fecha', 'Compromiso Tecnico Total', 'CT Activos (Ahorro)', 'CT Pasivos (Rentas)', 'Primas Emitidas', 'Rentas Pagadas', 'Rescates', 'Asegurados Activos', 'Beneficiarios Pasivos', 'Tipo de Cambio BNA', 'Rentabilidad Pesos', 'Rentabilidad USD']);
+      rows.push(['Periodo', 'CT Total ($ M)', 'CT Ahorro ($ M)', 'CT Rentas ($ M)', 'Primas ($ M)', 'Rentas ($ M)', 'Rescates ($ M)', 'Asegurados Activos', 'Beneficiarios Pasivos', 'TC BNA ($)', 'IPC Mensual (%)', 'Rentabilidad Pesos (%)', 'Rentabilidad USD (%)']);
       
       const fullTotPrimas = getFilteredMetricSeries('primas', false);
       const fullTotRentas = getFilteredMetricSeries('rentas', false);
@@ -3890,20 +3870,21 @@
       const rentP = DB.cube?.individual?.rentabilidad?.pesos || [];
       const rentD = DB.cube?.individual?.rentabilidad?.dolares || [];
 
-      for (let i = 0; i < N; i++) {
+      for (let i = N - 1; i >= 0; i--) {
         rows.push([
           DATES[i],
-          fullTotCtGlobal[i] || 0,
-          fullTotCtAct[i] || 0,
-          fullTotCtPas[i] || 0,
-          fullTotPrimas[i] || 0,
-          fullTotRentas[i] || 0,
-          fullTotRescates[i] || 0,
-          fullAsegAct[i] || 0,
-          fullAsegPas[i] || 0,
-          FX[i] || 1.0,
-          rentP[i] || 0,
-          rentD[i] || 0
+          ((fullTotCtGlobal[i] || 0) / 1e6).toFixed(2),
+          ((fullTotCtAct[i] || 0) / 1e6).toFixed(2),
+          ((fullTotCtPas[i] || 0) / 1e6).toFixed(2),
+          ((fullTotPrimas[i] || 0) / 1e6).toFixed(2),
+          ((fullTotRentas[i] || 0) / 1e6).toFixed(2),
+          ((fullTotRescates[i] || 0) / 1e6).toFixed(2),
+          Math.round(fullAsegAct[i] || 0),
+          Math.round(fullAsegPas[i] || 0),
+          (FX[i] || 1.0).toFixed(2),
+          (IPC_MONTHLY[i] || 0).toFixed(2),
+          ((rentP[i] || 0) * 100).toFixed(2),
+          ((rentD[i] || 0) * 100).toFixed(2)
         ]);
       }
 
