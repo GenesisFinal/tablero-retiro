@@ -2701,7 +2701,13 @@
         }
       }
 
-      setTimeout(renderAllChartsAndKPIs, 50);
+      setTimeout(() => {
+        renderAllChartsAndKPIs();
+        renderTables();
+        if (tabId === 'rentabilidad') {
+          renderMacroChart();
+        }
+      }, 50);
     }
 
     // 6. GESTIÓN DE TEMAS BRANDBOOK
@@ -2936,9 +2942,113 @@
           </tr>
         `).join('');
       }
+      renderMacroChart();
     }
 
     // 9. RENDERIZADO DINÁMICO DE TARJETAS KPIS Y GRÁFICOS
+    
+    // 8.1. RENDERIZADO DEL GRÁFICO DE BENCHMARKS MACROECONÓMICOS (TAB 3)
+    function renderMacroChart() {
+      const ctx = document.getElementById('chart-macro-benchmarks')?.getContext('2d');
+      if (!ctx) return;
+
+      const isDark = document.documentElement.classList.contains('dark');
+      if (window.chartMacroBenchmarks) window.chartMacroBenchmarks.destroy();
+
+      // Calcular variación mensual del Tipo de Cambio BNA
+      const tcVarMonthly = new Array(N).fill(0);
+      for (let i = 1; i < N; i++) {
+        if (FX[i - 1] > 0) {
+          tcVarMonthly[i] = ((FX[i] - FX[i - 1]) / FX[i - 1]) * 100.0;
+        }
+      }
+
+      const rentPesosMonthly = (DB.cube?.individual?.rentabilidad?.pesos || []).map(v => v * 100);
+      const ttPesosMonthly = (DB.cube?.individual?.rentabilidad?.tt_pesos || []).map(v => v * 100);
+
+      window.chartMacroBenchmarks = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: DATES,
+          datasets: [
+            {
+              label: 'Inflación Mensual (IPC %)',
+              data: IPC_MONTHLY,
+              borderColor: '#E20039',
+              backgroundColor: 'rgba(226, 0, 57, 0.12)',
+              tension: 0.35,
+              borderWidth: 2.2,
+              pointRadius: 2.5,
+              pointHoverRadius: 5
+            },
+            {
+              label: 'Variación Mensual TC BNA (%)',
+              data: tcVarMonthly,
+              borderColor: '#F8CC59',
+              backgroundColor: 'rgba(248, 204, 89, 0.12)',
+              tension: 0.35,
+              borderWidth: 2,
+              pointRadius: 2.5,
+              pointHoverRadius: 5
+            },
+            {
+              label: 'Rentabilidad Cartera Pesos (%)',
+              data: rentPesosMonthly,
+              borderColor: '#4183CA',
+              backgroundColor: 'rgba(65, 131, 202, 0.12)',
+              tension: 0.35,
+              borderWidth: 2,
+              pointRadius: 2.5,
+              pointHoverRadius: 5
+            },
+            {
+              label: 'Tasa Testigo SSN (%)',
+              data: ttPesosMonthly,
+              borderColor: '#3AC792',
+              backgroundColor: 'rgba(58, 199, 146, 0.12)',
+              borderDash: [4, 4],
+              tension: 0.35,
+              borderWidth: 1.8,
+              pointRadius: 2,
+              pointHoverRadius: 4
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          plugins: {
+            legend: {
+              position: 'top',
+              labels: {
+                color: isDark ? '#94A3B8' : '#475569',
+                font: { family: 'Sora', size: 11 }
+              }
+            },
+            tooltip: {
+              callbacks: {
+                label: ctx => `${ctx.dataset.label}: ${ctx.raw !== null && ctx.raw !== undefined ? ctx.raw.toFixed(2) : '0.00'}%`
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' },
+              ticks: { color: isDark ? '#94A3B8' : '#475569', maxRotation: 45, minRotation: 0 }
+            },
+            y: {
+              grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' },
+              ticks: {
+                color: isDark ? '#94A3B8' : '#475569',
+                callback: v => `${v.toFixed(1)}%`
+              }
+            }
+          }
+        }
+      });
+    }
+
     function renderAllChartsAndKPIs() {
       const { start, end } = getIndicesForEjercicio(currentEjercicioKey);
       const ct12mIdx = getCt12mIndices();
@@ -3839,6 +3949,7 @@
         console.warn('[AGMD Dataset] Usando dataset embebido como fallback:', err);
       }
       renderTables();
+      renderMacroChart();
       renderAllChartsAndKPIs();
     }
 
@@ -3861,6 +3972,7 @@
       setCtChartIpc(false);
       setFlujosChartIpc(false);
       renderTables();
+      renderMacroChart();
       renderAllChartsAndKPIs();
       loadExternalDatasetAndRender();
     });
