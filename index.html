@@ -1194,6 +1194,10 @@
       renderAllChartsAndKPIs();
     }
 
+    // Aliases para compatibilidad
+    function toggleProd(k) { selectProd(k); }
+    function toggleDet(k) { selectDet(k); }
+
     function updateFilterDescription() {
       const prodNames = { 'all': 'Todos los Productos', 'ri': 'Retiro Individual', 'rc': 'Retiro Colectivo', 'rvp': 'RVP y ART' };
       const segNames = { 'all': 'Todos los Segmentos', 'neg': 'Negocio Propio', 'emp': 'Plan Empleados', 'vin': 'Plan Vinculados' };
