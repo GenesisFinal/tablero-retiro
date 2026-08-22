@@ -1372,10 +1372,10 @@
             Producto:
           </span>
           <div class="flex gap-1.5 flex-wrap">
-            <button id="t-prod-all" onclick="selectProd('all')" class="btn-filter active px-2.5 py-1 rounded-lg text-xs transition">Todos</button>
-            <button id="t-ri" onclick="selectProd('ri')" class="btn-filter px-2.5 py-1 rounded-lg text-xs transition">Ret. Individual</button>
-            <button id="t-rc" onclick="selectProd('rc')" class="btn-filter px-2.5 py-1 rounded-lg text-xs transition">Ret. Colectivo</button>
-            <button id="t-rvp" onclick="selectProd('rvp')" class="btn-filter px-2.5 py-1 rounded-lg text-xs transition">RVP y ART</button>
+            <button id="t-prod-all" onclick="toggleProd('all')" class="btn-filter active px-2.5 py-1 rounded-lg text-xs transition">Todos</button>
+            <button id="t-ri" onclick="toggleProd('ri')" class="btn-filter px-2.5 py-1 rounded-lg text-xs transition">Ret. Individual</button>
+            <button id="t-rc" onclick="toggleProd('rc')" class="btn-filter px-2.5 py-1 rounded-lg text-xs transition">Ret. Colectivo</button>
+            <button id="t-rvp" onclick="toggleProd('rvp')" class="btn-filter px-2.5 py-1 rounded-lg text-xs transition">RVP y ART</button>
           </div>
         </div>
 
@@ -1386,10 +1386,10 @@
             Segmento:
           </span>
           <div class="flex gap-1.5 flex-wrap" id="container-seg-buttons">
-            <button id="t-seg-all" onclick="selectDet('all')" class="btn-filter active px-2.5 py-1 rounded-lg text-xs transition">Todos</button>
-            <button id="t-neg" onclick="selectDet('neg')" class="btn-filter px-2.5 py-1 rounded-lg text-xs transition">Negocio Propio</button>
-            <button id="t-emp" onclick="selectDet('emp')" class="btn-filter px-2.5 py-1 rounded-lg text-xs transition">Plan Empleados</button>
-            <button id="t-vin" onclick="selectDet('vin')" class="btn-filter px-2.5 py-1 rounded-lg text-xs transition">Plan Vinculados</button>
+            <button id="t-seg-all" onclick="toggleDet('all')" class="btn-filter active px-2.5 py-1 rounded-lg text-xs transition">Todos</button>
+            <button id="t-neg" onclick="toggleDet('neg')" class="btn-filter px-2.5 py-1 rounded-lg text-xs transition">Negocio Propio</button>
+            <button id="t-emp" onclick="toggleDet('emp')" class="btn-filter px-2.5 py-1 rounded-lg text-xs transition">Plan Empleados</button>
+            <button id="t-vin" onclick="toggleDet('vin')" class="btn-filter px-2.5 py-1 rounded-lg text-xs transition">Plan Vinculados</button>
           </div>
         </div>
 
@@ -2471,16 +2471,17 @@
       return CUM_IPC[targetIdx] / CUM_IPC[fromIdx];
     }
 
-    // 2. ESTADOS GLOBALES DE CONTROL
+        // 2. ESTADOS GLOBALES DE CONTROL MULTIDIMENSIONAL
     let currentTab = 'dashboard';
     let currentEjercicioKey = '12m';
     let currentCurrency = 'c'; // 'c' (consolidado), 'p' (pesos), 'd' (dolares)
-    let selectedProdKey = 'all'; // 'all', 'ri', 'rc', 'rvp'
-    let selectedSegKey = 'all';  // 'all', 'neg', 'emp', 'vin'
+    let selectedProds = ['individual', 'colectivo', 'rvp_art']; // Selección múltiple de productos
+    let selectedSegs = ['negocio', 'empleados', 'vinculados'];   // Selección múltiple de segmentos
     let ctIpcAdjusted = false;
     let flujosIpcAdjusted = false;
     let chartCtSeriesMode = 'both';
     let chartFlujosSeriesMode = 'all';
+    let currentMacroPeriodKey = 'all';
 
     const EJERCICIOS = {
       '12m': { label: 'Últimos 12 Meses (L12M)', subtitle: 'Agosto 2025 - Julio 2026', count: 12 },
@@ -2519,20 +2520,19 @@
       return { start: Math.max(0, last - 11), end: last };
     }
 
-    // 3. MOTOR DE AGREGACIÓN MULTIDIMENSIONAL POR PRODUCTO O GLOBAL
-    function getProductMetricSeries(metricKey, prodKey, segKey = 'all', applyIpc = false, targetIpcIdx = null) {
+    // 3. MOTOR DE AGREGACIÓN MULTIDIMENSIONAL POR PRODUCTO O GLOBAL (MULTISELECCIÓN)
+    function getProductMetricSeries(metricKey, prodKey, segKeys = null, applyIpc = false, targetIpcIdx = null) {
       const res = new Array(N).fill(0);
       if (!DB.cube) return res;
 
-      const segMap = { 'all': ['negocio', 'empleados', 'vinculados'], 'neg': ['negocio'], 'emp': ['empleados'], 'vin': ['vinculados'] };
-      let segs = segMap[segKey] || ['negocio', 'empleados', 'vinculados'];
+      let segs = segKeys ? [...segKeys] : [...selectedSegs];
 
       if (prodKey === 'rvp_art' || prodKey === 'rvp') {
         prodKey = 'rvp_art';
-        segs = ['negocio'];
-      } else if (prodKey === 'ri') {
+        segs = segs.filter(s => s === 'negocio'); // RVP y ART es negocio propio
+      } else if (prodKey === 'ri' || prodKey === 'individual') {
         prodKey = 'individual';
-      } else if (prodKey === 'rc') {
+      } else if (prodKey === 'rc' || prodKey === 'colectivo') {
         prodKey = 'colectivo';
       }
 
@@ -2614,11 +2614,8 @@
       const res = new Array(N).fill(0);
       if (!DB.cube) return res;
 
-      const prodMap = { 'all': ['individual', 'colectivo', 'rvp_art'], 'ri': ['individual'], 'rc': ['colectivo'], 'rvp': ['rvp_art'] };
-      const prods = prodMap[selectedProdKey] || ['individual', 'colectivo', 'rvp_art'];
-
-      prods.forEach(prod => {
-        const pSeries = getProductMetricSeries(metricKey, prod, selectedSegKey, applyIpc, targetIpcIdx);
+      selectedProds.forEach(prod => {
+        const pSeries = getProductMetricSeries(metricKey, prod, selectedSegs, applyIpc, targetIpcIdx);
         for (let i = 0; i < N; i++) {
           res[i] += pSeries[i];
         }
@@ -2627,6 +2624,7 @@
       return res;
     }
 
+    // 4. FORMATEADORES Y UTILIDADES MATEMÁTICAS
     // 4. FORMATEADORES Y UTILIDADES MATEMÁTICAS
     function formatNumber(num) {
       if (num === null || num === undefined || isNaN(num)) return '0';
@@ -2753,7 +2751,7 @@
       });
     }
 
-    // 7. CONTROLES Y FILTROS INTERACTIVOS CON VISUAL ACTIVATION
+        // 7. CONTROLES Y FILTROS INTERACTIVOS CON MULTISELECCIÓN
     function setEjercicio(ejKey) {
       currentEjercicioKey = ejKey;
       ['12m', '2026-2027', '2025-2026', '2024-2025', '2023-2024', 'all'].forEach(k => {
@@ -2790,101 +2788,100 @@
       renderAllChartsAndKPIs();
     }
 
-    function selectProd(prodKey) {
-      selectedProdKey = prodKey;
-      ['all', 'ri', 'rc', 'rvp'].forEach(k => {
-        const btnMap = { 'all': 't-prod-all', 'ri': 't-ri', 'rc': 't-rc', 'rvp': 't-rvp' };
-        const btn = document.getElementById(btnMap[k]);
-        if (btn) btn.classList.toggle('active', k === prodKey);
-      });
-
-      // Regla actuarial: Si es RVP y ART -> Fijar Negocio Propio y deshabilitar Empleados/Vinculados
-      const btnEmp = document.getElementById('t-emp');
-      const btnVin = document.getElementById('t-vin');
-      const btnAllSeg = document.getElementById('t-seg-all');
-
-      if (prodKey === 'rvp') {
-        selectedSegKey = 'neg';
-        ['all', 'neg', 'emp', 'vin'].forEach(k => {
-          const btnMap = { 'all': 't-seg-all', 'neg': 't-neg', 'emp': 't-emp', 'vin': 't-vin' };
-          const btn = document.getElementById(btnMap[k]);
-          if (btn) btn.classList.toggle('active', k === 'neg');
-        });
-        
-        if (btnEmp) { btnEmp.disabled = true; btnEmp.classList.add('opacity-40', 'cursor-not-allowed'); }
-        if (btnVin) { btnVin.disabled = true; btnVin.classList.add('opacity-40', 'cursor-not-allowed'); }
-        if (btnAllSeg) { btnAllSeg.disabled = true; btnAllSeg.classList.add('opacity-40', 'cursor-not-allowed'); }
+    // MULTISELECCIÓN DE PRODUCTOS (Todos | Individual | Colectivo | RVP y ART)
+    function toggleProd(prodKey) {
+      const allProdsList = ['individual', 'colectivo', 'rvp_art'];
+      if (prodKey === 'all') {
+        selectedProds = ['individual', 'colectivo', 'rvp_art'];
       } else {
-        if (btnEmp) { btnEmp.disabled = false; btnEmp.classList.remove('opacity-40', 'cursor-not-allowed'); }
-        if (btnVin) { btnVin.disabled = false; btnVin.classList.remove('opacity-40', 'cursor-not-allowed'); }
-        if (btnAllSeg) { btnAllSeg.disabled = false; btnAllSeg.classList.remove('opacity-40', 'cursor-not-allowed'); }
+        const keyMap = { 'ri': 'individual', 'rc': 'colectivo', 'rvp': 'rvp_art', 'individual': 'individual', 'colectivo': 'colectivo', 'rvp_art': 'rvp_art' };
+        const p = keyMap[prodKey];
+        if (selectedProds.includes(p)) {
+          if (selectedProds.length > 1) {
+            selectedProds = selectedProds.filter(x => x !== p);
+          } else {
+            // Si era el único, re-activar todos
+            selectedProds = ['individual', 'colectivo', 'rvp_art'];
+          }
+        } else {
+          selectedProds.push(p);
+        }
       }
 
+      updateFilterButtonsUI();
       updateFilterDescription();
       renderAllChartsAndKPIs();
     }
 
-    function selectDet(segKey) {
-      if (selectedProdKey === 'rvp' && segKey !== 'neg') return;
-      selectedSegKey = segKey;
-      ['all', 'neg', 'emp', 'vin'].forEach(k => {
-        const btnMap = { 'all': 't-seg-all', 'neg': 't-neg', 'emp': 't-emp', 'vin': 't-vin' };
-        const btn = document.getElementById(btnMap[k]);
-        if (btn) btn.classList.toggle('active', k === segKey);
-      });
+    // MULTISELECCIÓN DE SEGMENTOS (Todos | Negocio Propio | Plan Empleados | Plan Vinculados)
+    function toggleDet(segKey) {
+      const allSegsList = ['negocio', 'empleados', 'vinculados'];
+      if (segKey === 'all') {
+        selectedSegs = ['negocio', 'empleados', 'vinculados'];
+      } else {
+        const keyMap = { 'neg': 'negocio', 'emp': 'empleados', 'vin': 'vinculados', 'negocio': 'negocio', 'empleados': 'empleados', 'vinculados': 'vinculados' };
+        const s = keyMap[segKey];
+        if (selectedSegs.includes(s)) {
+          if (selectedSegs.length > 1) {
+            selectedSegs = selectedSegs.filter(x => x !== s);
+          } else {
+            // Si era el único, re-activar todos
+            selectedSegs = ['negocio', 'empleados', 'vinculados'];
+          }
+        } else {
+          selectedSegs.push(s);
+        }
+      }
 
+      updateFilterButtonsUI();
       updateFilterDescription();
       renderAllChartsAndKPIs();
     }
 
     // Aliases para compatibilidad
-    function toggleProd(k) { selectProd(k); }
-    function toggleDet(k) { selectDet(k); }
+    function selectProd(k) { toggleProd(k); }
+    function selectDet(k) { toggleDet(k); }
+
+    function updateFilterButtonsUI() {
+      const isAllProds = (selectedProds.length === 3);
+      const btnProdAll = document.getElementById('t-prod-all');
+      const btnRi = document.getElementById('t-ri');
+      const btnRc = document.getElementById('t-rc');
+      const btnRvp = document.getElementById('t-rvp');
+
+      if (btnProdAll) btnProdAll.classList.toggle('active', isAllProds);
+      if (btnRi) btnRi.classList.toggle('active', selectedProds.includes('individual'));
+      if (btnRc) btnRc.classList.toggle('active', selectedProds.includes('colectivo'));
+      if (btnRvp) btnRvp.classList.toggle('active', selectedProds.includes('rvp_art'));
+
+      const isAllSegs = (selectedSegs.length === 3);
+      const btnSegAll = document.getElementById('t-seg-all');
+      const btnNeg = document.getElementById('t-neg');
+      const btnEmp = document.getElementById('t-emp');
+      const btnVin = document.getElementById('t-vin');
+
+      if (btnSegAll) btnSegAll.classList.toggle('active', isAllSegs);
+      if (btnNeg) btnNeg.classList.toggle('active', selectedSegs.includes('negocio'));
+      if (btnEmp) btnEmp.classList.toggle('active', selectedSegs.includes('empleados'));
+      if (btnVin) btnVin.classList.toggle('active', selectedSegs.includes('vinculados'));
+    }
 
     function updateFilterDescription() {
-      const prodNames = { 'all': 'Todos los Productos', 'ri': 'Retiro Individual', 'rc': 'Retiro Colectivo', 'rvp': 'RVP y ART' };
-      const segNames = { 'all': 'Todos los Segmentos', 'neg': 'Negocio Propio', 'emp': 'Plan Empleados', 'vin': 'Plan Vinculados' };
+      const prodLabelMap = { 'individual': 'Individual', 'colectivo': 'Colectivo', 'rvp_art': 'RVP y ART' };
+      const segLabelMap = { 'negocio': 'Negocio Propio', 'empleados': 'Plan Empleados', 'vinculados': 'Plan Vinculados' };
+
+      const prodsText = (selectedProds.length === 3) 
+        ? 'Todos los Productos' 
+        : selectedProds.map(p => prodLabelMap[p]).join(' + ');
+
+      const segsText = (selectedSegs.length === 3) 
+        ? 'Todos los Segmentos' 
+        : selectedSegs.map(s => segLabelMap[s]).join(' + ');
+
       const desc = document.getElementById('status-filter-desc');
       if (desc) {
-        desc.textContent = `[ ${prodNames[selectedProdKey]} • ${segNames[selectedSegKey]} ]`;
+        desc.textContent = `[ ${prodsText} • ${segsText} ]`;
       }
-    }
-
-    // Handlers de Control de Gráficos y Ajuste IPC con actualización visual activa
-    function setCtChartIpc(adj) {
-      ctIpcAdjusted = adj;
-      const bNom = document.getElementById('btn-ct-ipc-nom');
-      const bReal = document.getElementById('btn-ct-ipc-real');
-      if (bNom) bNom.classList.toggle('active', !adj);
-      if (bReal) bReal.classList.toggle('active', adj);
-      renderAllChartsAndKPIs();
-    }
-
-    function setFlujosChartIpc(adj) {
-      flujosIpcAdjusted = adj;
-      const bNom = document.getElementById('btn-fl-ipc-nom');
-      const bReal = document.getElementById('btn-fl-ipc-real');
-      if (bNom) bNom.classList.toggle('active', !adj);
-      if (bReal) bReal.classList.toggle('active', adj);
-      renderAllChartsAndKPIs();
-    }
-
-    function setCtChartSeries(mode) {
-      chartCtSeriesMode = mode;
-      ['all', 'act', 'pas'].forEach(m => {
-        const b = document.getElementById('btn-ct-chart-' + m);
-        if (b) b.classList.toggle('active', m === mode);
-      });
-      renderAllChartsAndKPIs();
-    }
-
-    function setFlujosChartSeries(mode) {
-      chartFlujosSeriesMode = mode;
-      ['all', 'primas', 'rescates', 'rentas'].forEach(m => {
-        const b = document.getElementById('btn-fl-chart-' + m);
-        if (b) b.classList.toggle('active', m === mode);
-      });
-      renderAllChartsAndKPIs();
     }
 
     // 8. RENDERIZADO DE TABLAS Y CUADROS (TAB 3)
@@ -3373,44 +3370,42 @@
       }
 
       // ==========================================
-      // TAB 2 - DONUTS DE COMPOSICIÓN (REACTIVOS)
       // ==========================================
-      // Obtener series por producto con los filtros de segmento y moneda activos
-      const riPrimasSeries = getProductMetricSeries('primas', 'individual', selectedSegKey, flujosIpcAdjusted, end);
-      const rcPrimasSeries = getProductMetricSeries('primas', 'colectivo', selectedSegKey, flujosIpcAdjusted, end);
-      const rvpPrimasSeries = getProductMetricSeries('primas', 'rvp_art', selectedSegKey, flujosIpcAdjusted, end);
-
-      let riP = 0, rcP = 0, rvpP = 0;
-      for (let i = start; i <= end; i++) {
-        riP += riPrimasSeries[i] || 0;
-        rcP += rcPrimasSeries[i] || 0;
-        rvpP += rvpPrimasSeries[i] || 0;
-      }
-      const totP = riP + rcP + rvpP;
-
-      const riRentasSeries = getProductMetricSeries('rentas', 'individual', selectedSegKey, flujosIpcAdjusted, end);
-      const rcRentasSeries = getProductMetricSeries('rentas', 'colectivo', selectedSegKey, flujosIpcAdjusted, end);
-      const rvpRentasSeries = getProductMetricSeries('rentas', 'rvp_art', selectedSegKey, flujosIpcAdjusted, end);
-
-      let riR = 0, rcR = 0, rvpR = 0;
-      for (let i = start; i <= end; i++) {
-        riR += riRentasSeries[i] || 0;
-        rcR += rcRentasSeries[i] || 0;
-        rvpR += rvpRentasSeries[i] || 0;
-      }
-      const totR = riR + rcR + rvpR;
+      // TAB 2 - DONUTS DE COMPOSICIÓN (MULTISELECCIÓN REACTIVA)
+      // ==========================================
+      const prodConfig = {
+        'individual': { label: 'Individual', color: '#4183CA' },
+        'colectivo': { label: 'Colectivo', color: '#3AC792' },
+        'rvp_art': { label: 'RVP y ART', color: '#E20039' }
+      };
 
       // 1. Donut Primas por Producto
       const ctxPieP = document.getElementById('pie-primas-prod')?.getContext('2d');
       if (ctxPieP) {
         if (window.piePrimasProd) window.piePrimasProd.destroy();
+        
+        const pLabels = [];
+        const pData = [];
+        const pColors = [];
+        let totP = 0;
+
+        selectedProds.forEach(prod => {
+          const s = getProductMetricSeries('primas', prod, selectedSegs, flujosIpcAdjusted, end);
+          let sum = 0;
+          for (let i = start; i <= end; i++) sum += (s[i] || 0);
+          pLabels.push(prodConfig[prod].label);
+          pData.push(sum / 1e6);
+          pColors.push(prodConfig[prod].color);
+          totP += sum;
+        });
+
         window.piePrimasProd = new Chart(ctxPieP, {
           type: 'doughnut',
           data: {
-            labels: ['Individual', 'Colectivo', 'RVP y ART'],
+            labels: pLabels,
             datasets: [{
-              data: [riP / 1e6, rcP / 1e6, rvpP / 1e6],
-              backgroundColor: ['#4183CA', '#3AC792', '#E20039'],
+              data: pData,
+              backgroundColor: pColors,
               borderColor: isDark ? '#161822' : '#FFFFFF',
               borderWidth: 2
             }]
@@ -3437,13 +3432,29 @@
       const ctxPieR = document.getElementById('pie-rentas-prod')?.getContext('2d');
       if (ctxPieR) {
         if (window.pieRentasProd) window.pieRentasProd.destroy();
+        
+        const rLabels = [];
+        const rData = [];
+        const rColors = [];
+        let totR = 0;
+
+        selectedProds.forEach(prod => {
+          const s = getProductMetricSeries('rentas', prod, selectedSegs, flujosIpcAdjusted, end);
+          let sum = 0;
+          for (let i = start; i <= end; i++) sum += (s[i] || 0);
+          rLabels.push(prodConfig[prod].label);
+          rData.push(sum / 1e6);
+          rColors.push(prodConfig[prod].color);
+          totR += sum;
+        });
+
         window.pieRentasProd = new Chart(ctxPieR, {
           type: 'doughnut',
           data: {
-            labels: ['Individual', 'Colectivo', 'RVP y ART'],
+            labels: rLabels,
             datasets: [{
-              data: [riR / 1e6, rcR / 1e6, rvpR / 1e6],
-              backgroundColor: ['#4183CA', '#3AC792', '#E20039'],
+              data: rData,
+              backgroundColor: rColors,
               borderColor: isDark ? '#161822' : '#FFFFFF',
               borderWidth: 2
             }]
@@ -3508,11 +3519,9 @@
         if (window.pieCtMoneda) window.pieCtMoneda.destroy();
         let monPesos = 0, monUSD = 0;
         const lastFx = FX[end] || 1.0;
-        const prods = (selectedProdKey === 'all') ? ['individual', 'colectivo', 'rvp_art'] : [selectedProdKey === 'ri' ? 'individual' : selectedProdKey === 'rc' ? 'colectivo' : 'rvp_art'];
-        const segs = (selectedSegKey === 'all') ? ['negocio', 'empleados', 'vinculados'] : [selectedSegKey === 'neg' ? 'negocio' : selectedSegKey === 'emp' ? 'empleados' : 'vinculados'];
 
-        prods.forEach(p => {
-          segs.forEach(s => {
+        selectedProds.forEach(p => {
+          selectedSegs.forEach(s => {
             if (p === 'rvp_art' && s !== 'negocio') return;
             const cube = DB.cube?.[p]?.[s];
             if (!cube) return;
@@ -3552,30 +3561,35 @@
       }
 
       // ========================================================
-      // TAB 2 - LOS 6 GRÁFICOS DE ANÁLISIS DE CARTERA
+      // TAB 2 - LOS 6 GRÁFICOS DE ANÁLISIS DE CARTERA (MULTISELECCIÓN)
       // ========================================================
 
       // 1. Rentas Pagadas por Producto (chart-rentas)
       const ctxRentasTab2 = document.getElementById('chart-rentas')?.getContext('2d');
       if (ctxRentasTab2) {
         if (window.chartRentas) window.chartRentas.destroy();
-        const riRSlice = riRentasSeries.slice(start, end + 1).map(v => v / 1e6);
-        const rcRSlice = rcRentasSeries.slice(start, end + 1).map(v => v / 1e6);
-        const rvpRSlice = rvpRentasSeries.slice(start, end + 1).map(v => v / 1e6);
+        const rentDatasets = [];
+        let totRTab2 = 0;
+
+        selectedProds.forEach(prod => {
+          const s = getProductMetricSeries('rentas', prod, selectedSegs, flujosIpcAdjusted, end);
+          const slice = s.slice(start, end + 1).map(v => v / 1e6);
+          rentDatasets.push({
+            label: prodConfig[prod].label,
+            data: slice,
+            borderColor: prodConfig[prod].color,
+            backgroundColor: prodConfig[prod].color + '1A',
+            tension: 0.35, borderWidth: 2, fill: true
+          });
+          for (let i = start; i <= end; i++) totRTab2 += (s[i] || 0);
+        });
 
         const badgeRentas = document.getElementById('badge-chart-rentas');
-        if (badgeRentas) badgeRentas.textContent = formatInMillions(totR);
+        if (badgeRentas) badgeRentas.textContent = formatInMillions(totRTab2);
 
         window.chartRentas = new Chart(ctxRentasTab2, {
           type: 'line',
-          data: {
-            labels: datesSlice,
-            datasets: [
-              { label: 'Retiro Individual', data: riRSlice, borderColor: '#4183CA', backgroundColor: 'rgba(65, 131, 202, 0.1)', tension: 0.35, borderWidth: 2, fill: true },
-              { label: 'Retiro Colectivo', data: rcRSlice, borderColor: '#3AC792', backgroundColor: 'rgba(58, 199, 146, 0.1)', tension: 0.35, borderWidth: 2, fill: true },
-              { label: 'RVP y ART', data: rvpRSlice, borderColor: '#E20039', backgroundColor: 'rgba(226, 0, 57, 0.1)', tension: 0.35, borderWidth: 2, fill: true }
-            ]
-          },
+          data: { labels: datesSlice, datasets: rentDatasets },
           options: {
             responsive: true, maintainAspectRatio: false,
             plugins: {
@@ -3594,32 +3608,28 @@
       const ctxRescatesTab2 = document.getElementById('chart-rescates')?.getContext('2d');
       if (ctxRescatesTab2) {
         if (window.chartRescates) window.chartRescates.destroy();
-        const riResSeries = getProductMetricSeries('rescates', 'individual', selectedSegKey, flujosIpcAdjusted, end);
-        const rcResSeries = getProductMetricSeries('rescates', 'colectivo', selectedSegKey, flujosIpcAdjusted, end);
-        const rvpResSeries = getProductMetricSeries('rescates', 'rvp_art', selectedSegKey, flujosIpcAdjusted, end);
+        const rescDatasets = [];
+        let totResTab2 = 0;
 
-        const riResSlice = riResSeries.slice(start, end + 1).map(v => v / 1e6);
-        const rcResSlice = rcResSeries.slice(start, end + 1).map(v => v / 1e6);
-        const rvpResSlice = rvpResSeries.slice(start, end + 1).map(v => v / 1e6);
-
-        let totRes = 0;
-        for (let i = start; i <= end; i++) {
-          totRes += (riResSeries[i] || 0) + (rcResSeries[i] || 0) + (rvpResSeries[i] || 0);
-        }
+        selectedProds.forEach(prod => {
+          const s = getProductMetricSeries('rescates', prod, selectedSegs, flujosIpcAdjusted, end);
+          const slice = s.slice(start, end + 1).map(v => v / 1e6);
+          rescDatasets.push({
+            label: prodConfig[prod].label,
+            data: slice,
+            borderColor: prodConfig[prod].color,
+            backgroundColor: prodConfig[prod].color + '1A',
+            tension: 0.35, borderWidth: 2, fill: true
+          });
+          for (let i = start; i <= end; i++) totResTab2 += (s[i] || 0);
+        });
 
         const badgeResc = document.getElementById('badge-chart-rescates');
-        if (badgeResc) badgeResc.textContent = formatInMillions(totRes);
+        if (badgeResc) badgeResc.textContent = formatInMillions(totResTab2);
 
         window.chartRescates = new Chart(ctxRescatesTab2, {
           type: 'line',
-          data: {
-            labels: datesSlice,
-            datasets: [
-              { label: 'Retiro Individual', data: riResSlice, borderColor: '#4183CA', backgroundColor: 'rgba(65, 131, 202, 0.1)', tension: 0.35, borderWidth: 2, fill: true },
-              { label: 'Retiro Colectivo', data: rcResSlice, borderColor: '#3AC792', backgroundColor: 'rgba(58, 199, 146, 0.1)', tension: 0.35, borderWidth: 2, fill: true },
-              { label: 'RVP y ART', data: rvpResSlice, borderColor: '#E20039', backgroundColor: 'rgba(226, 0, 57, 0.1)', tension: 0.35, borderWidth: 2, fill: true }
-            ]
-          },
+          data: { labels: datesSlice, datasets: rescDatasets },
           options: {
             responsive: true, maintainAspectRatio: false,
             plugins: {
@@ -3638,27 +3648,26 @@
       const ctxCtActTab2 = document.getElementById('chart-ct-act')?.getContext('2d');
       if (ctxCtActTab2) {
         if (window.chartCtAct) window.chartCtAct.destroy();
-        const riCtActSeries = getProductMetricSeries('ct_act', 'individual', selectedSegKey, ctIpcAdjusted, end);
-        const rcCtActSeries = getProductMetricSeries('ct_act', 'colectivo', selectedSegKey, ctIpcAdjusted, end);
-        const rvpCtActSeries = getProductMetricSeries('ct_act', 'rvp_art', selectedSegKey, ctIpcAdjusted, end);
+        const ctActDatasets = [];
 
-        const riCtActSlice = riCtActSeries.slice(start, end + 1).map(v => v / 1e6);
-        const rcCtActSlice = rcCtActSeries.slice(start, end + 1).map(v => v / 1e6);
-        const rvpCtActSlice = rvpCtActSeries.slice(start, end + 1).map(v => v / 1e6);
+        selectedProds.forEach(prod => {
+          const s = getProductMetricSeries('ct_act', prod, selectedSegs, ctIpcAdjusted, end);
+          const slice = s.slice(start, end + 1).map(v => v / 1e6);
+          ctActDatasets.push({
+            label: `${prodConfig[prod].label} (Ahorro)`,
+            data: slice,
+            borderColor: prodConfig[prod].color,
+            backgroundColor: prodConfig[prod].color + '1A',
+            tension: 0.35, borderWidth: 2, fill: true
+          });
+        });
 
         const badgeCtAct = document.getElementById('badge-chart-ct-act');
         if (badgeCtAct) badgeCtAct.textContent = formatInMillions(ctAct[end] || 0);
 
         window.chartCtAct = new Chart(ctxCtActTab2, {
           type: 'line',
-          data: {
-            labels: datesSlice,
-            datasets: [
-              { label: 'Retiro Individual (Ahorro)', data: riCtActSlice, borderColor: '#4183CA', backgroundColor: 'rgba(65, 131, 202, 0.15)', tension: 0.35, borderWidth: 2, fill: true },
-              { label: 'Retiro Colectivo (Ahorro)', data: rcCtActSlice, borderColor: '#3AC792', backgroundColor: 'rgba(58, 199, 146, 0.15)', tension: 0.35, borderWidth: 2, fill: true },
-              { label: 'RVP y ART (Ahorro)', data: rvpCtActSlice, borderColor: '#E20039', backgroundColor: 'rgba(226, 0, 57, 0.15)', tension: 0.35, borderWidth: 2, fill: true }
-            ]
-          },
+          data: { labels: datesSlice, datasets: ctActDatasets },
           options: {
             responsive: true, maintainAspectRatio: false,
             plugins: {
@@ -3677,27 +3686,26 @@
       const ctxCtPasTab2 = document.getElementById('chart-ct-pas')?.getContext('2d');
       if (ctxCtPasTab2) {
         if (window.chartCtPas) window.chartCtPas.destroy();
-        const riCtPasSeries = getProductMetricSeries('ct_pas', 'individual', selectedSegKey, ctIpcAdjusted, end);
-        const rcCtPasSeries = getProductMetricSeries('ct_pas', 'colectivo', selectedSegKey, ctIpcAdjusted, end);
-        const rvpCtPasSeries = getProductMetricSeries('ct_pas', 'rvp_art', selectedSegKey, ctIpcAdjusted, end);
+        const ctPasDatasets = [];
 
-        const riCtPasSlice = riCtPasSeries.slice(start, end + 1).map(v => v / 1e6);
-        const rcCtPasSlice = rcCtPasSeries.slice(start, end + 1).map(v => v / 1e6);
-        const rvpCtPasSlice = rvpCtPasSeries.slice(start, end + 1).map(v => v / 1e6);
+        selectedProds.forEach(prod => {
+          const s = getProductMetricSeries('ct_pas', prod, selectedSegs, ctIpcAdjusted, end);
+          const slice = s.slice(start, end + 1).map(v => v / 1e6);
+          ctPasDatasets.push({
+            label: `${prodConfig[prod].label} (Rentas)`,
+            data: slice,
+            borderColor: prodConfig[prod].color,
+            backgroundColor: prodConfig[prod].color + '1A',
+            tension: 0.35, borderWidth: 2, fill: true
+          });
+        });
 
         const badgeCtPas = document.getElementById('badge-chart-ct-pas');
         if (badgeCtPas) badgeCtPas.textContent = formatInMillions(ctPas[end] || 0);
 
         window.chartCtPas = new Chart(ctxCtPasTab2, {
           type: 'line',
-          data: {
-            labels: datesSlice,
-            datasets: [
-              { label: 'Retiro Individual (Rentas)', data: riCtPasSlice, borderColor: '#4183CA', backgroundColor: 'rgba(65, 131, 202, 0.15)', tension: 0.35, borderWidth: 2, fill: true },
-              { label: 'Retiro Colectivo (Rentas)', data: rcCtPasSlice, borderColor: '#3AC792', backgroundColor: 'rgba(58, 199, 146, 0.15)', tension: 0.35, borderWidth: 2, fill: true },
-              { label: 'RVP y ART (Rentas)', data: rvpCtPasSlice, borderColor: '#E20039', backgroundColor: 'rgba(226, 0, 57, 0.15)', tension: 0.35, borderWidth: 2, fill: true }
-            ]
-          },
+          data: { labels: datesSlice, datasets: ctPasDatasets },
           options: {
             responsive: true, maintainAspectRatio: false,
             plugins: {
@@ -3826,7 +3834,7 @@
       }
     }
 
-        // 11. TAB 4: SERIES CRONOLÓGICAS (MATRIZ MAESTRA)
+    // 11. TAB 4: SERIES CRONOLÓGICAS (MATRIZ MAESTRA)
     function renderSeriesTable() {
       const tbody = document.getElementById('tbody-master-table');
       if (!tbody) return;
@@ -3974,8 +3982,8 @@
       applyTheme(initialTheme);
       setEjercicio('12m');
       setMoneda('c');
-      selectProd('all');
-      selectDet('all');
+      updateFilterButtonsUI();
+      updateFilterDescription();
       setCtChartIpc(false);
       setFlujosChartIpc(false);
       renderTables();
