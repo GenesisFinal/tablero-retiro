@@ -994,6 +994,50 @@
 
 
 
+  
+    /* ESTILOS DE SELECTORES Y BOTONES DE FILTRO (BRANDBOOK LA SEGUNDA) */
+    .btn-filter {
+      background: #FFFFFF !important;
+      border: 1px solid #CBD5E1 !important;
+      color: #475569 !important;
+      font-weight: 500 !important;
+      transition: all 0.15s ease-in-out !important;
+      cursor: pointer !important;
+    }
+    .btn-filter:hover {
+      background: #F1F5F9 !important;
+      color: #0F172A !important;
+      border-color: #94A3B8 !important;
+    }
+    .btn-filter.active {
+      background: #E20039 !important;
+      border-color: #E20039 !important;
+      color: #FFFFFF !important;
+      font-weight: 700 !important;
+      box-shadow: 0 2px 8px rgba(226, 0, 57, 0.4) !important;
+    }
+
+    .dark .btn-filter {
+      background: #1A1D27 !important;
+      border: 1px solid #282D3D !important;
+      color: #94A3B8 !important;
+      font-weight: 500 !important;
+      transition: all 0.15s ease-in-out !important;
+      cursor: pointer !important;
+    }
+    .dark .btn-filter:hover {
+      background: #232735 !important;
+      color: #FFFFFF !important;
+      border-color: #3E455B !important;
+    }
+    .dark .btn-filter.active {
+      background: #E20039 !important;
+      border-color: #FF4C60 !important;
+      color: #FFFFFF !important;
+      font-weight: 700 !important;
+      box-shadow: 0 0 16px rgba(226, 0, 57, 0.5) !important;
+    }
+
   </style>
 
 
@@ -1289,94 +1333,34 @@
 
 
     <div id="global-filters-container" class="glass-card p-4 rounded-2xl space-y-4">
-
-
       
-
-
-      <!-- Fila 1: Selector de Tiempo (Default: Últimos 12 Meses) -->
-
-
+      <!-- Fila 1: Selector de Tiempo y Selector de Moneda -->
       <div class="flex flex-wrap items-center justify-between gap-4">
-
-
-        <div class="flex items-center gap-2">
-
-
+        <div class="flex items-center gap-2 flex-wrap">
           <span class="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-
-
             <i class="fas fa-calendar-alt text-brand-red"></i>
-
-
             Período:
-
-
           </span>
-
-
           <div id="bg-ejercicios" class="flex flex-wrap gap-1.5">
-
-
             <button id="btn-ej-12m" onclick="setEjercicio('12m')" class="btn-filter active px-3 py-1 text-xs rounded-lg transition">Últimos 12 Meses (L12M)</button>
-
-
             <button id="btn-ej-2026-2027" onclick="setEjercicio('2026-2027')" class="btn-filter px-3 py-1 text-xs rounded-lg transition">Ej. 2026/2027</button>
-
-
             <button id="btn-ej-2025-2026" onclick="setEjercicio('2025-2026')" class="btn-filter px-3 py-1 text-xs rounded-lg transition">Ej. 2025/2026</button>
-
-
             <button id="btn-ej-2024-2025" onclick="setEjercicio('2024-2025')" class="btn-filter px-3 py-1 text-xs rounded-lg transition">Ej. 2024/2025</button>
-
-
             <button id="btn-ej-2023-2024" onclick="setEjercicio('2023-2024')" class="btn-filter px-3 py-1 text-xs rounded-lg transition">Ej. 2023/2024</button>
-
-
             <button id="btn-ej-all" onclick="setEjercicio('all')" class="btn-filter px-3 py-1 text-xs rounded-lg transition">Histórico Total (41 Meses)</button>
-
-
           </div>
-
-
         </div>
-
-
-
-
 
         <!-- Selector de Moneda -->
-
-
         <div class="flex items-center gap-2">
-
-
           <span class="text-xs font-semibold text-slate-700 dark:text-slate-300">Moneda:</span>
-
-
           <div id="bg-moneda" class="flex gap-1 bg-slate-200 dark:bg-slate-800 p-0.5 rounded-lg">
-
-
             <button id="btn-m-c" onclick="setMoneda('c')" class="btn-filter active px-3 py-1 text-xs rounded-md transition font-medium">Consolidado ($)</button>
-
-
             <button id="btn-m-p" onclick="setMoneda('p')" class="btn-filter px-3 py-1 text-xs rounded-md transition font-medium">Pesos Puro ($)</button>
-
-
             <button id="btn-m-d" onclick="setMoneda('d')" class="btn-filter px-3 py-1 text-xs rounded-md transition font-medium">Dólares (u$s)</button>
-
-
           </div>
-
-
         </div>
-
-
       </div>
-
-
-
-
 
       <!-- Fila 2: Selectores Multidimensionales de Línea y Negocio (Combinables) -->
       <div class="pt-3 border-t border-slate-200 dark:border-slate-800 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
@@ -1413,15 +1397,13 @@
 
       <!-- Leyenda Dinámica de Filtro Activo -->
       <div class="pt-2 border-t border-slate-100 dark:border-slate-800/60 flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 font-mono">
-        <div>Visualizando <span id="status-ej-label" class="font-bold text-slate-800 dark:text-slate-200">Últimos 12 Meses (L12M)</span> <span id="status-ej-sub" class="text-slate-400 dark:text-slate-500">(Agosto 2025 - Julio 2026)</span> <span id="status-filter-desc" class="ml-2 text-brand-red font-semibold"></span></div>
+        <div>Visualizando <span id="status-ej-label" class="font-bold text-slate-800 dark:text-slate-200">Últimos 12 Meses (L12M)</span> <span id="status-ej-sub" class="text-slate-400 dark:text-slate-500">(Agosto 2025 - Julio 2026)</span> <span id="status-filter-desc" class="ml-2 text-brand-red font-semibold">[ Todos los Productos • Todos los Segmentos ]</span></div>
         <div id="status-period-info">12 Meses computados • Cifras en $ Millones</div>
       </div>
 
     </div>
 
     <!-- ======================================================== -->
-
-
     <!-- TAB 1: RESUMEN EJECUTIVO (DASHBOARD)                     -->
 
 
@@ -2503,6 +2485,17 @@
     let FX = (DB.macro && DB.macro.FX) || [];
     let IPC_MONTHLY = (DB.macro && DB.macro.IPC_MONTHLY) || [];
 
+    // Calcular índice acumulado de precios (IPC)
+    let CUM_IPC = new Array(N).fill(1.0);
+    for (let i = 1; i < N; i++) {
+      CUM_IPC[i] = CUM_IPC[i - 1] * (1.0 + (IPC_MONTHLY[i] || 0) / 100.0);
+    }
+
+    function getIpcDeflator(fromIdx, targetIdx) {
+      if (!CUM_IPC[fromIdx] || CUM_IPC[fromIdx] === 0) return 1.0;
+      return CUM_IPC[targetIdx] / CUM_IPC[fromIdx];
+    }
+
     // 2. ESTADOS GLOBALES DE CONTROL
     let currentTab = 'dashboard';
     let currentEjercicioKey = '12m';
@@ -2512,7 +2505,7 @@
     let ctIpcAdjusted = false;
     let flujosIpcAdjusted = false;
     let chartCtSeriesMode = 'both';
-    let chartFlujosSeriesMode = 'primas';
+    let chartFlujosSeriesMode = 'all';
     let chartAsegSeriesMode = 'both';
 
     const EJERCICIOS = {
@@ -2552,20 +2545,8 @@
       return { start: Math.max(0, last - 11), end: last };
     }
 
-    function sliceArrayByEjercicio(arr) {
-      if (!arr || arr.length === 0) return [];
-      const { start, end } = getIndicesForEjercicio(currentEjercicioKey);
-      return arr.slice(start, end + 1);
-    }
-
-    function sliceCt12m(arr) {
-      if (!arr || arr.length === 0) return [];
-      const { start, end } = getCt12mIndices();
-      return arr.slice(start, end + 1);
-    }
-
     // 3. MOTOR DE AGREGACIÓN MULTIDIMENSIONAL
-    function getFilteredMetricSeries(metricKey) {
+    function getFilteredMetricSeries(metricKey, applyIpc = false, targetIpcIdx = null) {
       const res = new Array(N).fill(0);
       if (!DB.cube) return res;
 
@@ -2582,6 +2563,7 @@
       const usePesos = (currentCurrency === 'c' || currentCurrency === 'p');
       const useUSD = (currentCurrency === 'c' || currentCurrency === 'd');
       const pesificarUSD = (currentCurrency === 'c');
+      const targetIdx = (targetIpcIdx !== null && targetIpcIdx !== undefined) ? targetIpcIdx : (N - 1);
 
       for (let i = 0; i < N; i++) {
         let sum = 0;
@@ -2643,6 +2625,11 @@
           });
         });
 
+        if (applyIpc && !['aseg_act', 'aseg_pas'].includes(metricKey)) {
+          const factor = getIpcDeflator(i, targetIdx);
+          sum = sum * factor;
+        }
+
         res[i] = sum;
       }
 
@@ -2669,17 +2656,25 @@
       return (val * 100).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%';
     }
 
-    function formatVarBadge(currVal, prevVal, isMonthly = false, isInflationAdjusted = false) {
+    function formatVarBadge(currVal, prevVal, isMonthly = false, isInflationAdjusted = false, currIdx = 0, prevIdx = 0) {
       if (prevVal === 0 || isNaN(prevVal) || isNaN(currVal)) {
         return `<span class="text-slate-400 font-mono text-[11px]">N/D</span>`;
       }
-      const pct = (currVal - prevVal) / Math.abs(prevVal);
+      
+      let effectivePrev = prevVal;
+      if (isInflationAdjusted && currIdx > prevIdx && CUM_IPC[prevIdx] && CUM_IPC[currIdx]) {
+        const ipcFactor = CUM_IPC[currIdx] / CUM_IPC[prevIdx];
+        effectivePrev = prevVal * ipcFactor;
+      }
+
+      const pct = (currVal - effectivePrev) / Math.abs(effectivePrev);
       const isPos = pct >= 0;
       const colorClass = isPos ? 'text-[#047857] dark:text-[#3AC792]' : 'text-[#DC2626] dark:text-[#FF4C60]';
       const icon = isPos ? 'fa-arrow-up' : 'fa-arrow-down';
       const sign = isPos ? '+' : '';
       const absVal = Math.abs(pct * 100).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + '%';
-      return `<span class="${colorClass} font-mono inline-flex items-center gap-1 font-semibold text-[11px]"><i class="fas ${icon} text-[8px]"></i>${sign}${absVal}</span>`;
+      const tag = isInflationAdjusted ? ' <span class="text-[9px] font-normal opacity-80">(Real)</span>' : '';
+      return `<span class="${colorClass} font-mono inline-flex items-center gap-1 font-semibold text-[11px]"><i class="fas ${icon} text-[8px]"></i>${sign}${absVal}${tag}</span>`;
     }
 
     // 5. PESTAÑAS (TABS)
@@ -2761,40 +2756,45 @@
       });
     }
 
-    // 7. CONTROLES Y FILTROS INTERACTIVOS
+    // 7. CONTROLES Y FILTROS INTERACTIVOS CON VISUAL ACTIVATION
     function setEjercicio(ejKey) {
       currentEjercicioKey = ejKey;
-      document.querySelectorAll('#bg-ejercicios button').forEach(b => b.classList.remove('active'));
-      const btn = document.getElementById('btn-ej-' + ejKey);
-      if (btn) btn.classList.add('active');
+      ['12m', '2026-2027', '2025-2026', '2024-2025', '2023-2024', 'all'].forEach(k => {
+        const btn = document.getElementById('btn-ej-' + k);
+        if (btn) btn.classList.toggle('active', k === ejKey);
+      });
 
       const ejInfo = EJERCICIOS[ejKey];
       const { start, end } = getIndicesForEjercicio(ejKey);
       const count = (end - start + 1);
 
-      document.getElementById('status-ej-label').textContent = ejInfo.label;
-      document.getElementById('status-ej-sub').textContent = `(${DATES[start]} a ${DATES[end]})`;
-      document.getElementById('status-period-info').textContent = `${count} Meses computados • Cifras en $ Millones`;
+      const lbl = document.getElementById('status-ej-label');
+      const sub = document.getElementById('status-ej-sub');
+      const info = document.getElementById('status-period-info');
+      if (lbl) lbl.textContent = ejInfo.label;
+      if (sub) sub.textContent = `(${DATES[start]} a ${DATES[end]})`;
+      if (info) info.textContent = `${count} Meses computados • Cifras en $ Millones`;
 
       renderAllChartsAndKPIs();
     }
 
     function setMoneda(mKey) {
       currentCurrency = mKey;
-      document.querySelectorAll('#bg-moneda button').forEach(b => b.classList.remove('active'));
-      const btn = document.getElementById('btn-m-' + mKey);
-      if (btn) btn.classList.add('active');
+      ['c', 'p', 'd'].forEach(k => {
+        const btn = document.getElementById('btn-m-' + k);
+        if (btn) btn.classList.toggle('active', k === mKey);
+      });
 
       renderAllChartsAndKPIs();
     }
 
     function selectProd(prodKey) {
       selectedProdKey = prodKey;
-      document.querySelectorAll('#global-filters-container button[id^="t-prod-"], #global-filters-container #t-ri, #global-filters-container #t-rc, #global-filters-container #t-rvp').forEach(b => b.classList.remove('active'));
-      
-      const btnMap = { 'all': 't-prod-all', 'ri': 't-ri', 'rc': 't-rc', 'rvp': 't-rvp' };
-      const btn = document.getElementById(btnMap[prodKey]);
-      if (btn) btn.classList.add('active');
+      ['all', 'ri', 'rc', 'rvp'].forEach(k => {
+        const btnMap = { 'all': 't-prod-all', 'ri': 't-ri', 'rc': 't-rc', 'rvp': 't-rvp' };
+        const btn = document.getElementById(btnMap[k]);
+        if (btn) btn.classList.toggle('active', k === prodKey);
+      });
 
       // Regla actuarial: Si es RVP y ART -> Fijar Negocio Propio y deshabilitar Empleados/Vinculados
       const btnEmp = document.getElementById('t-emp');
@@ -2803,8 +2803,11 @@
 
       if (prodKey === 'rvp') {
         selectedSegKey = 'neg';
-        document.querySelectorAll('#global-filters-container button[id^="t-seg-"], #global-filters-container #t-neg, #global-filters-container #t-emp, #global-filters-container #t-vin').forEach(b => b.classList.remove('active'));
-        document.getElementById('t-neg')?.classList.add('active');
+        ['all', 'neg', 'emp', 'vin'].forEach(k => {
+          const btnMap = { 'all': 't-seg-all', 'neg': 't-neg', 'emp': 't-emp', 'vin': 't-vin' };
+          const btn = document.getElementById(btnMap[k]);
+          if (btn) btn.classList.toggle('active', k === 'neg');
+        });
         
         if (btnEmp) { btnEmp.disabled = true; btnEmp.classList.add('opacity-40', 'cursor-not-allowed'); }
         if (btnVin) { btnVin.disabled = true; btnVin.classList.add('opacity-40', 'cursor-not-allowed'); }
@@ -2822,11 +2825,11 @@
     function selectDet(segKey) {
       if (selectedProdKey === 'rvp' && segKey !== 'neg') return;
       selectedSegKey = segKey;
-      document.querySelectorAll('#global-filters-container button[id^="t-seg-"], #global-filters-container #t-neg, #global-filters-container #t-emp, #global-filters-container #t-vin').forEach(b => b.classList.remove('active'));
-      
-      const btnMap = { 'all': 't-seg-all', 'neg': 't-neg', 'emp': 't-emp', 'vin': 't-vin' };
-      const btn = document.getElementById(btnMap[segKey]);
-      if (btn) btn.classList.add('active');
+      ['all', 'neg', 'emp', 'vin'].forEach(k => {
+        const btnMap = { 'all': 't-seg-all', 'neg': 't-neg', 'emp': 't-emp', 'vin': 't-vin' };
+        const btn = document.getElementById(btnMap[k]);
+        if (btn) btn.classList.toggle('active', k === segKey);
+      });
 
       updateFilterDescription();
       renderAllChartsAndKPIs();
@@ -2845,12 +2848,47 @@
       }
     }
 
-    // Toggle handlers para botones secundarios
-    function setCtChartSeries(mode) { chartCtSeriesMode = mode; renderAllChartsAndKPIs(); }
-    function setCtChartIpc(adj) { ctIpcAdjusted = adj; renderAllChartsAndKPIs(); }
-    function setFlujosChartSeries(mode) { chartFlujosSeriesMode = mode; renderAllChartsAndKPIs(); }
-    function setFlujosChartIpc(adj) { flujosIpcAdjusted = adj; renderAllChartsAndKPIs(); }
-    function setAsegChartSeries(mode) { chartAsegSeriesMode = mode; renderAllChartsAndKPIs(); }
+    // Handlers de Control de Gráficos y Ajuste IPC con actualización visual activa
+    function setCtChartIpc(adj) {
+      ctIpcAdjusted = adj;
+      const bNom = document.getElementById('btn-ct-ipc-nom');
+      const bReal = document.getElementById('btn-ct-ipc-real');
+      if (bNom) bNom.classList.toggle('active', !adj);
+      if (bReal) bReal.classList.toggle('active', adj);
+      renderAllChartsAndKPIs();
+    }
+
+    function setFlujosChartIpc(adj) {
+      flujosIpcAdjusted = adj;
+      const bNom = document.getElementById('btn-fl-ipc-nom');
+      const bReal = document.getElementById('btn-fl-ipc-real');
+      if (bNom) bNom.classList.toggle('active', !adj);
+      if (bReal) bReal.classList.toggle('active', adj);
+      renderAllChartsAndKPIs();
+    }
+
+    function setCtChartSeries(mode) {
+      chartCtSeriesMode = mode;
+      ['all', 'act', 'pas'].forEach(m => {
+        const b = document.getElementById('btn-ct-chart-' + m);
+        if (b) b.classList.toggle('active', m === mode);
+      });
+      renderAllChartsAndKPIs();
+    }
+
+    function setFlujosChartSeries(mode) {
+      chartFlujosSeriesMode = mode;
+      ['all', 'primas', 'rescates', 'rentas'].forEach(m => {
+        const b = document.getElementById('btn-fl-chart-' + m);
+        if (b) b.classList.toggle('active', m === mode);
+      });
+      renderAllChartsAndKPIs();
+    }
+
+    function setAsegChartSeries(mode) {
+      chartAsegSeriesMode = mode;
+      renderAllChartsAndKPIs();
+    }
 
     // 8. RENDERIZADO DE TABLAS Y CUADROS
     function renderTables() {
@@ -2905,24 +2943,39 @@
       const datesSlice = DATES.slice(start, end + 1);
       const ctDates12m = DATES.slice(ct12mIdx.start, ct12mIdx.end + 1);
 
-      const fullTotPrimas = getFilteredMetricSeries('primas');
-      const fullTotRentas = getFilteredMetricSeries('rentas');
-      const fullTotRescates = getFilteredMetricSeries('rescates');
+      // Series Nominales
+      const fullTotPrimasNom = getFilteredMetricSeries('primas', false);
+      const fullTotRentasNom = getFilteredMetricSeries('rentas', false);
+      const fullTotRescatesNom = getFilteredMetricSeries('rescates', false);
+      const fullTotPasesNom = getFilteredMetricSeries('pase_pasividad', false);
 
-      const fullTotCtAct = getFilteredMetricSeries('ct_act');
-      const fullTotCtPas = getFilteredMetricSeries('ct_pas');
-      const fullTotCtGlobal = getFilteredMetricSeries('ct');
+      const fullTotCtActNom = getFilteredMetricSeries('ct_act', false);
+      const fullTotCtPasNom = getFilteredMetricSeries('ct_pas', false);
+      const fullTotCtGlobalNom = getFilteredMetricSeries('ct', false);
 
+      // Series Ajustadas por IPC (Deflactadas a moneda de cierre)
+      const fullTotPrimasIpc = getFilteredMetricSeries('primas', true, end);
+      const fullTotRentasIpc = getFilteredMetricSeries('rentas', true, end);
+      const fullTotRescatesIpc = getFilteredMetricSeries('rescates', true, end);
+      const fullTotPasesIpc = getFilteredMetricSeries('pase_pasividad', true, end);
+
+      const fullTotCtActIpc = getFilteredMetricSeries('ct_act', true, ct12mIdx.end);
+      const fullTotCtPasIpc = getFilteredMetricSeries('ct_pas', true, ct12mIdx.end);
+      const fullTotCtGlobalIpc = getFilteredMetricSeries('ct', true, ct12mIdx.end);
+
+      // Series de asegurados (demográficas)
       const fullAsegAct = getFilteredMetricSeries('aseg_act');
       const fullAsegPas = getFilteredMetricSeries('aseg_pas');
       const fullTotAsegurados = fullAsegAct.map((v, i) => v + fullAsegPas[i]);
 
       // 1. KPIs de Compromiso Técnico
-      const ctCurr = fullTotCtGlobal[end] || 0;
-      const ctPrevYear = (end >= 12) ? fullTotCtGlobal[end - 12] : (start > 0 ? fullTotCtGlobal[start - 1] : ctCurr);
-      const ctPrevMonth = (end > 0) ? fullTotCtGlobal[end - 1] : ctCurr;
-      const ctActFinal = fullTotCtAct[end] || 0;
-      const ctPasFinal = fullTotCtPas[end] || 0;
+      const ctCurr = fullTotCtGlobalNom[end] || 0;
+      const prevYearIdx = (end >= 12) ? (end - 12) : 0;
+      const prevMonthIdx = (end > 0) ? (end - 1) : 0;
+      const ctPrevYear = (end >= 12) ? fullTotCtGlobalNom[end - 12] : (start > 0 ? fullTotCtGlobalNom[start - 1] : ctCurr);
+      const ctPrevMonth = (end > 0) ? fullTotCtGlobalNom[end - 1] : ctCurr;
+      const ctActFinal = fullTotCtActNom[end] || 0;
+      const ctPasFinal = fullTotCtPasNom[end] || 0;
 
       const ctGrid = document.getElementById('kpi-ct-grid');
       if (ctGrid) {
@@ -2934,8 +2987,8 @@
             </div>
             <div class="text-xl font-bold font-mono text-slate-900 dark:text-white">${formatInMillions(ctCurr)}</div>
             <div class="flex items-center justify-between text-[11px] pt-1 border-t border-slate-100 dark:border-slate-800/40">
-              <span class="text-slate-500">Var. Interanual: ${formatVarBadge(ctCurr, ctPrevYear, false, ctIpcAdjusted)}</span>
-              <span class="text-slate-500">Mensual: ${formatVarBadge(ctCurr, ctPrevMonth, true, ctIpcAdjusted)}</span>
+              <span class="text-slate-500">Var. Interanual: ${formatVarBadge(ctCurr, ctPrevYear, false, ctIpcAdjusted, end, prevYearIdx)}</span>
+              <span class="text-slate-500">Mensual: ${formatVarBadge(ctCurr, ctPrevMonth, true, ctIpcAdjusted, end, prevMonthIdx)}</span>
             </div>
           </div>
 
@@ -2966,13 +3019,17 @@
       }
 
       // 2. KPIs de Flujos
+      const activePrimas = flujosIpcAdjusted ? fullTotPrimasIpc : fullTotPrimasNom;
+      const activeRentas = flujosIpcAdjusted ? fullTotRentasIpc : fullTotRentasNom;
+      const activeRescates = flujosIpcAdjusted ? fullTotRescatesIpc : fullTotRescatesNom;
+      const activePases = flujosIpcAdjusted ? fullTotPasesIpc : fullTotPasesNom;
+
       let sumPrimas = 0, sumRentas = 0, sumRescates = 0, sumPases = 0;
-      const fullTotPases = getFilteredMetricSeries('pase_pasividad');
       for (let i = start; i <= end; i++) {
-        sumPrimas += fullTotPrimas[i] || 0;
-        sumRentas += fullTotRentas[i] || 0;
-        sumRescates += fullTotRescates[i] || 0;
-        sumPases += fullTotPases[i] || 0;
+        sumPrimas += activePrimas[i] || 0;
+        sumRentas += activeRentas[i] || 0;
+        sumRescates += activeRescates[i] || 0;
+        sumPases += activePases[i] || 0;
       }
 
       let prevPrimas = 0, prevRentas = 0, prevRescates = 0;
@@ -2980,9 +3037,9 @@
       const prevEnd = Math.max(0, start - 1);
       if (start > 0) {
         for (let i = prevStart; i <= prevEnd; i++) {
-          prevPrimas += fullTotPrimas[i] || 0;
-          prevRentas += fullTotRentas[i] || 0;
-          prevRescates += fullTotRescates[i] || 0;
+          prevPrimas += activePrimas[i] || 0;
+          prevRentas += activeRentas[i] || 0;
+          prevRescates += activeRescates[i] || 0;
         }
       }
 
@@ -2994,17 +3051,17 @@
           <div class="glass-card p-3 rounded-xl space-y-1">
             <div class="text-[11px] text-slate-500 dark:text-slate-400">Primas Emitidas</div>
             <div class="text-sm font-bold font-mono text-[#047857] dark:text-[#3AC792]">${formatInMillions(sumPrimas)}</div>
-            <div class="text-[10px]">${formatVarBadge(sumPrimas, prevPrimas, false, flujosIpcAdjusted)}</div>
+            <div class="text-[10px]">${formatVarBadge(sumPrimas, prevPrimas, false, flujosIpcAdjusted, end, prevEnd)}</div>
           </div>
           <div class="glass-card p-3 rounded-xl space-y-1">
             <div class="text-[11px] text-slate-500 dark:text-slate-400">Rentas Pagadas</div>
             <div class="text-sm font-bold font-mono text-[#1D4ED8] dark:text-[#4183CA]">${formatInMillions(sumRentas)}</div>
-            <div class="text-[10px]">${formatVarBadge(sumRentas, prevRentas, false, flujosIpcAdjusted)}</div>
+            <div class="text-[10px]">${formatVarBadge(sumRentas, prevRentas, false, flujosIpcAdjusted, end, prevEnd)}</div>
           </div>
           <div class="glass-card p-3 rounded-xl space-y-1">
             <div class="text-[11px] text-slate-500 dark:text-slate-400">Rescates Pagados</div>
             <div class="text-sm font-bold font-mono text-[#DC2626] dark:text-[#FF4C60]">${formatInMillions(sumRescates)}</div>
-            <div class="text-[10px]">${formatVarBadge(sumRescates, prevRescates, false, flujosIpcAdjusted)}</div>
+            <div class="text-[10px]">${formatVarBadge(sumRescates, prevRescates, false, flujosIpcAdjusted, end, prevEnd)}</div>
           </div>
           <div class="glass-card p-3 rounded-xl space-y-1">
             <div class="text-[11px] text-slate-500 dark:text-slate-400">Ratio Rescate / CT</div>
@@ -3039,8 +3096,8 @@
             </div>
             <div class="text-xl font-bold font-mono text-slate-900 dark:text-white">${formatNumber(asegCurr)}</div>
             <div class="flex items-center justify-between text-[11px] pt-1 border-t border-slate-100 dark:border-slate-800/40 text-slate-500">
-              <span>Var. Interanual: ${formatVarBadge(asegCurr, asegPrevYear, false)}</span>
-              <span>Mensual: ${formatVarBadge(asegCurr, asegPrevMonth, true)}</span>
+              <span>Var. Interanual: ${formatVarBadge(asegCurr, asegPrevYear, false, false, end, prevYearIdx)}</span>
+              <span>Mensual: ${formatVarBadge(asegCurr, asegPrevMonth, true, false, end, prevMonthIdx)}</span>
             </div>
           </div>
 
@@ -3070,8 +3127,12 @@
         `;
       }
 
-      // Renderizar Gráficos Principales y Tablas
-      renderCharts(start, end, ct12mIdx, fullTotCtAct, fullTotCtPas, fullTotCtGlobal, fullTotPrimas, fullTotRentas, fullTotRescates, fullAsegAct, fullAsegPas, fullTotAsegurados);
+      // Renderizar Gráficos Principales y Tablas con las series activas (Nominal o IPC)
+      const ctActChartSeries = ctIpcAdjusted ? fullTotCtActIpc : fullTotCtActNom;
+      const ctPasChartSeries = ctIpcAdjusted ? fullTotCtPasIpc : fullTotCtPasNom;
+      const ctGlobalChartSeries = ctIpcAdjusted ? fullTotCtGlobalIpc : fullTotCtGlobalNom;
+
+      renderCharts(start, end, ct12mIdx, ctActChartSeries, ctPasChartSeries, ctGlobalChartSeries, activePrimas, activeRentas, activeRescates, fullAsegAct, fullAsegPas, fullTotAsegurados);
       renderSeriesTable();
     }
 
@@ -3100,6 +3161,8 @@
           datasets.push({ label: 'Total Consolidado', data: ctTot12m, borderColor: '#E20039', borderDash: [4, 4], fill: false, tension: 0.35, borderWidth: 2.5 });
         }
 
+        const ipcLabel = ctIpcAdjusted ? ` (Ajustado IPC a precios de ${DATES[ct12mIdx.end]})` : ' (Nominal)';
+
         window.chartCtMain = new Chart(ctxCt, {
           type: 'line',
           data: { labels: ctDates12m, datasets },
@@ -3108,7 +3171,7 @@
             interaction: { mode: 'index', intersect: false },
             plugins: {
               legend: { position: 'top', labels: { color: isDark ? '#94A3B8' : '#475569', font: { family: 'Sora', size: 11 } } },
-              tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: $ ${ctx.raw.toLocaleString('es-AR', { minimumFractionDigits: 2 })} M` } }
+              tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: $ ${ctx.raw.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} M${ipcLabel}` } }
             },
             scales: {
               x: { grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }, ticks: { color: isDark ? '#94A3B8' : '#475569' } },
@@ -3137,12 +3200,17 @@
           datasets.push({ label: 'Rescates Pagados', data: resSlice, borderColor: '#E20039', backgroundColor: 'rgba(226, 0, 57, 0.15)', tension: 0.35, borderWidth: 2 });
         }
 
+        const flujosIpcLabel = flujosIpcAdjusted ? ` (Ajustado IPC a precios de ${DATES[end]})` : ' (Nominal)';
+
         window.chartFlujosMain = new Chart(ctxFlujos, {
           type: 'line',
           data: { labels: datesSlice, datasets },
           options: {
             responsive: true, maintainAspectRatio: false,
-            plugins: { legend: { position: 'top', labels: { color: isDark ? '#94A3B8' : '#475569', font: { family: 'Sora', size: 11 } } } },
+            plugins: {
+              legend: { position: 'top', labels: { color: isDark ? '#94A3B8' : '#475569', font: { family: 'Sora', size: 11 } } },
+              tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: $ ${ctx.raw.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} M${flujosIpcLabel}` } }
+            },
             scales: {
               x: { grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }, ticks: { color: isDark ? '#94A3B8' : '#475569' } },
               y: { grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }, ticks: { color: isDark ? '#94A3B8' : '#475569', callback: v => `$ ${v.toLocaleString('es-AR')} M` } }
@@ -3250,12 +3318,12 @@
       const tbody = document.getElementById('tbody-master-table');
       if (!tbody) return;
 
-      const fullTotPrimas = getFilteredMetricSeries('primas');
-      const fullTotRentas = getFilteredMetricSeries('rentas');
-      const fullTotRescates = getFilteredMetricSeries('rescates');
-      const fullTotCtAct = getFilteredMetricSeries('ct_act');
-      const fullTotCtPas = getFilteredMetricSeries('ct_pas');
-      const fullTotCtGlobal = getFilteredMetricSeries('ct');
+      const fullTotPrimas = getFilteredMetricSeries('primas', false);
+      const fullTotRentas = getFilteredMetricSeries('rentas', false);
+      const fullTotRescates = getFilteredMetricSeries('rescates', false);
+      const fullTotCtAct = getFilteredMetricSeries('ct_act', false);
+      const fullTotCtPas = getFilteredMetricSeries('ct_pas', false);
+      const fullTotCtGlobal = getFilteredMetricSeries('ct', false);
       const fullAsegAct = getFilteredMetricSeries('aseg_act');
       const fullAsegPas = getFilteredMetricSeries('aseg_pas');
 
@@ -3302,12 +3370,12 @@
       const rows = [];
       rows.push(['Fecha', 'Compromiso Tecnico Total', 'CT Activos (Ahorro)', 'CT Pasivos (Rentas)', 'Primas Emitidas', 'Rentas Pagadas', 'Rescates', 'Asegurados Activos', 'Beneficiarios Pasivos', 'Tipo de Cambio BNA', 'Rentabilidad Pesos', 'Rentabilidad USD']);
       
-      const fullTotPrimas = getFilteredMetricSeries('primas');
-      const fullTotRentas = getFilteredMetricSeries('rentas');
-      const fullTotRescates = getFilteredMetricSeries('rescates');
-      const fullTotCtAct = getFilteredMetricSeries('ct_act');
-      const fullTotCtPas = getFilteredMetricSeries('ct_pas');
-      const fullTotCtGlobal = getFilteredMetricSeries('ct');
+      const fullTotPrimas = getFilteredMetricSeries('primas', false);
+      const fullTotRentas = getFilteredMetricSeries('rentas', false);
+      const fullTotRescates = getFilteredMetricSeries('rescates', false);
+      const fullTotCtAct = getFilteredMetricSeries('ct_act', false);
+      const fullTotCtPas = getFilteredMetricSeries('ct_pas', false);
+      const fullTotCtGlobal = getFilteredMetricSeries('ct', false);
       const fullAsegAct = getFilteredMetricSeries('aseg_act');
       const fullAsegPas = getFilteredMetricSeries('aseg_pas');
       const rentP = DB.cube?.individual?.rentabilidad?.pesos || [];
@@ -3362,6 +3430,10 @@
             N = DATES.length;
             FX = (json.macro && json.macro.FX) || [];
             IPC_MONTHLY = (json.macro && json.macro.IPC_MONTHLY) || [];
+            CUM_IPC = new Array(N).fill(1.0);
+            for (let i = 1; i < N; i++) {
+              CUM_IPC[i] = CUM_IPC[i - 1] * (1.0 + (IPC_MONTHLY[i] || 0) / 100.0);
+            }
           }
         }
       } catch (err) {
@@ -3387,6 +3459,8 @@
       setMoneda('c');
       selectProd('all');
       selectDet('all');
+      setCtChartIpc(false);
+      setFlujosChartIpc(false);
       renderTables();
       renderAllChartsAndKPIs();
       loadExternalDatasetAndRender();
