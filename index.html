@@ -2494,7 +2494,6 @@
     let flujosIpcAdjusted = false;
     let chartCtSeriesMode = 'both';
     let chartFlujosSeriesMode = 'all';
-    let chartAsegSeriesMode = 'both';
 
     const EJERCICIOS = {
       '12m': { label: 'Últimos 12 Meses (L12M)', subtitle: 'Agosto 2025 - Julio 2026', count: 12 },
@@ -2533,20 +2532,25 @@
       return { start: Math.max(0, last - 11), end: last };
     }
 
-    // 3. MOTOR DE AGREGACIÓN MULTIDIMENSIONAL
-    function getFilteredMetricSeries(metricKey, applyIpc = false, targetIpcIdx = null) {
+    // 3. MOTOR DE AGREGACIÓN MULTIDIMENSIONAL POR PRODUCTO O GLOBAL
+    function getProductMetricSeries(metricKey, prodKey, segKey = 'all', applyIpc = false, targetIpcIdx = null) {
       const res = new Array(N).fill(0);
       if (!DB.cube) return res;
 
-      const prodMap = { 'all': ['individual', 'colectivo', 'rvp_art'], 'ri': ['individual'], 'rc': ['colectivo'], 'rvp': ['rvp_art'] };
       const segMap = { 'all': ['negocio', 'empleados', 'vinculados'], 'neg': ['negocio'], 'emp': ['empleados'], 'vin': ['vinculados'] };
+      let segs = segMap[segKey] || ['negocio', 'empleados', 'vinculados'];
 
-      const prods = prodMap[selectedProdKey] || ['individual', 'colectivo', 'rvp_art'];
-      let segs = segMap[selectedSegKey] || ['negocio', 'empleados', 'vinculados'];
-
-      if (selectedProdKey === 'rvp') {
+      if (prodKey === 'rvp_art' || prodKey === 'rvp') {
+        prodKey = 'rvp_art';
         segs = ['negocio'];
+      } else if (prodKey === 'ri') {
+        prodKey = 'individual';
+      } else if (prodKey === 'rc') {
+        prodKey = 'colectivo';
       }
+
+      const prodCube = DB.cube[prodKey];
+      if (!prodCube) return res;
 
       const usePesos = (currentCurrency === 'c' || currentCurrency === 'p');
       const useUSD = (currentCurrency === 'c' || currentCurrency === 'd');
@@ -2557,60 +2561,55 @@
         let sum = 0;
         const fx_i = FX[i] || 1.0;
 
-        prods.forEach(prod => {
-          const prodCube = DB.cube[prod];
-          if (!prodCube) return;
+        segs.forEach(seg => {
+          const segCube = prodCube[seg];
+          if (!segCube) return;
 
-          segs.forEach(seg => {
-            const segCube = prodCube[seg];
-            if (!segCube) return;
+          let pArr = [];
+          let dArr = [];
 
-            let pArr = [];
-            let dArr = [];
+          if (metricKey === 'ct' || metricKey === 'ct_total') {
+            pArr = (segCube.pesos?.ct_activos || []).map((v, idx) => v + (segCube.pesos?.ct_pasivos?.[idx] || 0));
+            dArr = (segCube.dolares?.ct_activos || []).map((v, idx) => v + (segCube.dolares?.ct_pasivos?.[idx] || 0));
+          } else if (metricKey === 'ct_act') {
+            pArr = segCube.pesos?.ct_activos || [];
+            dArr = segCube.dolares?.ct_activos || [];
+          } else if (metricKey === 'ct_pas') {
+            pArr = segCube.pesos?.ct_pasivos || [];
+            dArr = segCube.dolares?.ct_pasivos || [];
+          } else if (metricKey === 'primas') {
+            pArr = segCube.pesos?.primas || [];
+            dArr = segCube.dolares?.primas || [];
+          } else if (metricKey === 'rentas') {
+            pArr = segCube.pesos?.rentas || [];
+            dArr = segCube.dolares?.rentas || [];
+          } else if (metricKey === 'rescates') {
+            pArr = (segCube.pesos?.rescates || []).map(v => Math.abs(v));
+            dArr = (segCube.dolares?.rescates || []).map(v => Math.abs(v));
+          } else if (metricKey === 'pase_pasividad') {
+            pArr = segCube.pesos?.pase_pasividad || [];
+            dArr = segCube.dolares?.pase_pasividad || [];
+          } else if (metricKey === 'aseg_act') {
+            pArr = segCube.pesos?.cert_act || segCube.pesos?.polizas_act || segCube.pesos?.polizas || [];
+            dArr = segCube.dolares?.cert_act || segCube.dolares?.polizas_act || segCube.dolares?.polizas || [];
+          } else if (metricKey === 'aseg_pas') {
+            pArr = segCube.pesos?.cert_pas || segCube.pesos?.polizas_pas || [];
+            dArr = segCube.dolares?.cert_pas || segCube.dolares?.polizas_pas || [];
+          }
 
-            if (metricKey === 'ct' || metricKey === 'ct_total') {
-              pArr = (segCube.pesos?.ct_activos || []).map((v, idx) => v + (segCube.pesos?.ct_pasivos?.[idx] || 0));
-              dArr = (segCube.dolares?.ct_activos || []).map((v, idx) => v + (segCube.dolares?.ct_pasivos?.[idx] || 0));
-            } else if (metricKey === 'ct_act') {
-              pArr = segCube.pesos?.ct_activos || [];
-              dArr = segCube.dolares?.ct_activos || [];
-            } else if (metricKey === 'ct_pas') {
-              pArr = segCube.pesos?.ct_pasivos || [];
-              dArr = segCube.dolares?.ct_pasivos || [];
-            } else if (metricKey === 'primas') {
-              pArr = segCube.pesos?.primas || [];
-              dArr = segCube.dolares?.primas || [];
-            } else if (metricKey === 'rentas') {
-              pArr = segCube.pesos?.rentas || [];
-              dArr = segCube.dolares?.rentas || [];
-            } else if (metricKey === 'rescates') {
-              pArr = (segCube.pesos?.rescates || []).map(v => Math.abs(v));
-              dArr = (segCube.dolares?.rescates || []).map(v => Math.abs(v));
-            } else if (metricKey === 'pase_pasividad') {
-              pArr = segCube.pesos?.pase_pasividad || [];
-              dArr = segCube.dolares?.pase_pasividad || [];
-            } else if (metricKey === 'aseg_act') {
-              pArr = segCube.pesos?.cert_act || segCube.pesos?.polizas_act || segCube.pesos?.polizas || [];
-              dArr = segCube.dolares?.cert_act || segCube.dolares?.polizas_act || segCube.dolares?.polizas || [];
-            } else if (metricKey === 'aseg_pas') {
-              pArr = segCube.pesos?.cert_pas || segCube.pesos?.polizas_pas || [];
-              dArr = segCube.dolares?.cert_pas || segCube.dolares?.polizas_pas || [];
+          const pVal = pArr[i] || 0;
+          const dVal = dArr[i] || 0;
+
+          const isDemographic = ['aseg_act', 'aseg_pas'].includes(metricKey);
+
+          if (isDemographic) {
+            sum += (pVal + dVal);
+          } else {
+            if (usePesos) sum += pVal;
+            if (useUSD) {
+              sum += (pesificarUSD ? (dVal * fx_i) : dVal);
             }
-
-            const pVal = pArr[i] || 0;
-            const dVal = dArr[i] || 0;
-
-            const isDemographic = ['aseg_act', 'aseg_pas'].includes(metricKey);
-
-            if (isDemographic) {
-              sum += (pVal + dVal);
-            } else {
-              if (usePesos) sum += pVal;
-              if (useUSD) {
-                sum += (pesificarUSD ? (dVal * fx_i) : dVal);
-              }
-            }
-          });
+          }
         });
 
         if (applyIpc && !['aseg_act', 'aseg_pas'].includes(metricKey)) {
@@ -2620,6 +2619,23 @@
 
         res[i] = sum;
       }
+
+      return res;
+    }
+
+    function getFilteredMetricSeries(metricKey, applyIpc = false, targetIpcIdx = null) {
+      const res = new Array(N).fill(0);
+      if (!DB.cube) return res;
+
+      const prodMap = { 'all': ['individual', 'colectivo', 'rvp_art'], 'ri': ['individual'], 'rc': ['colectivo'], 'rvp': ['rvp_art'] };
+      const prods = prodMap[selectedProdKey] || ['individual', 'colectivo', 'rvp_art'];
+
+      prods.forEach(prod => {
+        const pSeries = getProductMetricSeries(metricKey, prod, selectedSegKey, applyIpc, targetIpcIdx);
+        for (let i = 0; i < N; i++) {
+          res[i] += pSeries[i];
+        }
+      });
 
       return res;
     }
@@ -2761,7 +2777,7 @@
       const info = document.getElementById('status-period-info');
       if (lbl) lbl.textContent = ejInfo.label;
       if (sub) sub.textContent = `(${DATES[start]} a ${DATES[end]})`;
-      if (info) info.textContent = `${count} Meses computados • Cifras en $ Millones`;
+      if (info) info.textContent = `${count} Meses computados • Cifras en ${currentCurrency === 'd' ? 'u$s' : '$'} Millones`;
 
       renderAllChartsAndKPIs();
     }
@@ -2772,6 +2788,11 @@
         const btn = document.getElementById('btn-m-' + k);
         if (btn) btn.classList.toggle('active', k === mKey);
       });
+
+      const info = document.getElementById('status-period-info');
+      const { start, end } = getIndicesForEjercicio(currentEjercicioKey);
+      const count = (end - start + 1);
+      if (info) info.textContent = `${count} Meses computados • Cifras en ${currentCurrency === 'd' ? 'u$s' : '$'} Millones`;
 
       renderAllChartsAndKPIs();
     }
@@ -2873,12 +2894,7 @@
       renderAllChartsAndKPIs();
     }
 
-    function setAsegChartSeries(mode) {
-      chartAsegSeriesMode = mode;
-      renderAllChartsAndKPIs();
-    }
-
-    // 8. RENDERIZADO DE TABLAS Y CUADROS
+    // 8. RENDERIZADO DE TABLAS Y CUADROS (TAB 3)
     function renderTables() {
       const rPData = DB.tables?.rent_pesos || [];
       const rDData = DB.tables?.rent_dolares || [];
@@ -2928,9 +2944,6 @@
       const ct12mIdx = getCt12mIndices();
       const count = (end - start + 1);
 
-      const datesSlice = DATES.slice(start, end + 1);
-      const ctDates12m = DATES.slice(ct12mIdx.start, ct12mIdx.end + 1);
-
       // Series Nominales
       const fullTotPrimasNom = getFilteredMetricSeries('primas', false);
       const fullTotRentasNom = getFilteredMetricSeries('rentas', false);
@@ -2941,7 +2954,7 @@
       const fullTotCtPasNom = getFilteredMetricSeries('ct_pas', false);
       const fullTotCtGlobalNom = getFilteredMetricSeries('ct', false);
 
-      // Series Ajustadas por IPC (Deflactadas a moneda de cierre)
+      // Series Ajustadas por IPC
       const fullTotPrimasIpc = getFilteredMetricSeries('primas', true, end);
       const fullTotRentasIpc = getFilteredMetricSeries('rentas', true, end);
       const fullTotRescatesIpc = getFilteredMetricSeries('rescates', true, end);
@@ -3021,9 +3034,11 @@
       }
 
       let prevPrimas = 0, prevRentas = 0, prevRescates = 0;
-      const prevStart = Math.max(0, start - count);
-      const prevEnd = Math.max(0, start - 1);
-      if (start > 0) {
+      let hasValidPrev = false;
+      const prevStart = start - count;
+      const prevEnd = start - 1;
+      if (prevStart >= 0) {
+        hasValidPrev = true;
         for (let i = prevStart; i <= prevEnd; i++) {
           prevPrimas += activePrimas[i] || 0;
           prevRentas += activeRentas[i] || 0;
@@ -3039,17 +3054,17 @@
           <div class="glass-card p-3 rounded-xl space-y-1">
             <div class="text-[11px] text-slate-500 dark:text-slate-400">Primas Emitidas</div>
             <div class="text-sm font-bold font-mono text-[#047857] dark:text-[#3AC792]">${formatInMillions(sumPrimas)}</div>
-            <div class="text-[10px]">${formatVarBadge(sumPrimas, prevPrimas, false, flujosIpcAdjusted, end, prevEnd)}</div>
+            <div class="text-[10px]">${hasValidPrev ? formatVarBadge(sumPrimas, prevPrimas, false, flujosIpcAdjusted, end, prevEnd) : '<span class="text-slate-400">Base</span>'}</div>
           </div>
           <div class="glass-card p-3 rounded-xl space-y-1">
             <div class="text-[11px] text-slate-500 dark:text-slate-400">Rentas Pagadas</div>
             <div class="text-sm font-bold font-mono text-[#1D4ED8] dark:text-[#4183CA]">${formatInMillions(sumRentas)}</div>
-            <div class="text-[10px]">${formatVarBadge(sumRentas, prevRentas, false, flujosIpcAdjusted, end, prevEnd)}</div>
+            <div class="text-[10px]">${hasValidPrev ? formatVarBadge(sumRentas, prevRentas, false, flujosIpcAdjusted, end, prevEnd) : '<span class="text-slate-400">Base</span>'}</div>
           </div>
           <div class="glass-card p-3 rounded-xl space-y-1">
             <div class="text-[11px] text-slate-500 dark:text-slate-400">Rescates Pagados</div>
             <div class="text-sm font-bold font-mono text-[#DC2626] dark:text-[#FF4C60]">${formatInMillions(sumRescates)}</div>
-            <div class="text-[10px]">${formatVarBadge(sumRescates, prevRescates, false, flujosIpcAdjusted, end, prevEnd)}</div>
+            <div class="text-[10px]">${hasValidPrev ? formatVarBadge(sumRescates, prevRescates, false, flujosIpcAdjusted, end, prevEnd) : '<span class="text-slate-400">Base</span>'}</div>
           </div>
           <div class="glass-card p-3 rounded-xl space-y-1">
             <div class="text-[11px] text-slate-500 dark:text-slate-400">Ratio Rescate / CT</div>
@@ -3115,7 +3130,7 @@
         `;
       }
 
-      // Renderizar Gráficos Principales y Tablas con las series activas (Nominal o IPC)
+      // Series para Gráficos
       const ctActChartSeries = ctIpcAdjusted ? fullTotCtActIpc : fullTotCtActNom;
       const ctPasChartSeries = ctIpcAdjusted ? fullTotCtPasIpc : fullTotCtPasNom;
       const ctGlobalChartSeries = ctIpcAdjusted ? fullTotCtGlobalIpc : fullTotCtGlobalNom;
@@ -3124,13 +3139,16 @@
       renderSeriesTable();
     }
 
-    // 10. CONSTRUCCIÓN DE GRÁFICOS CHART.JS
+    // 10. CONSTRUCCIÓN COMPLETA DE GRÁFICOS (TAB 1 Y TAB 2)
     function renderCharts(start, end, ct12mIdx, ctAct, ctPas, ctGlobal, primas, rentas, rescates, asegAct, asegPas, asegTot) {
       const isDark = document.documentElement.classList.contains('dark');
       const datesSlice = DATES.slice(start, end + 1);
       const ctDates12m = DATES.slice(ct12mIdx.start, ct12mIdx.end + 1);
+      const currUnit = currentCurrency === 'd' ? 'u$s' : '$';
 
-      // 1. Chart CT Main
+      // ==========================================
+      // TAB 1 - GRÁFICO 1: CT EVOLUCIÓN (12M)
+      // ==========================================
       const ctxCt = document.getElementById('chart-ct-main')?.getContext('2d');
       if (ctxCt) {
         if (window.chartCtMain) window.chartCtMain.destroy();
@@ -3159,17 +3177,19 @@
             interaction: { mode: 'index', intersect: false },
             plugins: {
               legend: { position: 'top', labels: { color: isDark ? '#94A3B8' : '#475569', font: { family: 'Sora', size: 11 } } },
-              tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: $ ${ctx.raw.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} M${ipcLabel}` } }
+              tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${currUnit} ${ctx.raw.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} M${ipcLabel}` } }
             },
             scales: {
               x: { grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }, ticks: { color: isDark ? '#94A3B8' : '#475569' } },
-              y: { grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }, ticks: { color: isDark ? '#94A3B8' : '#475569', callback: v => `$ ${v.toLocaleString('es-AR')} M` } }
+              y: { grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }, ticks: { color: isDark ? '#94A3B8' : '#475569', callback: v => `${currUnit} ${v.toLocaleString('es-AR')} M` } }
             }
           }
         });
       }
 
-      // 2. Chart Flujos Main
+      // ==========================================
+      // TAB 1 - GRÁFICO 2: FLUJOS OPERATIVOS
+      // ==========================================
       const ctxFlujos = document.getElementById('chart-flujos-main')?.getContext('2d');
       if (ctxFlujos) {
         if (window.chartFlujosMain) window.chartFlujosMain.destroy();
@@ -3197,17 +3217,19 @@
             responsive: true, maintainAspectRatio: false,
             plugins: {
               legend: { position: 'top', labels: { color: isDark ? '#94A3B8' : '#475569', font: { family: 'Sora', size: 11 } } },
-              tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: $ ${ctx.raw.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} M${flujosIpcLabel}` } }
+              tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${currUnit} ${ctx.raw.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} M${flujosIpcLabel}` } }
             },
             scales: {
               x: { grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }, ticks: { color: isDark ? '#94A3B8' : '#475569' } },
-              y: { grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }, ticks: { color: isDark ? '#94A3B8' : '#475569', callback: v => `$ ${v.toLocaleString('es-AR')} M` } }
+              y: { grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }, ticks: { color: isDark ? '#94A3B8' : '#475569', callback: v => `${currUnit} ${v.toLocaleString('es-AR')} M` } }
             }
           }
         });
       }
 
-      // 3. Chart Asegurados Main
+      // ==========================================
+      // TAB 1 - GRÁFICO 3: ASEGURADOS Y CUENTAS
+      // ==========================================
       const ctxAseg = document.getElementById('chart-asegurados-main')?.getContext('2d');
       if (ctxAseg) {
         if (window.chartAseguradosMain) window.chartAseguradosMain.destroy();
@@ -3218,12 +3240,16 @@
           data: {
             labels: datesSlice,
             datasets: [
-              { label: 'Asegurados Activos', data: actSlice, backgroundColor: '#3AC792', borderRadius: 4 },
-              { label: 'Beneficiarios Pasivos', data: pasSlice, backgroundColor: '#4183CA', borderRadius: 4 }
+              { label: 'Asegurados Activos (Ahorro)', data: actSlice, backgroundColor: '#3AC792', borderRadius: 4 },
+              { label: 'Beneficiarios Pasivos (Rentas)', data: pasSlice, backgroundColor: '#4183CA', borderRadius: 4 }
             ]
           },
           options: {
             responsive: true, maintainAspectRatio: false,
+            plugins: {
+              legend: { position: 'top', labels: { color: isDark ? '#94A3B8' : '#475569', font: { family: 'Sora', size: 11 } } },
+              tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.raw.toLocaleString('es-AR')} cuentas/pólizas` } }
+            },
             scales: {
               x: { stacked: true, grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }, ticks: { color: isDark ? '#94A3B8' : '#475569' } },
               y: { stacked: true, grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }, ticks: { color: isDark ? '#94A3B8' : '#475569' } }
@@ -3232,71 +3258,456 @@
         });
       }
 
-      // 4. Donuts de Composición
-      const lastFx = FX[end] || 1.0;
-      
-      // Donut Primas por Producto
+      // ==========================================
+      // TAB 2 - DONUTS DE COMPOSICIÓN (REACTIVOS)
+      // ==========================================
+      // Obtener series por producto con los filtros de segmento y moneda activos
+      const riPrimasSeries = getProductMetricSeries('primas', 'individual', selectedSegKey, flujosIpcAdjusted, end);
+      const rcPrimasSeries = getProductMetricSeries('primas', 'colectivo', selectedSegKey, flujosIpcAdjusted, end);
+      const rvpPrimasSeries = getProductMetricSeries('primas', 'rvp_art', selectedSegKey, flujosIpcAdjusted, end);
+
+      let riP = 0, rcP = 0, rvpP = 0;
+      for (let i = start; i <= end; i++) {
+        riP += riPrimasSeries[i] || 0;
+        rcP += rcPrimasSeries[i] || 0;
+        rvpP += rvpPrimasSeries[i] || 0;
+      }
+      const totP = riP + rcP + rvpP;
+
+      const riRentasSeries = getProductMetricSeries('rentas', 'individual', selectedSegKey, flujosIpcAdjusted, end);
+      const rcRentasSeries = getProductMetricSeries('rentas', 'colectivo', selectedSegKey, flujosIpcAdjusted, end);
+      const rvpRentasSeries = getProductMetricSeries('rentas', 'rvp_art', selectedSegKey, flujosIpcAdjusted, end);
+
+      let riR = 0, rcR = 0, rvpR = 0;
+      for (let i = start; i <= end; i++) {
+        riR += riRentasSeries[i] || 0;
+        rcR += rcRentasSeries[i] || 0;
+        rvpR += rvpRentasSeries[i] || 0;
+      }
+      const totR = riR + rcR + rvpR;
+
+      // 1. Donut Primas por Producto
       const ctxPieP = document.getElementById('pie-primas-prod')?.getContext('2d');
       if (ctxPieP) {
         if (window.piePrimasProd) window.piePrimasProd.destroy();
-        let riP = 0, rcP = 0, rvpP = 0;
-        ['negocio', 'empleados', 'vinculados'].forEach(s => {
-          riP += (DB.cube?.individual?.[s]?.pesos?.primas?.[end] || 0) + (DB.cube?.individual?.[s]?.dolares?.primas?.[end] || 0) * lastFx;
-          rcP += (DB.cube?.colectivo?.[s]?.pesos?.primas?.[end] || 0) + (DB.cube?.colectivo?.[s]?.dolares?.primas?.[end] || 0) * lastFx;
-          rvpP += (DB.cube?.rvp_art?.[s]?.pesos?.primas?.[end] || 0) + (DB.cube?.rvp_art?.[s]?.dolares?.primas?.[end] || 0) * lastFx;
-        });
         window.piePrimasProd = new Chart(ctxPieP, {
           type: 'doughnut',
-          data: { labels: ['Individual', 'Colectivo', 'RVP y ART'], datasets: [{ data: [riP/1e6, rcP/1e6, rvpP/1e6], backgroundColor: ['#4183CA', '#3AC792', '#E20039'], borderColor: isDark ? '#161822' : '#FFFFFF', borderWidth: 2 }] },
-          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: isDark ? '#94A3B8' : '#475569', font: { family: 'Sora', size: 10 } } } } }
+          data: {
+            labels: ['Individual', 'Colectivo', 'RVP y ART'],
+            datasets: [{
+              data: [riP / 1e6, rcP / 1e6, rvpP / 1e6],
+              backgroundColor: ['#4183CA', '#3AC792', '#E20039'],
+              borderColor: isDark ? '#161822' : '#FFFFFF',
+              borderWidth: 2
+            }]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: {
+              legend: { position: 'bottom', labels: { color: isDark ? '#94A3B8' : '#475569', font: { family: 'Sora', size: 10 } } },
+              tooltip: {
+                callbacks: {
+                  label: ctx => {
+                    const val = ctx.raw;
+                    const pct = totP > 0 ? ((val * 1e6) / totP) * 100 : 0;
+                    return `${ctx.label}: ${currUnit} ${val.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} M (${pct.toFixed(1)}%)`;
+                  }
+                }
+              }
+            }
+          }
         });
       }
 
-      // Donut Rentas por Producto
+      // 2. Donut Rentas por Producto
       const ctxPieR = document.getElementById('pie-rentas-prod')?.getContext('2d');
       if (ctxPieR) {
         if (window.pieRentasProd) window.pieRentasProd.destroy();
-        let riR = 0, rcR = 0, rvpR = 0;
-        ['negocio', 'empleados', 'vinculados'].forEach(s => {
-          riR += (DB.cube?.individual?.[s]?.pesos?.rentas?.[end] || 0) + (DB.cube?.individual?.[s]?.dolares?.rentas?.[end] || 0) * lastFx;
-          rcR += (DB.cube?.colectivo?.[s]?.pesos?.rentas?.[end] || 0) + (DB.cube?.colectivo?.[s]?.dolares?.rentas?.[end] || 0) * lastFx;
-          rvpR += (DB.cube?.rvp_art?.[s]?.pesos?.rentas?.[end] || 0) + (DB.cube?.rvp_art?.[s]?.dolares?.rentas?.[end] || 0) * lastFx;
-        });
         window.pieRentasProd = new Chart(ctxPieR, {
           type: 'doughnut',
-          data: { labels: ['Individual', 'Colectivo', 'RVP y ART'], datasets: [{ data: [riR/1e6, rcR/1e6, rvpR/1e6], backgroundColor: ['#4183CA', '#3AC792', '#E20039'], borderColor: isDark ? '#161822' : '#FFFFFF', borderWidth: 2 }] },
-          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: isDark ? '#94A3B8' : '#475569', font: { family: 'Sora', size: 10 } } } } }
+          data: {
+            labels: ['Individual', 'Colectivo', 'RVP y ART'],
+            datasets: [{
+              data: [riR / 1e6, rcR / 1e6, rvpR / 1e6],
+              backgroundColor: ['#4183CA', '#3AC792', '#E20039'],
+              borderColor: isDark ? '#161822' : '#FFFFFF',
+              borderWidth: 2
+            }]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: {
+              legend: { position: 'bottom', labels: { color: isDark ? '#94A3B8' : '#475569', font: { family: 'Sora', size: 10 } } },
+              tooltip: {
+                callbacks: {
+                  label: ctx => {
+                    const val = ctx.raw;
+                    const pct = totR > 0 ? ((val * 1e6) / totR) * 100 : 0;
+                    return `${ctx.label}: ${currUnit} ${val.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} M (${pct.toFixed(1)}%)`;
+                  }
+                }
+              }
+            }
+          }
         });
       }
 
-      // Donut CT por Etapa (Activos vs Pasivos)
+      // 3. Donut CT por Etapa (Ahorro vs Rentas)
       const ctxPieEtapa = document.getElementById('pie-ct-etapa')?.getContext('2d');
       if (ctxPieEtapa) {
         if (window.pieCtEtapa) window.pieCtEtapa.destroy();
         const actVal = ctAct[end] || 0;
         const pasVal = ctPas[end] || 0;
+        const totCtEtapa = actVal + pasVal;
         window.pieCtEtapa = new Chart(ctxPieEtapa, {
           type: 'doughnut',
-          data: { labels: ['Ahorro (Activos)', 'Rentas (Pasivos)'], datasets: [{ data: [actVal/1e6, pasVal/1e6], backgroundColor: ['#3AC792', '#4183CA'], borderColor: isDark ? '#161822' : '#FFFFFF', borderWidth: 2 }] },
-          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: isDark ? '#94A3B8' : '#475569', font: { family: 'Sora', size: 10 } } } } }
+          data: {
+            labels: ['Ahorro (Activos)', 'Rentas (Pasivos)'],
+            datasets: [{
+              data: [actVal / 1e6, pasVal / 1e6],
+              backgroundColor: ['#3AC792', '#4183CA'],
+              borderColor: isDark ? '#161822' : '#FFFFFF',
+              borderWidth: 2
+            }]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: {
+              legend: { position: 'bottom', labels: { color: isDark ? '#94A3B8' : '#475569', font: { family: 'Sora', size: 10 } } },
+              tooltip: {
+                callbacks: {
+                  label: ctx => {
+                    const val = ctx.raw;
+                    const pct = totCtEtapa > 0 ? ((val * 1e6) / totCtEtapa) * 100 : 0;
+                    return `${ctx.label}: ${currUnit} ${val.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} M (${pct.toFixed(1)}%)`;
+                  }
+                }
+              }
+            }
+          }
         });
       }
 
-      // Donut CT por Moneda ($ vs u$s)
+      // 4. Donut CT por Moneda (Pesos vs Dólares Pesificados al Cierre)
       const ctxPieMon = document.getElementById('pie-ct-moneda')?.getContext('2d');
       if (ctxPieMon) {
         if (window.pieCtMoneda) window.pieCtMoneda.destroy();
-        let totP = 0, totD = 0;
-        ['individual', 'colectivo', 'rvp_art'].forEach(p => {
-          ['negocio', 'empleados', 'vinculados'].forEach(s => {
-            totP += (DB.cube?.[p]?.[s]?.pesos?.ct_activos?.[end] || 0) + (DB.cube?.[p]?.[s]?.pesos?.ct_pasivos?.[end] || 0);
-            totD += ((DB.cube?.[p]?.[s]?.dolares?.ct_activos?.[end] || 0) + (DB.cube?.[p]?.[s]?.dolares?.ct_pasivos?.[end] || 0)) * lastFx;
+        let monPesos = 0, monUSD = 0;
+        const lastFx = FX[end] || 1.0;
+        const prods = (selectedProdKey === 'all') ? ['individual', 'colectivo', 'rvp_art'] : [selectedProdKey === 'ri' ? 'individual' : selectedProdKey === 'rc' ? 'colectivo' : 'rvp_art'];
+        const segs = (selectedSegKey === 'all') ? ['negocio', 'empleados', 'vinculados'] : [selectedSegKey === 'neg' ? 'negocio' : selectedSegKey === 'emp' ? 'empleados' : 'vinculados'];
+
+        prods.forEach(p => {
+          segs.forEach(s => {
+            if (p === 'rvp_art' && s !== 'negocio') return;
+            const cube = DB.cube?.[p]?.[s];
+            if (!cube) return;
+            monPesos += (cube.pesos?.ct_activos?.[end] || 0) + (cube.pesos?.ct_pasivos?.[end] || 0);
+            monUSD += ((cube.dolares?.ct_activos?.[end] || 0) + (cube.dolares?.ct_pasivos?.[end] || 0)) * lastFx;
           });
         });
+
+        const totMon = monPesos + monUSD;
         window.pieCtMoneda = new Chart(ctxPieMon, {
           type: 'doughnut',
-          data: { labels: ['Pesos Puro ($)', 'Dólares (Pesificados)'], datasets: [{ data: [totP/1e6, totD/1e6], backgroundColor: ['#4183CA', '#3AC792'], borderColor: isDark ? '#161822' : '#FFFFFF', borderWidth: 2 }] },
-          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: isDark ? '#94A3B8' : '#475569', font: { family: 'Sora', size: 10 } } } } }
+          data: {
+            labels: ['Pesos Puro ($)', `Dólares ($${lastFx.toFixed(0)}/u$s)`],
+            datasets: [{
+              data: [monPesos / 1e6, monUSD / 1e6],
+              backgroundColor: ['#4183CA', '#3AC792'],
+              borderColor: isDark ? '#161822' : '#FFFFFF',
+              borderWidth: 2
+            }]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: {
+              legend: { position: 'bottom', labels: { color: isDark ? '#94A3B8' : '#475569', font: { family: 'Sora', size: 10 } } },
+              tooltip: {
+                callbacks: {
+                  label: ctx => {
+                    const val = ctx.raw;
+                    const pct = totMon > 0 ? ((val * 1e6) / totMon) * 100 : 0;
+                    return `${ctx.label}: $ ${val.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} M (${pct.toFixed(1)}%)`;
+                  }
+                }
+              }
+            }
+          }
+        });
+      }
+
+      // ========================================================
+      // TAB 2 - LOS 6 GRÁFICOS DE ANÁLISIS DE CARTERA
+      // ========================================================
+
+      // 1. Rentas Pagadas por Producto (chart-rentas)
+      const ctxRentasTab2 = document.getElementById('chart-rentas')?.getContext('2d');
+      if (ctxRentasTab2) {
+        if (window.chartRentas) window.chartRentas.destroy();
+        const riRSlice = riRentasSeries.slice(start, end + 1).map(v => v / 1e6);
+        const rcRSlice = rcRentasSeries.slice(start, end + 1).map(v => v / 1e6);
+        const rvpRSlice = rvpRentasSeries.slice(start, end + 1).map(v => v / 1e6);
+
+        const badgeRentas = document.getElementById('badge-chart-rentas');
+        if (badgeRentas) badgeRentas.textContent = formatInMillions(totR);
+
+        window.chartRentas = new Chart(ctxRentasTab2, {
+          type: 'line',
+          data: {
+            labels: datesSlice,
+            datasets: [
+              { label: 'Retiro Individual', data: riRSlice, borderColor: '#4183CA', backgroundColor: 'rgba(65, 131, 202, 0.1)', tension: 0.35, borderWidth: 2, fill: true },
+              { label: 'Retiro Colectivo', data: rcRSlice, borderColor: '#3AC792', backgroundColor: 'rgba(58, 199, 146, 0.1)', tension: 0.35, borderWidth: 2, fill: true },
+              { label: 'RVP y ART', data: rvpRSlice, borderColor: '#E20039', backgroundColor: 'rgba(226, 0, 57, 0.1)', tension: 0.35, borderWidth: 2, fill: true }
+            ]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: {
+              legend: { position: 'top', labels: { color: isDark ? '#94A3B8' : '#475569', font: { family: 'Sora', size: 10 } } },
+              tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${currUnit} ${ctx.raw.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} M` } }
+            },
+            scales: {
+              x: { grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }, ticks: { color: isDark ? '#94A3B8' : '#475569' } },
+              y: { grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }, ticks: { color: isDark ? '#94A3B8' : '#475569', callback: v => `${currUnit} ${v.toLocaleString('es-AR')} M` } }
+            }
+          }
+        });
+      }
+
+      // 2. Rescates Pagados por Producto (chart-rescates)
+      const ctxRescatesTab2 = document.getElementById('chart-rescates')?.getContext('2d');
+      if (ctxRescatesTab2) {
+        if (window.chartRescates) window.chartRescates.destroy();
+        const riResSeries = getProductMetricSeries('rescates', 'individual', selectedSegKey, flujosIpcAdjusted, end);
+        const rcResSeries = getProductMetricSeries('rescates', 'colectivo', selectedSegKey, flujosIpcAdjusted, end);
+        const rvpResSeries = getProductMetricSeries('rescates', 'rvp_art', selectedSegKey, flujosIpcAdjusted, end);
+
+        const riResSlice = riResSeries.slice(start, end + 1).map(v => v / 1e6);
+        const rcResSlice = rcResSeries.slice(start, end + 1).map(v => v / 1e6);
+        const rvpResSlice = rvpResSeries.slice(start, end + 1).map(v => v / 1e6);
+
+        let totRes = 0;
+        for (let i = start; i <= end; i++) {
+          totRes += (riResSeries[i] || 0) + (rcResSeries[i] || 0) + (rvpResSeries[i] || 0);
+        }
+
+        const badgeResc = document.getElementById('badge-chart-rescates');
+        if (badgeResc) badgeResc.textContent = formatInMillions(totRes);
+
+        window.chartRescates = new Chart(ctxRescatesTab2, {
+          type: 'line',
+          data: {
+            labels: datesSlice,
+            datasets: [
+              { label: 'Retiro Individual', data: riResSlice, borderColor: '#4183CA', backgroundColor: 'rgba(65, 131, 202, 0.1)', tension: 0.35, borderWidth: 2, fill: true },
+              { label: 'Retiro Colectivo', data: rcResSlice, borderColor: '#3AC792', backgroundColor: 'rgba(58, 199, 146, 0.1)', tension: 0.35, borderWidth: 2, fill: true },
+              { label: 'RVP y ART', data: rvpResSlice, borderColor: '#E20039', backgroundColor: 'rgba(226, 0, 57, 0.1)', tension: 0.35, borderWidth: 2, fill: true }
+            ]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: {
+              legend: { position: 'top', labels: { color: isDark ? '#94A3B8' : '#475569', font: { family: 'Sora', size: 10 } } },
+              tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${currUnit} ${ctx.raw.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} M` } }
+            },
+            scales: {
+              x: { grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }, ticks: { color: isDark ? '#94A3B8' : '#475569' } },
+              y: { grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }, ticks: { color: isDark ? '#94A3B8' : '#475569', callback: v => `${currUnit} ${v.toLocaleString('es-AR')} M` } }
+            }
+          }
+        });
+      }
+
+      // 3. CT Activo - Etapa de Ahorro (chart-ct-act)
+      const ctxCtActTab2 = document.getElementById('chart-ct-act')?.getContext('2d');
+      if (ctxCtActTab2) {
+        if (window.chartCtAct) window.chartCtAct.destroy();
+        const riCtActSeries = getProductMetricSeries('ct_act', 'individual', selectedSegKey, ctIpcAdjusted, end);
+        const rcCtActSeries = getProductMetricSeries('ct_act', 'colectivo', selectedSegKey, ctIpcAdjusted, end);
+        const rvpCtActSeries = getProductMetricSeries('ct_act', 'rvp_art', selectedSegKey, ctIpcAdjusted, end);
+
+        const riCtActSlice = riCtActSeries.slice(start, end + 1).map(v => v / 1e6);
+        const rcCtActSlice = rcCtActSeries.slice(start, end + 1).map(v => v / 1e6);
+        const rvpCtActSlice = rvpCtActSeries.slice(start, end + 1).map(v => v / 1e6);
+
+        const badgeCtAct = document.getElementById('badge-chart-ct-act');
+        if (badgeCtAct) badgeCtAct.textContent = formatInMillions(ctAct[end] || 0);
+
+        window.chartCtAct = new Chart(ctxCtActTab2, {
+          type: 'line',
+          data: {
+            labels: datesSlice,
+            datasets: [
+              { label: 'Retiro Individual (Ahorro)', data: riCtActSlice, borderColor: '#4183CA', backgroundColor: 'rgba(65, 131, 202, 0.15)', tension: 0.35, borderWidth: 2, fill: true },
+              { label: 'Retiro Colectivo (Ahorro)', data: rcCtActSlice, borderColor: '#3AC792', backgroundColor: 'rgba(58, 199, 146, 0.15)', tension: 0.35, borderWidth: 2, fill: true },
+              { label: 'RVP y ART (Ahorro)', data: rvpCtActSlice, borderColor: '#E20039', backgroundColor: 'rgba(226, 0, 57, 0.15)', tension: 0.35, borderWidth: 2, fill: true }
+            ]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: {
+              legend: { position: 'top', labels: { color: isDark ? '#94A3B8' : '#475569', font: { family: 'Sora', size: 10 } } },
+              tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${currUnit} ${ctx.raw.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} M` } }
+            },
+            scales: {
+              x: { grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }, ticks: { color: isDark ? '#94A3B8' : '#475569' } },
+              y: { grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }, ticks: { color: isDark ? '#94A3B8' : '#475569', callback: v => `${currUnit} ${v.toLocaleString('es-AR')} M` } }
+            }
+          }
+        });
+      }
+
+      // 4. CT Pasivo - Etapa de Rentas (chart-ct-pas)
+      const ctxCtPasTab2 = document.getElementById('chart-ct-pas')?.getContext('2d');
+      if (ctxCtPasTab2) {
+        if (window.chartCtPas) window.chartCtPas.destroy();
+        const riCtPasSeries = getProductMetricSeries('ct_pas', 'individual', selectedSegKey, ctIpcAdjusted, end);
+        const rcCtPasSeries = getProductMetricSeries('ct_pas', 'colectivo', selectedSegKey, ctIpcAdjusted, end);
+        const rvpCtPasSeries = getProductMetricSeries('ct_pas', 'rvp_art', selectedSegKey, ctIpcAdjusted, end);
+
+        const riCtPasSlice = riCtPasSeries.slice(start, end + 1).map(v => v / 1e6);
+        const rcCtPasSlice = rcCtPasSeries.slice(start, end + 1).map(v => v / 1e6);
+        const rvpCtPasSlice = rvpCtPasSeries.slice(start, end + 1).map(v => v / 1e6);
+
+        const badgeCtPas = document.getElementById('badge-chart-ct-pas');
+        if (badgeCtPas) badgeCtPas.textContent = formatInMillions(ctPas[end] || 0);
+
+        window.chartCtPas = new Chart(ctxCtPasTab2, {
+          type: 'line',
+          data: {
+            labels: datesSlice,
+            datasets: [
+              { label: 'Retiro Individual (Rentas)', data: riCtPasSlice, borderColor: '#4183CA', backgroundColor: 'rgba(65, 131, 202, 0.15)', tension: 0.35, borderWidth: 2, fill: true },
+              { label: 'Retiro Colectivo (Rentas)', data: rcCtPasSlice, borderColor: '#3AC792', backgroundColor: 'rgba(58, 199, 146, 0.15)', tension: 0.35, borderWidth: 2, fill: true },
+              { label: 'RVP y ART (Rentas)', data: rvpCtPasSlice, borderColor: '#E20039', backgroundColor: 'rgba(226, 0, 57, 0.15)', tension: 0.35, borderWidth: 2, fill: true }
+            ]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: {
+              legend: { position: 'top', labels: { color: isDark ? '#94A3B8' : '#475569', font: { family: 'Sora', size: 10 } } },
+              tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${currUnit} ${ctx.raw.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} M` } }
+            },
+            scales: {
+              x: { grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }, ticks: { color: isDark ? '#94A3B8' : '#475569' } },
+              y: { grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }, ticks: { color: isDark ? '#94A3B8' : '#475569', callback: v => `${currUnit} ${v.toLocaleString('es-AR')} M` } }
+            }
+          }
+        });
+      }
+
+      // 5. Flujo Neto Mensual (chart-flujo-neto-tab2)
+      const ctxFlujoNetoTab2 = document.getElementById('chart-flujo-neto-tab2')?.getContext('2d');
+      if (ctxFlujoNetoTab2) {
+        if (window.chartFlujoNetoTab2) window.chartFlujoNetoTab2.destroy();
+        const pSlice = primas.slice(start, end + 1);
+        const rSlice = rentas.slice(start, end + 1);
+        const resSlice = rescates.slice(start, end + 1);
+
+        const netSlice = pSlice.map((p, i) => (p - (rSlice[i] || 0) - (resSlice[i] || 0)) / 1e6);
+        const bgColors = netSlice.map(v => v >= 0 ? '#3AC792' : '#E20039');
+
+        let totNet = 0;
+        netSlice.forEach(v => totNet += v);
+
+        const badgeNet = document.getElementById('badge-chart-flujo-neto');
+        if (badgeNet) {
+          badgeNet.textContent = `${currUnit} ${totNet.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} M`;
+          badgeNet.className = totNet >= 0 ? 'text-[#047857] dark:text-[#3AC792] font-mono font-bold' : 'text-[#DC2626] dark:text-[#FF4C60] font-mono font-bold';
+        }
+
+        window.chartFlujoNetoTab2 = new Chart(ctxFlujoNetoTab2, {
+          type: 'bar',
+          data: {
+            labels: datesSlice,
+            datasets: [{
+              label: 'Flujo Neto Mensual',
+              data: netSlice,
+              backgroundColor: bgColors,
+              borderRadius: 4
+            }]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: ctx => {
+                    const idx = ctx.dataIndex;
+                    const pVal = (pSlice[idx] || 0) / 1e6;
+                    const egresos = ((rSlice[idx] || 0) + (resSlice[idx] || 0)) / 1e6;
+                    return `Neto: ${currUnit} ${ctx.raw.toLocaleString('es-AR', { minimumFractionDigits: 2 })} M (Primas: ${currUnit}${pVal.toFixed(2)}M, Egresos: ${currUnit}${egresos.toFixed(2)}M)`;
+                  }
+                }
+              }
+            },
+            scales: {
+              x: { grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }, ticks: { color: isDark ? '#94A3B8' : '#475569' } },
+              y: { grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }, ticks: { color: isDark ? '#94A3B8' : '#475569', callback: v => `${currUnit} ${v.toLocaleString('es-AR')} M` } }
+            }
+          }
+        });
+      }
+
+      // 6. Ratio Rescates / Primas (%) (chart-ratio-rescates)
+      const ctxRatioRescates = document.getElementById('chart-ratio-rescates')?.getContext('2d');
+      if (ctxRatioRescates) {
+        if (window.chartRatioRescates) window.chartRatioRescates.destroy();
+        const pSlice = primas.slice(start, end + 1);
+        const resSlice = rescates.slice(start, end + 1);
+
+        const ratioSlice = pSlice.map((p, i) => {
+          const resVal = resSlice[i] || 0;
+          return p > 0 ? (resVal / p) * 100 : 0;
+        });
+
+        let sumP = 0, sumRes = 0;
+        pSlice.forEach((p, i) => {
+          sumP += p;
+          sumRes += (resSlice[i] || 0);
+        });
+        const avgRatio = sumP > 0 ? (sumRes / sumP) * 100 : 0;
+
+        const badgeRatio = document.getElementById('badge-chart-ratio-resc');
+        if (badgeRatio) badgeRatio.textContent = avgRatio.toFixed(2) + '%';
+
+        window.chartRatioRescates = new Chart(ctxRatioRescates, {
+          type: 'line',
+          data: {
+            labels: datesSlice,
+            datasets: [{
+              label: 'Ratio Rescates / Primas (%)',
+              data: ratioSlice,
+              borderColor: '#FF593E',
+              backgroundColor: 'rgba(255, 89, 62, 0.15)',
+              tension: 0.35,
+              borderWidth: 2,
+              fill: true
+            }]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: {
+              legend: { position: 'top', labels: { color: isDark ? '#94A3B8' : '#475569', font: { family: 'Sora', size: 10 } } },
+              tooltip: {
+                callbacks: {
+                  label: ctx => {
+                    const idx = ctx.dataIndex;
+                    const pVal = (pSlice[idx] || 0) / 1e6;
+                    const resVal = (resSlice[idx] || 0) / 1e6;
+                    return `Ratio: ${ctx.raw.toFixed(2)}% (Rescates: ${currUnit}${resVal.toFixed(2)}M / Primas: ${currUnit}${pVal.toFixed(2)}M)`;
+                  }
+                }
+              }
+            },
+            scales: {
+              x: { grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }, ticks: { color: isDark ? '#94A3B8' : '#475569' } },
+              y: { grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }, ticks: { color: isDark ? '#94A3B8' : '#475569', callback: v => `${v.toFixed(0)}%` } }
+            }
+          }
         });
       }
     }
