@@ -108,6 +108,7 @@ def main():
     
     upload_file(".nojekyll", os.path.join(base_dir, ".nojekyll"), "Config: Deshabilitar procesamiento Jekyll con .nojekyll")
     upload_file("favicon.svg", os.path.join(base_dir, "favicon.svg"), "Asset: Favicon SVG para pestaña y marcadores")
+    upload_file("LaSegunda_Color_RGB.png", os.path.join(base_dir, "LaSegunda_Color_RGB.png"), "Asset: Logo oficial La Segunda Seguros")
     upload_file("index.html", os.path.join(base_dir, "index.html"), "Feat: Tablero Seguros de Retiro con Actualizacion Semanal y Boton a Demanda")
     upload_file("data_retiro.json", os.path.join(base_dir, "data_retiro.json"), "Data: Series historicas consolidadas de Seguros de Retiro con 8003 asegurados")
     upload_file("actualizar_tablero.py", os.path.join(base_dir, "actualizar_tablero.py"), "Code: Script de actualizacion y validacion actuarial")
