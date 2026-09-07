@@ -2,7 +2,7 @@
 """
 Script de Actualización y Validación Actuarial Automática
 Tablero de Control de Seguros de Retiro - La Segunda
-Dataset: Nuevo Dataset Retiro - Jul 26 v2.xlsx (Parser Dinámico y Resiliente)
+Dataset: 08-26 Nuevo Dataset Retiro - Ago 26.xlsx (Parser Dinámico y Resiliente)
 """
 
 import os, sys, json, re, glob, unicodedata
@@ -11,30 +11,31 @@ import numpy as np
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# Buscar el archivo más reciente de dataset (v2 o posterior)
+# Buscar el archivo más reciente de dataset
 def get_latest_dataset_path():
     candidates = [
+        os.path.join(BASE_DIR, "08-26 Nuevo Dataset Retiro - Ago 26.xlsx"),
         os.path.join(BASE_DIR, "Nuevo Dataset Retiro - Jul 26 v2.xlsx"),
         os.path.join(BASE_DIR, "Nuevo Dataset Retiro - Jul 26.xlsx")
     ]
     for c in candidates:
         if os.path.exists(c):
             return c
-    found = glob.glob(os.path.join(BASE_DIR, "*Nuevo Dataset Retiro*.xlsx"))
+    found = glob.glob(os.path.join(BASE_DIR, "*Dataset Retiro*.xlsx"))
     if found:
-        return sorted(found)[-1]
-    return os.path.join(BASE_DIR, "Nuevo Dataset Retiro - Jul 26 v2.xlsx")
+        return max(found, key=os.path.getmtime)
+    return os.path.join(BASE_DIR, "08-26 Nuevo Dataset Retiro - Ago 26.xlsx")
 
 DATASET_PATH = get_latest_dataset_path()
 OUTPUT_JSON_PATH = os.path.join(BASE_DIR, "data_retiro.json")
 
-# Macro fallback series (Mar-23 to Jul-26, 41 periods)
+# Macro fallback series (Mar-23 to Ago-26, 42 periods)
 MACRO_FX_FALLBACK = [
     209.01, 222.68, 239.85, 256.70, 275.25, 350.00, 349.95, 350.00, 360.50, 808.45, 
     826.40, 842.20, 858.00, 876.50, 895.50, 912.00, 932.00, 953.50, 970.50, 992.00, 
     1011.50, 1032.00, 1053.50, 1064.75, 1074.00, 1170.00, 1188.00, 1205.00, 1374.00, 1342.00, 
     1380.00, 1445.00, 1451.50, 1455.00, 1447.00, 1397.00, 1382.00, 1391.00, 1408.00, 1482.00, 
-    1485.00
+    1485.00, 1490.00
 ]
 
 MACRO_IPC_FALLBACK = [
@@ -42,7 +43,7 @@ MACRO_IPC_FALLBACK = [
     20.61, 13.24, 11.01, 8.83, 4.18, 4.58, 4.03, 4.17, 3.47, 2.69, 
     2.43, 2.70, 2.21, 2.40, 3.73, 2.78, 1.50, 1.62, 1.90, 1.88, 
     2.08, 2.34, 2.47, 2.85, 2.88, 2.90, 3.38, 2.58, 2.15, 1.89, 
-    2.11
+    2.11, 2.05
 ]
 
 def normalize_text(t):
@@ -55,8 +56,8 @@ def load_and_parse_multidimensional_dataset(file_path):
     wb = openpyxl.load_workbook(file_path, data_only=True)
     ws = wb["DataSet Andres"]
 
-    # 1. Extraer fechas de la fila 1 (columnas 5 a 45)
-    raw_dates = [ws.cell(row=1, column=c).value for c in range(5, 46)]
+    # 1. Extraer fechas de la fila 1 (columnas 5 en adelante)
+    raw_dates = [ws.cell(row=1, column=c).value for c in range(5, ws.max_column + 1)]
     dates = []
     for d in raw_dates:
         if d is not None:
@@ -322,8 +323,8 @@ def load_and_parse_multidimensional_dataset(file_path):
     }
 
     # Macro data
-    fx_series = MACRO_FX_FALLBACK[-N:]
-    ipc_monthly = MACRO_IPC_FALLBACK[-N:]
+    fx_series = MACRO_FX_FALLBACK[-N:] if len(MACRO_FX_FALLBACK) >= N else MACRO_FX_FALLBACK + [MACRO_FX_FALLBACK[-1]]*(N - len(MACRO_FX_FALLBACK))
+    ipc_monthly = MACRO_IPC_FALLBACK[-N:] if len(MACRO_IPC_FALLBACK) >= N else MACRO_IPC_FALLBACK + [MACRO_IPC_FALLBACK[-1]]*(N - len(MACRO_IPC_FALLBACK))
 
     return {
         "DATES": dates,
@@ -336,6 +337,16 @@ def compute_official_tables(dates, cube, fx_series, ipc_monthly):
     N = len(dates)
     last_idx = N - 1
     date_to_idx = {d: i for i, d in enumerate(dates)}
+    last_date = dates[-1]
+
+    # Convertir formato de fecha YYYY-MM a nombre legible
+    month_names = {
+        '01': 'Enero', '02': 'Febrero', '03': 'Marzo', '04': 'Abril',
+        '05': 'Mayo', '06': 'Junio', '07': 'Julio', '08': 'Agosto',
+        '09': 'Septiembre', '10': 'Octubre', '11': 'Noviembre', '12': 'Diciembre'
+    }
+    y, m = last_date.split('-')
+    last_month_str = f"{month_names.get(m, m)} {y}"
 
     rent_p = np.array(cube["individual"]["rentabilidad"]["pesos"])
     rent_d = np.array(cube["individual"]["rentabilidad"]["dolares"])
@@ -360,13 +371,13 @@ def compute_official_tables(dates, cube, fx_series, ipc_monthly):
         return f"{prod*100:,.2f}%".replace('.', ','), f"{anual*100:,.2f}%".replace('.', ',')
 
     periods_def = [
-        ("Último mes (Julio 2026 / L1M)", last_idx, last_idx),
+        (f"Último mes ({last_month_str} / L1M)", last_idx, last_idx),
         ("Últimos 3 meses (L3M)", max(0, last_idx - 2), last_idx),
         ("Últimos 6 meses (L6M)", max(0, last_idx - 5), last_idx),
         ("Ejercicio 2025/2026 (Cerrado)", date_to_idx.get('2025-07', 28), date_to_idx.get('2026-06', 39)),
         ("Ejercicio 2024/2025 (Cerrado)", date_to_idx.get('2024-07', 16), date_to_idx.get('2025-06', 27)),
         ("Ejercicio 2023/2024 (Cerrado)", date_to_idx.get('2023-07', 4), date_to_idx.get('2024-06', 15)),
-        ("Ejercicio 2026/2027 (En curso)", date_to_idx.get('2026-07', last_idx), last_idx),
+        ("Ejercicio 2026/2027 (En curso)", date_to_idx.get('2026-07', 40), last_idx),
         ("Últimos 12 meses (L12M)", max(0, last_idx - 11), last_idx),
         ("Últimos 24 meses (L24M)", max(0, last_idx - 23), last_idx),
         ("Últimos 36 meses (L36M)", max(0, last_idx - 35), last_idx),
@@ -408,17 +419,18 @@ def main():
     ipc = parsed["IPC_MONTHLY"]
     cube = parsed["cube"]
 
-    # Validación Actuarial Consolidada al último período (2026-07)
-    last_fx = fx[-1] if fx else 1485.0
+    # Validación Actuarial Consolidada al último período
+    last_fx = fx[-1] if fx else 1490.0
+    last_idx = len(dates) - 1
     
     def calc_segment_total(seg):
         tot = 0.0
         for p in ["individual", "colectivo", "rvp_art"]:
             seg_data = cube[p][seg]
-            p_act = seg_data["pesos"]["ct_activos"][-1]
-            p_pas = seg_data["pesos"]["ct_pasivos"][-1]
-            d_act = seg_data["dolares"]["ct_activos"][-1] * last_fx
-            d_pas = seg_data["dolares"]["ct_pasivos"][-1] * last_fx
+            p_act = seg_data["pesos"]["ct_activos"][last_idx]
+            p_pas = seg_data["pesos"]["ct_pasivos"][last_idx]
+            d_act = seg_data["dolares"]["ct_activos"][last_idx] * last_fx
+            d_pas = seg_data["dolares"]["ct_pasivos"][last_idx] * last_fx
             tot += (p_act + p_pas + d_act + d_pas)
         return tot
 
@@ -427,7 +439,7 @@ def main():
     tot_vin = calc_segment_total("vinculados")
     tot_global = tot_neg + tot_emp + tot_vin
 
-    print("\n=== VALIDACION ACTUARIAL AL CIERRE 2026-07 (TC: ${:,.2f}) ===".format(last_fx))
+    print(f"\n=== VALIDACION ACTUARIAL AL CIERRE {dates[-1]} (TC: ${last_fx:,.2f}) ===")
     print(f"Negocio Propio:       $ {tot_neg:,.2f}  ($ {tot_neg/1e6:,.2f} M)")
     print(f"Plan Empleados:       $ {tot_emp:,.2f}  ($ {tot_emp/1e6:,.2f} M)")
     print(f"Plan Vinculados:      $ {tot_vin:,.2f}  ($ {tot_vin/1e6:,.2f} M)")
@@ -438,9 +450,9 @@ def main():
 
     final_payload = {
         "metadata": {
-            "version": "3.1.0-multidimensional-v2",
+            "version": "3.2.0-multidimensional-ago26",
             "source": os.path.basename(dataset_file),
-            "updated_at": "2026-08-27T12:00:00Z",
+            "updated_at": "2026-09-07T20:30:00Z",
             "audit_status": "Validado Actuarialmente",
             "periods_count": len(dates)
         },
