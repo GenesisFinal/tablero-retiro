@@ -35,7 +35,7 @@ MACRO_FX_FALLBACK = [
     826.40, 842.20, 858.00, 876.50, 895.50, 912.00, 932.00, 953.50, 970.50, 992.00, 
     1011.50, 1032.00, 1053.50, 1064.75, 1074.00, 1170.00, 1188.00, 1205.00, 1374.00, 1342.00, 
     1380.00, 1445.00, 1451.50, 1455.00, 1447.00, 1397.00, 1382.00, 1391.00, 1408.00, 1482.00, 
-    1485.00, 1490.00
+    1485.00, 1508.50
 ]
 
 MACRO_IPC_FALLBACK = [
@@ -293,7 +293,7 @@ def load_and_parse_multidimensional_dataset(file_path):
                     "rescates": find_series("rvp", "rescates", "", "pesos"),
                     "pase_pasividad": find_series("rvp", "pase a pasividad", "", "pesos"),
                     "ct_activos": [0.0]*N,
-                    "ct_pasivos": find_series("rvp", "compromiso", "", "pesos"),
+                    "ct_pasivos": [a + b for a, b in zip(find_series("rvp", "compromiso", "", "pesos"), find_series("rvp", "ilppd", "", ""))],
                     "polizas": [0.0]*N, "cert_act": [0.0]*N, "cert_pas": [0.0]*N
                 },
                 "dolares": {
@@ -420,7 +420,7 @@ def main():
     cube = parsed["cube"]
 
     # Validación Actuarial Consolidada al último período
-    last_fx = fx[-1] if fx else 1490.0
+    last_fx = fx[-1] if fx else 1508.50
     last_idx = len(dates) - 1
     
     def calc_segment_total(seg):
