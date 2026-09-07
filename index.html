@@ -1185,54 +1185,33 @@
 
       const ipcSlice = (IPC_MONTHLY || []).slice(start, end + 1);
       const tcSlice = fullTcVarMonthly.slice(start, end + 1);
-      const rentPesosSlice = (DB.cube?.individual?.rentabilidad?.pesos || []).slice(start, end + 1).map(v => v * 100);
-      const ttPesosSlice = (DB.cube?.individual?.rentabilidad?.tt_pesos || []).slice(start, end + 1).map(v => v * 100);
 
       window.chartMacroBenchmarks = new Chart(ctx, {
-        type: 'line',
+        type: 'bar',
         data: {
           labels: datesSlice,
           datasets: [
             {
+              type: 'bar',
               label: 'Inflación Mensual (IPC %)',
               data: ipcSlice,
+              backgroundColor: isDark ? 'rgba(226, 0, 57, 0.85)' : 'rgba(226, 0, 57, 0.85)',
               borderColor: '#E20039',
-              backgroundColor: 'rgba(226, 0, 57, 0.12)',
-              tension: 0.35,
-              borderWidth: 2.2,
-              pointRadius: 3,
-              pointHoverRadius: 6
+              borderWidth: 1,
+              borderRadius: 4,
+              barPercentage: 0.85,
+              categoryPercentage: 0.8
             },
             {
+              type: 'bar',
               label: 'Variación Mensual TC BNA (%)',
               data: tcSlice,
-              borderColor: '#F8CC59',
-              backgroundColor: 'rgba(248, 204, 89, 0.12)',
-              tension: 0.35,
-              borderWidth: 2,
-              pointRadius: 3,
-              pointHoverRadius: 6
-            },
-            {
-              label: 'Rentabilidad Cartera Pesos (%)',
-              data: rentPesosSlice,
-              borderColor: '#4183CA',
-              backgroundColor: 'rgba(65, 131, 202, 0.12)',
-              tension: 0.35,
-              borderWidth: 2,
-              pointRadius: 3,
-              pointHoverRadius: 6
-            },
-            {
-              label: 'Tasa Testigo SSN (%)',
-              data: ttPesosSlice,
-              borderColor: '#3AC792',
-              backgroundColor: 'rgba(58, 199, 146, 0.12)',
-              borderDash: [4, 4],
-              tension: 0.35,
-              borderWidth: 1.8,
-              pointRadius: 2.5,
-              pointHoverRadius: 5
+              backgroundColor: isDark ? 'rgba(248, 204, 89, 0.85)' : 'rgba(234, 164, 0, 0.85)',
+              borderColor: isDark ? '#F8CC59' : '#D99B00',
+              borderWidth: 1,
+              borderRadius: 4,
+              barPercentage: 0.85,
+              categoryPercentage: 0.8
             }
           ]
         },
@@ -1242,34 +1221,52 @@
           interaction: { mode: 'index', intersect: false },
           plugins: {
             legend: {
+              display: true,
               position: 'top',
               labels: {
-                color: isDark ? '#94A3B8' : '#475569',
-                font: { family: 'Sora', size: 11 }
+                boxWidth: 12,
+                boxHeight: 12,
+                usePointStyle: false,
+                color: isDark ? '#94A3B8' : '#64748B',
+                font: { family: 'Inter', size: 11, weight: '500' }
               }
             },
             tooltip: {
+              backgroundColor: isDark ? 'rgba(15, 23, 42, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+              titleColor: isDark ? '#F8FAFC' : '#0F172A',
+              bodyColor: isDark ? '#E2E8F0' : '#334155',
+              borderColor: isDark ? '#334155' : '#CBD5E1',
+              borderWidth: 1,
+              padding: 10,
               callbacks: {
-                label: ctx => `${ctx.dataset.label}: ${ctx.raw !== null && ctx.raw !== undefined ? ctx.raw.toFixed(2) : '0.00'}%`
+                label: function(context) {
+                  const val = context.raw;
+                  return ` ${context.dataset.label}: ${val !== undefined && val !== null ? val.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0,00'}%`;
+                }
               }
             }
           },
           scales: {
             x: {
-              grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' },
-              ticks: { color: isDark ? '#94A3B8' : '#475569', maxRotation: 45, minRotation: 0 }
+              grid: { display: false },
+              ticks: {
+                color: isDark ? '#64748B' : '#94A3B8',
+                font: { family: 'JetBrains Mono', size: 10 },
+                maxRotation: 45
+              }
             },
             y: {
-              grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' },
+              grid: { color: isDark ? 'rgba(51, 65, 85, 0.3)' : 'rgba(226, 232, 240, 0.8)' },
               ticks: {
-                color: isDark ? '#94A3B8' : '#475569',
-                callback: v => `${v.toFixed(1)}%`
+                color: isDark ? '#64748B' : '#94A3B8',
+                font: { family: 'JetBrains Mono', size: 10 },
+                callback: v => v.toFixed(1) + '%'
               }
             }
           }
         }
       });
-    }
+    } }
 
     // 9. RENDERIZADO DINÁMICO DE TARJETAS KPIS Y GRÁFICOS
     function renderAllChartsAndKPIs() {
