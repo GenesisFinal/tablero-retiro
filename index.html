@@ -1830,9 +1830,9 @@
           rentDatasets.push({
             label: prodConfig[prod].label,
             data: slice,
-            borderColor: prodConfig[prod].color,
-            backgroundColor: prodConfig[prod].color + '1A',
-            tension: 0.35, borderWidth: 2, fill: true
+            backgroundColor: prodConfig[prod].color,
+            borderRadius: 3,
+            borderWidth: 0
           });
           for (let i = start; i <= end; i++) totRTab2 += (s[i] || 0);
         });
@@ -1841,23 +1841,32 @@
         if (badgeRentas) badgeRentas.textContent = formatInMillions(totRTab2);
 
         window.chartRentas = new Chart(ctxRentasTab2, {
-          type: 'line',
+          type: 'bar',
           data: { labels: datesSlice, datasets: rentDatasets },
           options: {
             responsive: true, maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
             plugins: {
               legend: { position: 'top', labels: { color: isDark ? '#94A3B8' : '#475569', font: { family: 'Sora', size: 10 } } },
-              tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${currUnit} ${ctx.raw.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} M` } }
+              tooltip: {
+                callbacks: {
+                  label: ctx => `${ctx.dataset.label}: ${currUnit} ${ctx.raw.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} M`,
+                  footer: items => {
+                    const sum = items.reduce((a, b) => a + (b.raw || 0), 0);
+                    return `Total: ${currUnit} ${sum.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} M`;
+                  }
+                }
+              }
             },
             scales: {
-              x: { grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }, ticks: { color: isDark ? '#94A3B8' : '#475569' } },
-              y: { grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }, ticks: { color: isDark ? '#94A3B8' : '#475569', callback: v => `${currUnit} ${v.toLocaleString('es-AR')} M` } }
+              x: { stacked: true, grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }, ticks: { color: isDark ? '#94A3B8' : '#475569' } },
+              y: { stacked: true, grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }, ticks: { color: isDark ? '#94A3B8' : '#475569', callback: v => `${currUnit} ${v.toLocaleString('es-AR')} M` } }
             }
           }
         });
       }
 
-      // 2. Rescates Pagados por Producto (chart-rescates)
+      // 2. Rescates Pagados por Producto (chart-rescates) - BARRAS APILADAS
       const ctxRescatesTab2 = document.getElementById('chart-rescates')?.getContext('2d');
       if (ctxRescatesTab2) {
         if (window.chartRescates) window.chartRescates.destroy();
@@ -1870,9 +1879,9 @@
           rescDatasets.push({
             label: prodConfig[prod].label,
             data: slice,
-            borderColor: prodConfig[prod].color,
-            backgroundColor: prodConfig[prod].color + '1A',
-            tension: 0.35, borderWidth: 2, fill: true
+            backgroundColor: prodConfig[prod].color,
+            borderRadius: 3,
+            borderWidth: 0
           });
           for (let i = start; i <= end; i++) totResTab2 += (s[i] || 0);
         });
@@ -1881,23 +1890,32 @@
         if (badgeResc) badgeResc.textContent = formatInMillions(totResTab2);
 
         window.chartRescates = new Chart(ctxRescatesTab2, {
-          type: 'line',
+          type: 'bar',
           data: { labels: datesSlice, datasets: rescDatasets },
           options: {
             responsive: true, maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
             plugins: {
               legend: { position: 'top', labels: { color: isDark ? '#94A3B8' : '#475569', font: { family: 'Sora', size: 10 } } },
-              tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${currUnit} ${ctx.raw.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} M` } }
+              tooltip: {
+                callbacks: {
+                  label: ctx => `${ctx.dataset.label}: ${currUnit} ${ctx.raw.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} M`,
+                  footer: items => {
+                    const sum = items.reduce((a, b) => a + (b.raw || 0), 0);
+                    return `Total: ${currUnit} ${sum.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} M`;
+                  }
+                }
+              }
             },
             scales: {
-              x: { grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }, ticks: { color: isDark ? '#94A3B8' : '#475569' } },
-              y: { grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }, ticks: { color: isDark ? '#94A3B8' : '#475569', callback: v => `${currUnit} ${v.toLocaleString('es-AR')} M` } }
+              x: { stacked: true, grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }, ticks: { color: isDark ? '#94A3B8' : '#475569' } },
+              y: { stacked: true, grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }, ticks: { color: isDark ? '#94A3B8' : '#475569', callback: v => `${currUnit} ${v.toLocaleString('es-AR')} M` } }
             }
           }
         });
       }
 
-      // 3. CT Activo - Etapa de Ahorro (chart-ct-act) - Se excluye RVP y ART (siempre CT=0 en ahorro)
+      // 3. CT Activo - Etapa de Ahorro (chart-ct-act) - BARRAS APILADAS
       const ctxCtActTab2 = document.getElementById('chart-ct-act')?.getContext('2d');
       if (ctxCtActTab2) {
         if (window.chartCtAct) window.chartCtAct.destroy();
@@ -1909,9 +1927,9 @@
           ctActDatasets.push({
             label: `${prodConfig[prod].label} (Ahorro)`,
             data: slice,
-            borderColor: prodConfig[prod].color,
-            backgroundColor: prodConfig[prod].color + '1A',
-            tension: 0.35, borderWidth: 2, fill: true
+            backgroundColor: prodConfig[prod].color,
+            borderRadius: 3,
+            borderWidth: 0
           });
         });
 
@@ -1919,23 +1937,32 @@
         if (badgeCtAct) badgeCtAct.textContent = formatInMillions(ctAct[end] || 0);
 
         window.chartCtAct = new Chart(ctxCtActTab2, {
-          type: 'line',
+          type: 'bar',
           data: { labels: datesSlice, datasets: ctActDatasets },
           options: {
             responsive: true, maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
             plugins: {
               legend: { position: 'top', labels: { color: isDark ? '#94A3B8' : '#475569', font: { family: 'Sora', size: 10 } } },
-              tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${currUnit} ${ctx.raw.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} M` } }
+              tooltip: {
+                callbacks: {
+                  label: ctx => `${ctx.dataset.label}: ${currUnit} ${ctx.raw.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} M`,
+                  footer: items => {
+                    const sum = items.reduce((a, b) => a + (b.raw || 0), 0);
+                    return `Total Ahorro: ${currUnit} ${sum.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} M`;
+                  }
+                }
+              }
             },
             scales: {
-              x: { grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }, ticks: { color: isDark ? '#94A3B8' : '#475569' } },
-              y: { grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }, ticks: { color: isDark ? '#94A3B8' : '#475569', callback: v => `${currUnit} ${v.toLocaleString('es-AR')} M` } }
+              x: { stacked: true, grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }, ticks: { color: isDark ? '#94A3B8' : '#475569' } },
+              y: { stacked: true, grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }, ticks: { color: isDark ? '#94A3B8' : '#475569', callback: v => `${currUnit} ${v.toLocaleString('es-AR')} M` } }
             }
           }
         });
       }
 
-      // 4. CT Pasivo - Etapa de Rentas (chart-ct-pas)
+      // 4. CT Pasivo - Etapa de Rentas (chart-ct-pas) - BARRAS APILADAS
       const ctxCtPasTab2 = document.getElementById('chart-ct-pas')?.getContext('2d');
       if (ctxCtPasTab2) {
         if (window.chartCtPas) window.chartCtPas.destroy();
@@ -1947,9 +1974,9 @@
           ctPasDatasets.push({
             label: `${prodConfig[prod].label} (Rentas)`,
             data: slice,
-            borderColor: prodConfig[prod].color,
-            backgroundColor: prodConfig[prod].color + '1A',
-            tension: 0.35, borderWidth: 2, fill: true
+            backgroundColor: prodConfig[prod].color,
+            borderRadius: 3,
+            borderWidth: 0
           });
         });
 
@@ -1957,24 +1984,32 @@
         if (badgeCtPas) badgeCtPas.textContent = formatInMillions(ctPas[end] || 0);
 
         window.chartCtPas = new Chart(ctxCtPasTab2, {
-          type: 'line',
+          type: 'bar',
           data: { labels: datesSlice, datasets: ctPasDatasets },
           options: {
             responsive: true, maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
             plugins: {
               legend: { position: 'top', labels: { color: isDark ? '#94A3B8' : '#475569', font: { family: 'Sora', size: 10 } } },
-              tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${currUnit} ${ctx.raw.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} M` } }
+              tooltip: {
+                callbacks: {
+                  label: ctx => `${ctx.dataset.label}: ${currUnit} ${ctx.raw.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} M`,
+                  footer: items => {
+                    const sum = items.reduce((a, b) => a + (b.raw || 0), 0);
+                    return `Total Rentas: ${currUnit} ${sum.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} M`;
+                  }
+                }
+              }
             },
             scales: {
-              x: { grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }, ticks: { color: isDark ? '#94A3B8' : '#475569' } },
-              y: { grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }, ticks: { color: isDark ? '#94A3B8' : '#475569', callback: v => `${currUnit} ${v.toLocaleString('es-AR')} M` } }
+              x: { stacked: true, grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }, ticks: { color: isDark ? '#94A3B8' : '#475569' } },
+              y: { stacked: true, grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }, ticks: { color: isDark ? '#94A3B8' : '#475569', callback: v => `${currUnit} ${v.toLocaleString('es-AR')} M` } }
             }
           }
         });
       }
 
-      // 5. Flujo Neto Mensual (chart-flujo-neto-tab2)
-      const ctxFlujoNetoTab2 = document.getElementById('chart-flujo-neto-tab2')?.getContext('2d');
+      // 5. const ctxFlujoNetoTab2 = document.getElementById('chart-flujo-neto-tab2')?.getContext('2d');
       if (ctxFlujoNetoTab2) {
         if (window.chartFlujoNetoTab2) window.chartFlujoNetoTab2.destroy();
         const pSlice = primas.slice(start, end + 1);
