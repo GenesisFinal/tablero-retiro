@@ -2009,7 +2009,8 @@
         });
       }
 
-      // 5. const ctxFlujoNetoTab2 = document.getElementById('chart-flujo-neto-tab2')?.getContext('2d');
+      // 5. Flujo Neto Mensual (chart-flujo-neto-tab2)
+      const ctxFlujoNetoTab2 = document.getElementById('chart-flujo-neto-tab2')?.getContext('2d');
       if (ctxFlujoNetoTab2) {
         if (window.chartFlujoNetoTab2) window.chartFlujoNetoTab2.destroy();
         const pSlice = primas.slice(start, end + 1);
