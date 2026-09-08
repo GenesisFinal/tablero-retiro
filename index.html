@@ -1394,17 +1394,17 @@
           <div class="glass-card p-3 rounded-xl space-y-1">
             <div class="text-[11px] text-slate-500 dark:text-slate-400">Primas Emitidas</div>
             <div class="text-sm font-bold font-mono text-[#047857] dark:text-[#3AC792]">${formatInMillions(sumPrimas)}</div>
-            <div class="text-[10px]">${hasValidPrev ? formatVarBadge(sumPrimas, prevPrimas, false, flujosIpcAdjusted, end, prevEnd) : '<span class="text-slate-400">Base</span>'}</div>
+            <div class="text-[10px]">${hasValidPrev ? formatVarBadge(sumPrimas, prevPrimas, false, flujosIpcAdjusted, end, effPrevEnd) : '<span class="text-slate-400">Base</span>'}</div>
           </div>
           <div class="glass-card p-3 rounded-xl space-y-1">
             <div class="text-[11px] text-slate-500 dark:text-slate-400">Rentas Pagadas</div>
             <div class="text-sm font-bold font-mono text-[#1D4ED8] dark:text-[#4183CA]">${formatInMillions(sumRentas)}</div>
-            <div class="text-[10px]">${hasValidPrev ? formatVarBadge(sumRentas, prevRentas, false, flujosIpcAdjusted, end, prevEnd) : '<span class="text-slate-400">Base</span>'}</div>
+            <div class="text-[10px]">${hasValidPrev ? formatVarBadge(sumRentas, prevRentas, false, flujosIpcAdjusted, end, effPrevEnd) : '<span class="text-slate-400">Base</span>'}</div>
           </div>
           <div class="glass-card p-3 rounded-xl space-y-1">
             <div class="text-[11px] text-slate-500 dark:text-slate-400">Rescates Pagados</div>
             <div class="text-sm font-bold font-mono text-[#DC2626] dark:text-[#FF4C60]">${formatInMillions(sumRescates)}</div>
-            <div class="text-[10px]">${hasValidPrev ? formatVarBadge(sumRescates, prevRescates, false, flujosIpcAdjusted, end, prevEnd) : '<span class="text-slate-400">Base</span>'}</div>
+            <div class="text-[10px]">${hasValidPrev ? formatVarBadge(sumRescates, prevRescates, false, flujosIpcAdjusted, end, effPrevEnd) : '<span class="text-slate-400">Base</span>'}</div>
           </div>
           <div class="glass-card p-3 rounded-xl space-y-1">
             <div class="text-[11px] text-slate-500 dark:text-slate-400">Ratio Rescate / CT</div>
