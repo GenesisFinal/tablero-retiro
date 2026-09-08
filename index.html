@@ -2063,7 +2063,7 @@
         });
       }
 
-      // 6. Ratio Rescates / Primas (%) (chart-ratio-rescates)
+      // 6. Ratio Rescates / Primas (%) (chart-ratio-rescates) - BARRAS
       const ctxRatioRescates = document.getElementById('chart-ratio-rescates')?.getContext('2d');
       if (ctxRatioRescates) {
         if (window.chartRatioRescates) window.chartRatioRescates.destroy();
@@ -2086,17 +2086,17 @@
         if (badgeRatio) badgeRatio.textContent = avgRatio.toFixed(2) + '%';
 
         window.chartRatioRescates = new Chart(ctxRatioRescates, {
-          type: 'line',
+          type: 'bar',
           data: {
             labels: datesSlice,
             datasets: [{
               label: 'Ratio Rescates / Primas (%)',
               data: ratioSlice,
-              borderColor: '#FF593E',
-              backgroundColor: 'rgba(255, 89, 62, 0.15)',
-              tension: 0.35,
-              borderWidth: 2,
-              fill: true
+              backgroundColor: '#FF593E',
+              borderRadius: 4,
+              borderWidth: 0,
+              barPercentage: 0.75,
+              categoryPercentage: 0.8
             }]
           },
           options: {
@@ -2105,12 +2105,7 @@
               legend: { position: 'top', labels: { color: isDark ? '#94A3B8' : '#475569', font: { family: 'Sora', size: 10 } } },
               tooltip: {
                 callbacks: {
-                  label: ctx => {
-                    const idx = ctx.dataIndex;
-                    const pVal = (pSlice[idx] || 0) / 1e6;
-                    const resVal = (resSlice[idx] || 0) / 1e6;
-                    return `Ratio: ${ctx.raw.toFixed(2)}% (Rescates: ${currUnit}${resVal.toFixed(2)}M / Primas: ${currUnit}${pVal.toFixed(2)}M)`;
-                  }
+                  label: ctx => `Ratio: ${ctx.raw.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`
                 }
               }
             },
@@ -2123,177 +2118,348 @@
       }
     }
 
-    // 11. TAB 4: SERIES CRONOLÓGICAS (MATRIZ MAESTRA)
     function renderSeriesTable() {
+
       const tbody = document.getElementById('tbody-master-table');
+
       if (!tbody) return;
 
+
+
       const fullTotPrimas = getFilteredMetricSeries('primas', false);
+
       const fullTotRentas = getFilteredMetricSeries('rentas', false);
+
       const fullTotRescates = getFilteredMetricSeries('rescates', false);
+
       const fullTotCtAct = getFilteredMetricSeries('ct_act', false);
+
       const fullTotCtPas = getFilteredMetricSeries('ct_pas', false);
+
       const fullTotCtGlobal = getFilteredMetricSeries('ct', false);
+
       const fullAsegAct = getFilteredMetricSeries('aseg_act');
+
       const fullAsegPas = getFilteredMetricSeries('aseg_pas');
+
+
 
       const rentPesosSeries = DB.cube?.individual?.rentabilidad?.pesos || [];
+
       const rentDolarSeries = DB.cube?.individual?.rentabilidad?.dolares || [];
 
+
+
       let rowsHtml = '';
+
       for (let i = N - 1; i >= 0; i--) {
+
         const dStr = DATES[i];
+
         const tc_i = FX[i] || 1.0;
+
         const ipc_i = IPC_MONTHLY[i] || 0;
+
         const ctTot = fullTotCtGlobal[i] || 0;
+
         const ctAct = fullTotCtAct[i] || 0;
+
         const ctPas = fullTotCtPas[i] || 0;
+
         const primas = fullTotPrimas[i] || 0;
+
         const rentas = fullTotRentas[i] || 0;
+
         const rescates = fullTotRescates[i] || 0;
+
         const asegAct = fullAsegAct[i] || 0;
+
         const asegPas = fullAsegPas[i] || 0;
+
         const rentP = rentPesosSeries[i] || 0;
+
         const rentD = rentDolarSeries[i] || 0;
 
+
+
         rowsHtml += `
+
           <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors text-xs">
+
             <td class="py-2.5 px-3 font-mono font-bold text-slate-900 dark:text-white whitespace-nowrap">${dStr}</td>
+
             <td class="py-2.5 px-3 text-right font-mono font-bold text-[#E20039] whitespace-nowrap">$ ${formatNumber(ctTot / 1e6)} M</td>
+
             <td class="py-2.5 px-3 text-right font-mono text-[#047857] dark:text-[#3AC792] whitespace-nowrap">$ ${formatNumber(ctAct / 1e6)} M</td>
+
             <td class="py-2.5 px-3 text-right font-mono text-[#1D4ED8] dark:text-[#4183CA] whitespace-nowrap">$ ${formatNumber(ctPas / 1e6)} M</td>
+
             <td class="py-2.5 px-3 text-right font-mono text-slate-700 dark:text-slate-200 whitespace-nowrap">$ ${formatNumber(primas / 1e6)} M</td>
+
             <td class="py-2.5 px-3 text-right font-mono text-slate-700 dark:text-slate-200 whitespace-nowrap">$ ${formatNumber(rentas / 1e6)} M</td>
+
             <td class="py-2.5 px-3 text-right font-mono text-[#DC2626] dark:text-[#FF4C60] whitespace-nowrap">$ ${formatNumber(rescates / 1e6)} M</td>
+
             <td class="py-2.5 px-3 text-right font-mono text-slate-600 dark:text-slate-300 whitespace-nowrap">${formatNumber(asegAct)}</td>
+
             <td class="py-2.5 px-3 text-right font-mono text-slate-600 dark:text-slate-300 whitespace-nowrap">${formatNumber(asegPas)}</td>
+
             <td class="py-2.5 px-3 text-right font-mono text-[#B45309] dark:text-[#F8CC59] whitespace-nowrap">$ ${tc_i.toFixed(2)}</td>
+
             <td class="py-2.5 px-3 text-right font-mono text-slate-600 dark:text-slate-300 whitespace-nowrap">${ipc_i.toFixed(2)}%</td>
+
             <td class="py-2.5 px-3 text-right font-mono text-[#1D4ED8] dark:text-[#4183CA] font-bold whitespace-nowrap">${formatPercent(rentP)}</td>
+
             <td class="py-2.5 px-3 text-right font-mono text-[#047857] dark:text-[#3AC792] font-bold whitespace-nowrap">${formatPercent(rentD)}</td>
+
           </tr>
+
         `;
+
       }
+
       tbody.innerHTML = rowsHtml;
+
     }
+
+
 
     // 12. EXPORTADORES
+
     function exportTableToCSV(filename = 'tablero_retiro_series.csv') {
+
       const rows = [];
+
       rows.push(['Periodo', 'CT Total ($ M)', 'CT Ahorro ($ M)', 'CT Rentas ($ M)', 'Primas ($ M)', 'Rentas ($ M)', 'Rescates ($ M)', 'Asegurados Activos', 'Beneficiarios Pasivos', 'TC BNA ($)', 'IPC Mensual (%)', 'Rentabilidad Pesos (%)', 'Rentabilidad USD (%)']);
+
       
+
       const fullTotPrimas = getFilteredMetricSeries('primas', false);
+
       const fullTotRentas = getFilteredMetricSeries('rentas', false);
+
       const fullTotRescates = getFilteredMetricSeries('rescates', false);
+
       const fullTotCtAct = getFilteredMetricSeries('ct_act', false);
+
       const fullTotCtPas = getFilteredMetricSeries('ct_pas', false);
+
       const fullTotCtGlobal = getFilteredMetricSeries('ct', false);
+
       const fullAsegAct = getFilteredMetricSeries('aseg_act');
+
       const fullAsegPas = getFilteredMetricSeries('aseg_pas');
+
       const rentP = DB.cube?.individual?.rentabilidad?.pesos || [];
+
       const rentD = DB.cube?.individual?.rentabilidad?.dolares || [];
 
+
+
       for (let i = N - 1; i >= 0; i--) {
+
         rows.push([
+
           DATES[i],
+
           ((fullTotCtGlobal[i] || 0) / 1e6).toFixed(2),
+
           ((fullTotCtAct[i] || 0) / 1e6).toFixed(2),
+
           ((fullTotCtPas[i] || 0) / 1e6).toFixed(2),
+
           ((fullTotPrimas[i] || 0) / 1e6).toFixed(2),
+
           ((fullTotRentas[i] || 0) / 1e6).toFixed(2),
+
           ((fullTotRescates[i] || 0) / 1e6).toFixed(2),
+
           Math.round(fullAsegAct[i] || 0),
+
           Math.round(fullAsegPas[i] || 0),
+
           (FX[i] || 1.0).toFixed(2),
+
           (IPC_MONTHLY[i] || 0).toFixed(2),
+
           ((rentP[i] || 0) * 100).toFixed(2),
+
           ((rentD[i] || 0) * 100).toFixed(2)
+
         ]);
+
       }
+
+
 
       const csvContent = "data:text/csv;charset=utf-8," + rows.map(e => e.join(";")).join("\n");
+
       const encodedUri = encodeURI(csvContent);
+
       const link = document.createElement("a");
+
       link.setAttribute("href", encodedUri);
+
       link.setAttribute("download", filename);
+
       document.body.appendChild(link);
+
       link.click();
+
       document.body.removeChild(link);
+
     }
+
+
 
     function exportJSONDataset() {
+
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(DB, null, 2));
+
       const downloadAnchor = document.createElement('a');
+
       downloadAnchor.setAttribute("href", dataStr);
+
       downloadAnchor.setAttribute("download", "data_retiro_multidimensional.json");
+
       document.body.appendChild(downloadAnchor);
+
       downloadAnchor.click();
+
       downloadAnchor.remove();
+
     }
+
+
 
     // 13. ACTUALIZACIÓN AUTOMÁTICA Y A DEMANDA
+
     async function loadExternalDatasetAndRender() {
+
       try {
+
         const response = await fetch('./data_retiro.json?v=' + Date.now(), { cache: 'no-store' });
+
         if (response.ok) {
+
           const json = await response.json();
+
           if (json && json.cube) {
+
             DB = json;
+
             DATES = json.dates || [];
+
             N = DATES.length;
+
             FX = (json.macro && json.macro.FX) || [];
+
             IPC_MONTHLY = (json.macro && json.macro.IPC_MONTHLY) || [];
+
             CUM_IPC = new Array(N).fill(1.0);
+
             for (let i = 1; i < N; i++) {
+
               CUM_IPC[i] = CUM_IPC[i - 1] * (1.0 + (IPC_MONTHLY[i] || 0) / 100.0);
+
             }
+
           }
+
         }
+
       } catch (err) {
+
         console.warn('[AGMD Dataset] Usando dataset embebido como fallback:', err);
+
       }
+
       renderTables();
+
       renderAllChartsAndKPIs();
+
     }
+
+
 
     function manualRefresh() {
+
       const btn = document.getElementById('btn-manual-sync');
+
       if (btn) btn.classList.add('animate-spin');
+
       loadExternalDatasetAndRender().then(() => {
+
         setTimeout(() => { if (btn) btn.classList.remove('animate-spin'); }, 600);
+
       });
+
     }
+
+
 
     // 14. INICIALIZACIÓN ROBUSTA Y SEGURA
+
     function initDashboard() {
+
       try {
+
         const initialTheme = getPreferredTheme();
+
         applyTheme(initialTheme);
+
       } catch(e) { console.warn('Theme init warning:', e); }
 
+
+
       try {
+
         setEjercicio('12m');
+
         setMoneda('c');
+
         updateFilterButtonsUI();
+
         updateFilterDescription();
+
         setCtChartIpc(false);
+
         setFlujosChartIpc(false);
+
       } catch(e) { console.warn('Filters init warning:', e); }
 
+
+
       try { renderTables(); } catch(e) { console.warn('Tables init warning:', e); }
+
       try { renderMacroChart(); } catch(e) { console.warn('Macro chart warning:', e); }
+
       try { renderAllChartsAndKPIs(); } catch(e) { console.warn('KPIs init warning:', e); }
+
       try { renderSeriesTable(); } catch(e) { console.warn('Series table warning:', e); }
+
       try { if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons(); } catch(e) {}
 
+
+
       loadExternalDatasetAndRender();
+
     }
 
+
+
     if (document.readyState === 'loading') {
+
       window.addEventListener('DOMContentLoaded', initDashboard);
+
     } else {
+
       initDashboard();
+
     }
+
   </script>
+
 </body>
+
 </html>
