@@ -1528,7 +1528,7 @@
       }
 
       // ==========================================
-      // TAB 1 - GRÁFICO 2: FLUJOS OPERATIVOS
+      // TAB 1 - GRÁFICO 2: FLUJOS OPERATIVOS (BARRAS AGRUPADAS)
       // ==========================================
       const ctxFlujos = document.getElementById('chart-flujos-main')?.getContext('2d');
       if (ctxFlujos) {
@@ -1539,22 +1539,47 @@
 
         const datasets = [];
         if (chartFlujosSeriesMode === 'primas' || chartFlujosSeriesMode === 'all') {
-          datasets.push({ label: 'Primas Emitidas', data: pSlice, borderColor: '#3AC792', backgroundColor: 'rgba(58, 199, 146, 0.15)', tension: 0.35, borderWidth: 2 });
+          datasets.push({
+            label: 'Primas Emitidas',
+            data: pSlice,
+            backgroundColor: '#3AC792',
+            borderRadius: 4,
+            borderWidth: 0,
+            barPercentage: 0.85,
+            categoryPercentage: 0.8
+          });
         }
         if (chartFlujosSeriesMode === 'rentas' || chartFlujosSeriesMode === 'all') {
-          datasets.push({ label: 'Rentas Pagadas', data: rSlice, borderColor: '#4183CA', backgroundColor: 'rgba(65, 131, 202, 0.15)', tension: 0.35, borderWidth: 2 });
+          datasets.push({
+            label: 'Rentas Pagadas',
+            data: rSlice,
+            backgroundColor: '#4183CA',
+            borderRadius: 4,
+            borderWidth: 0,
+            barPercentage: 0.85,
+            categoryPercentage: 0.8
+          });
         }
         if (chartFlujosSeriesMode === 'rescates' || chartFlujosSeriesMode === 'all') {
-          datasets.push({ label: 'Rescates Pagados', data: resSlice, borderColor: '#E20039', backgroundColor: 'rgba(226, 0, 57, 0.15)', tension: 0.35, borderWidth: 2 });
+          datasets.push({
+            label: 'Rescates Pagados',
+            data: resSlice,
+            backgroundColor: '#E20039',
+            borderRadius: 4,
+            borderWidth: 0,
+            barPercentage: 0.85,
+            categoryPercentage: 0.8
+          });
         }
 
         const flujosIpcLabel = flujosIpcAdjusted ? ` (Ajustado IPC a precios de ${DATES[end]})` : ' (Nominal)';
 
         window.chartFlujosMain = new Chart(ctxFlujos, {
-          type: 'line',
+          type: 'bar',
           data: { labels: datesSlice, datasets },
           options: {
             responsive: true, maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
             plugins: {
               legend: { position: 'top', labels: { color: isDark ? '#94A3B8' : '#475569', font: { family: 'Sora', size: 11 } } },
               tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${currUnit} ${ctx.raw.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} M${flujosIpcLabel}` } }
