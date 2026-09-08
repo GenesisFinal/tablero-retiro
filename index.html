@@ -1862,13 +1862,13 @@
         });
       }
 
-      // 3. CT Activo - Etapa de Ahorro (chart-ct-act)
+      // 3. CT Activo - Etapa de Ahorro (chart-ct-act) - Se excluye RVP y ART (siempre CT=0 en ahorro)
       const ctxCtActTab2 = document.getElementById('chart-ct-act')?.getContext('2d');
       if (ctxCtActTab2) {
         if (window.chartCtAct) window.chartCtAct.destroy();
         const ctActDatasets = [];
 
-        selectedProds.forEach(prod => {
+        selectedProds.filter(prod => prod !== 'rvp_art').forEach(prod => {
           const s = getProductMetricSeries('ct_act', prod, selectedSegs, ctIpcAdjusted, end);
           const slice = s.slice(start, end + 1).map(v => v / 1e6);
           ctActDatasets.push({
