@@ -839,24 +839,17 @@
       return (val * 100).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%';
     }
 
-    function formatVarBadge(currVal, prevVal, isMonthly = false, isInflationAdjusted = false, currIdx = 0, prevIdx = 0) {
-      if (prevVal === 0 || isNaN(prevVal) || isNaN(currVal)) {
+    function formatVarBadge(currVal, prevVal, isReal = false) {
+      if (!prevVal || prevVal === 0 || isNaN(prevVal) || isNaN(currVal)) {
         return `<span class="text-slate-400 font-mono text-[11px]">N/D</span>`;
       }
-      
-      let effectivePrev = prevVal;
-      if (isInflationAdjusted && currIdx > prevIdx && CUM_IPC[prevIdx] && CUM_IPC[currIdx]) {
-        const ipcFactor = CUM_IPC[currIdx] / CUM_IPC[prevIdx];
-        effectivePrev = prevVal * ipcFactor;
-      }
-
-      const pct = (currVal - effectivePrev) / Math.abs(effectivePrev);
+      const pct = (currVal - prevVal) / Math.abs(prevVal);
       const isPos = pct >= 0;
       const colorClass = isPos ? 'text-[#047857] dark:text-[#3AC792]' : 'text-[#DC2626] dark:text-[#FF4C60]';
       const icon = isPos ? 'fa-arrow-up' : 'fa-arrow-down';
       const sign = isPos ? '+' : '';
       const absVal = Math.abs(pct * 100).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + '%';
-      const tag = isInflationAdjusted ? ' <span class="text-[9px] font-normal opacity-80">(Real)</span>' : '';
+      const tag = isReal ? ' <span class="text-[9px] font-normal opacity-80">(Real)</span>' : '';
       return `<span class="${colorClass} font-mono inline-flex items-center gap-1 font-semibold text-[11px]"><i class="fas ${icon} text-[8px]"></i>${sign}${absVal}${tag}</span>`;
     }
 
@@ -1303,13 +1296,17 @@
       const fullTotAsegurados = fullAsegAct.map((v, i) => v + fullAsegPas[i]);
 
       // 1. KPIs de Compromiso Técnico
-      const ctCurr = fullTotCtGlobalNom[end] || 0;
+      const activeCtAct = ctIpcAdjusted ? fullTotCtActIpc : fullTotCtActNom;
+      const activeCtPas = ctIpcAdjusted ? fullTotCtPasIpc : fullTotCtPasNom;
+      const activeCtGlobal = ctIpcAdjusted ? fullTotCtGlobalIpc : fullTotCtGlobalNom;
+
+      const ctCurr = activeCtGlobal[end] || 0;
       const prevYearIdx = (end >= 12) ? (end - 12) : 0;
       const prevMonthIdx = (end > 0) ? (end - 1) : 0;
-      const ctPrevYear = (end >= 12) ? fullTotCtGlobalNom[end - 12] : (start > 0 ? fullTotCtGlobalNom[start - 1] : ctCurr);
-      const ctPrevMonth = (end > 0) ? fullTotCtGlobalNom[end - 1] : ctCurr;
-      const ctActFinal = fullTotCtActNom[end] || 0;
-      const ctPasFinal = fullTotCtPasNom[end] || 0;
+      const ctPrevYear = (end >= 12) ? activeCtGlobal[end - 12] : (start > 0 ? activeCtGlobal[start - 1] : ctCurr);
+      const ctPrevMonth = (end > 0) ? activeCtGlobal[end - 1] : ctCurr;
+      const ctActFinal = activeCtAct[end] || 0;
+      const ctPasFinal = activeCtPas[end] || 0;
 
       const ctGrid = document.getElementById('kpi-ct-grid');
       if (ctGrid) {
@@ -1321,8 +1318,8 @@
             </div>
             <div class="text-xl font-bold font-mono text-slate-900 dark:text-white">${formatInMillions(ctCurr)}</div>
             <div class="flex items-center justify-between text-[11px] pt-1 border-t border-slate-100 dark:border-slate-800/40">
-              <span class="text-slate-500">Var. Interanual: ${formatVarBadge(ctCurr, ctPrevYear, false, ctIpcAdjusted, end, prevYearIdx)}</span>
-              <span class="text-slate-500">Mensual: ${formatVarBadge(ctCurr, ctPrevMonth, true, ctIpcAdjusted, end, prevMonthIdx)}</span>
+              <span class="text-slate-500">Var. Interanual: ${formatVarBadge(ctCurr, ctPrevYear, ctIpcAdjusted)}</span>
+              <span class="text-slate-500">Mensual: ${formatVarBadge(ctCurr, ctPrevMonth, ctIpcAdjusted)}</span>
             </div>
           </div>
 
@@ -1397,17 +1394,17 @@
           <div class="glass-card p-3 rounded-xl space-y-1">
             <div class="text-[11px] text-slate-500 dark:text-slate-400">Primas Emitidas</div>
             <div class="text-sm font-bold font-mono text-[#047857] dark:text-[#3AC792]">${formatInMillions(sumPrimas)}</div>
-            <div class="text-[10px]">${hasValidPrev ? formatVarBadge(sumPrimas, prevPrimas, false, flujosIpcAdjusted, end, effPrevEnd) : '<span class="text-slate-400">Base</span>'}</div>
+            <div class="text-[10px]">${hasValidPrev ? formatVarBadge(sumPrimas, prevPrimas, flujosIpcAdjusted) : '<span class="text-slate-400">Base</span>'}</div>
           </div>
           <div class="glass-card p-3 rounded-xl space-y-1">
             <div class="text-[11px] text-slate-500 dark:text-slate-400">Rentas Pagadas</div>
             <div class="text-sm font-bold font-mono text-[#1D4ED8] dark:text-[#4183CA]">${formatInMillions(sumRentas)}</div>
-            <div class="text-[10px]">${hasValidPrev ? formatVarBadge(sumRentas, prevRentas, false, flujosIpcAdjusted, end, effPrevEnd) : '<span class="text-slate-400">Base</span>'}</div>
+            <div class="text-[10px]">${hasValidPrev ? formatVarBadge(sumRentas, prevRentas, flujosIpcAdjusted) : '<span class="text-slate-400">Base</span>'}</div>
           </div>
           <div class="glass-card p-3 rounded-xl space-y-1">
             <div class="text-[11px] text-slate-500 dark:text-slate-400">Rescates Pagados</div>
             <div class="text-sm font-bold font-mono text-[#DC2626] dark:text-[#FF4C60]">${formatInMillions(sumRescates)}</div>
-            <div class="text-[10px]">${hasValidPrev ? formatVarBadge(sumRescates, prevRescates, false, flujosIpcAdjusted, end, effPrevEnd) : '<span class="text-slate-400">Base</span>'}</div>
+            <div class="text-[10px]">${hasValidPrev ? formatVarBadge(sumRescates, prevRescates, flujosIpcAdjusted) : '<span class="text-slate-400">Base</span>'}</div>
           </div>
           <div class="glass-card p-3 rounded-xl space-y-1">
             <div class="text-[11px] text-slate-500 dark:text-slate-400">Ratio Rescate / CT</div>
@@ -1442,8 +1439,8 @@
             </div>
             <div class="text-xl font-bold font-mono text-slate-900 dark:text-white">${formatNumber(asegCurr)}</div>
             <div class="flex items-center justify-between text-[11px] pt-1 border-t border-slate-100 dark:border-slate-800/40 text-slate-500">
-              <span>Var. Interanual: ${formatVarBadge(asegCurr, asegPrevYear, false, false, end, prevYearIdx)}</span>
-              <span>Mensual: ${formatVarBadge(asegCurr, asegPrevMonth, true, false, end, prevMonthIdx)}</span>
+              <span>Var. Interanual: ${formatVarBadge(asegCurr, asegPrevYear, false)}</span>
+              <span>Mensual: ${formatVarBadge(asegCurr, asegPrevMonth, false)}</span>
             </div>
           </div>
 
