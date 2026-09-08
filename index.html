@@ -1365,11 +1365,21 @@
 
       let prevPrimas = 0, prevRentas = 0, prevRescates = 0;
       let hasValidPrev = false;
-      const prevStart = start - count;
-      const prevEnd = start - 1;
-      if (prevStart >= 0) {
+      let effPrevStart = -1, effPrevEnd = -1;
+      
+      // Comparación Interanual Homóloga (mismos meses del ejercicio/año anterior)
+      if (start >= 12 && end >= 12) {
+        effPrevStart = start - 12;
+        effPrevEnd = end - 12;
+      } else if (start - count >= 0) {
+        // Fallback secuencial si no hay 12 meses históricos hacia atrás
+        effPrevStart = start - count;
+        effPrevEnd = start - 1;
+      }
+
+      if (effPrevStart >= 0 && effPrevEnd >= effPrevStart) {
         hasValidPrev = true;
-        for (let i = prevStart; i <= prevEnd; i++) {
+        for (let i = effPrevStart; i <= effPrevEnd; i++) {
           prevPrimas += activePrimas[i] || 0;
           prevRentas += activeRentas[i] || 0;
           prevRescates += activeRescates[i] || 0;
