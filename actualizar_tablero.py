@@ -14,6 +14,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 # Buscar el archivo más reciente de dataset
 def get_latest_dataset_path():
     candidates = [
+        os.path.join(BASE_DIR, "09-26 Nuevo Dataset Retiro - Sep 26 (provisorio).xlsx"),
         os.path.join(BASE_DIR, "08-26 Nuevo Dataset Retiro - Ago 26.xlsx"),
         os.path.join(BASE_DIR, "Nuevo Dataset Retiro - Jul 26 v2.xlsx"),
         os.path.join(BASE_DIR, "Nuevo Dataset Retiro - Jul 26.xlsx")
@@ -24,18 +25,18 @@ def get_latest_dataset_path():
     found = glob.glob(os.path.join(BASE_DIR, "*Dataset Retiro*.xlsx"))
     if found:
         return max(found, key=os.path.getmtime)
-    return os.path.join(BASE_DIR, "08-26 Nuevo Dataset Retiro - Ago 26.xlsx")
+    return os.path.join(BASE_DIR, "09-26 Nuevo Dataset Retiro - Sep 26 (provisorio).xlsx")
 
 DATASET_PATH = get_latest_dataset_path()
 OUTPUT_JSON_PATH = os.path.join(BASE_DIR, "data_retiro.json")
 
-# Macro fallback series (Mar-23 to Ago-26, 42 periods)
+# Macro fallback series (Mar-23 to Sep-26, 43 periods)
 MACRO_FX_FALLBACK = [
     209.01, 222.68, 239.85, 256.70, 275.25, 350.00, 349.95, 350.00, 360.50, 808.45, 
     826.40, 842.20, 858.00, 876.50, 895.50, 912.00, 932.00, 953.50, 970.50, 992.00, 
     1011.50, 1032.00, 1053.50, 1064.75, 1074.00, 1170.00, 1188.00, 1205.00, 1374.00, 1342.00, 
     1380.00, 1445.00, 1451.50, 1455.00, 1447.00, 1397.00, 1382.00, 1391.00, 1408.00, 1482.00, 
-    1485.00, 1508.50
+    1485.00, 1508.50, 1531.00
 ]
 
 MACRO_IPC_FALLBACK = [
@@ -43,7 +44,7 @@ MACRO_IPC_FALLBACK = [
     20.61, 13.24, 11.01, 8.83, 4.18, 4.58, 4.03, 4.17, 3.47, 2.69, 
     2.43, 2.70, 2.21, 2.40, 3.73, 2.78, 1.50, 1.62, 1.90, 1.88, 
     2.08, 2.34, 2.47, 2.85, 2.88, 2.90, 3.38, 2.58, 2.15, 1.89, 
-    2.11, 1.70
+    2.11, 1.70, 1.60
 ]
 
 def normalize_text(t):
@@ -450,9 +451,9 @@ def main():
 
     final_payload = {
         "metadata": {
-            "version": "3.2.0-multidimensional-ago26",
+            "version": "3.3.0-multidimensional-sep26",
             "source": os.path.basename(dataset_file),
-            "updated_at": "2026-09-07T20:30:00Z",
+            "updated_at": "2026-10-07T11:25:00Z",
             "audit_status": "Validado Actuarialmente",
             "periods_count": len(dates)
         },
