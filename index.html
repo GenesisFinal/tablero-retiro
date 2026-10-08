@@ -302,11 +302,11 @@
           <!-- Poblado dinámicamente -->
         </div>
 
-        <!-- Gráfico Evolución CT (12 Meses) -->
+        <!-- Gráfico Evolución CT -->
         <div class="glass-card p-4 rounded-2xl space-y-3">
           <div class="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
             <i class="fas fa-chart-line text-brand-red"></i>
-            Evolución de Compromisos Técnicos (Últimos 12 Meses)
+            <span id="title-ct-main-text">Evolución de Compromisos Técnicos (Últimos 12 Meses)</span>
           </div>
           <div class="h-64 w-full">
             <canvas id="chart-ct-main"></canvas>
@@ -1332,8 +1332,14 @@
 
     function renderAllChartsAndKPIs() {
       const { start, end } = getIndicesForEjercicio(currentEjercicioKey);
-      const ct12mIdx = getCt12mIndices();
       const count = (end - start + 1);
+
+      // Actualizar título dinámico del gráfico de Compromisos Técnicos
+      const ejInfo = EJERCICIOS[currentEjercicioKey] || { label: 'Período Seleccionado' };
+      const ctTitleElem = document.getElementById('title-ct-main-text');
+      if (ctTitleElem) {
+        ctTitleElem.textContent = `Evolución de Compromisos Técnicos (${ejInfo.label})`;
+      }
 
       // Series Nominales
       const fullTotPrimasNom = getFilteredMetricSeries('primas', false);
@@ -1351,9 +1357,9 @@
       const fullTotRescatesIpc = getFilteredMetricSeries('rescates', true, end);
       const fullTotPasesIpc = getFilteredMetricSeries('pase_pasividad', true, end);
 
-      const fullTotCtActIpc = getFilteredMetricSeries('ct_act', true, ct12mIdx.end);
-      const fullTotCtPasIpc = getFilteredMetricSeries('ct_pas', true, ct12mIdx.end);
-      const fullTotCtGlobalIpc = getFilteredMetricSeries('ct', true, ct12mIdx.end);
+      const fullTotCtActIpc = getFilteredMetricSeries('ct_act', true, end);
+      const fullTotCtPasIpc = getFilteredMetricSeries('ct_pas', true, end);
+      const fullTotCtGlobalIpc = getFilteredMetricSeries('ct', true, end);
 
       // Series de asegurados (demográficas)
       const fullAsegAct = getFilteredMetricSeries('aseg_act');
@@ -1540,43 +1546,42 @@
       const ctPasChartSeries = ctIpcAdjusted ? fullTotCtPasIpc : fullTotCtPasNom;
       const ctGlobalChartSeries = ctIpcAdjusted ? fullTotCtGlobalIpc : fullTotCtGlobalNom;
 
-      renderCharts(start, end, ct12mIdx, ctActChartSeries, ctPasChartSeries, ctGlobalChartSeries, activePrimas, activeRentas, activeRescates, fullAsegAct, fullAsegPas, fullTotAsegurados);
+      renderCharts(start, end, ctActChartSeries, ctPasChartSeries, ctGlobalChartSeries, activePrimas, activeRentas, activeRescates, fullAsegAct, fullAsegPas, fullTotAsegurados);
       renderSeriesTable();
     }
 
     // 10. CONSTRUCCIÓN COMPLETA DE GRÁFICOS (TAB 1 Y TAB 2 CON MULTISELECCIÓN)
-    function renderCharts(start, end, ct12mIdx, ctAct, ctPas, ctGlobal, primas, rentas, rescates, asegAct, asegPas, asegTot) {
+    function renderCharts(start, end, ctAct, ctPas, ctGlobal, primas, rentas, rescates, asegAct, asegPas, asegTot) {
       const isDark = document.documentElement.classList.contains('dark');
       const datesSlice = DATES.slice(start, end + 1);
-      const ctDates12m = DATES.slice(ct12mIdx.start, ct12mIdx.end + 1);
       const currUnit = currentCurrency === 'd' ? 'u$s' : '$';
 
       // ==========================================
-      // TAB 1 - GRÁFICO 1: CT EVOLUCIÓN (12M)
+      // TAB 1 - GRÁFICO 1: CT EVOLUCIÓN
       // ==========================================
       const ctxCt = document.getElementById('chart-ct-main')?.getContext('2d');
       if (ctxCt) {
         if (window.chartCtMain) window.chartCtMain.destroy();
-        const ctAct12m = ctAct.slice(ct12mIdx.start, ct12mIdx.end + 1).map(v => v / 1e6);
-        const ctPas12m = ctPas.slice(ct12mIdx.start, ct12mIdx.end + 1).map(v => v / 1e6);
-        const ctTot12m = ctGlobal.slice(ct12mIdx.start, ct12mIdx.end + 1).map(v => v / 1e6);
+        const ctActSlice = ctAct.slice(start, end + 1).map(v => v / 1e6);
+        const ctPasSlice = ctPas.slice(start, end + 1).map(v => v / 1e6);
+        const ctTotSlice = ctGlobal.slice(start, end + 1).map(v => v / 1e6);
 
         const datasets = [];
         if (chartCtSeriesMode === 'both' || chartCtSeriesMode === 'act') {
-          datasets.push({ label: 'Ahorro (Activos)', data: ctAct12m, borderColor: '#3AC792', backgroundColor: 'rgba(58, 199, 146, 0.15)', fill: true, tension: 0.35, borderWidth: 2 });
+          datasets.push({ label: 'Ahorro (Activos)', data: ctActSlice, borderColor: '#3AC792', backgroundColor: 'rgba(58, 199, 146, 0.15)', fill: true, tension: 0.35, borderWidth: 2 });
         }
         if (chartCtSeriesMode === 'both' || chartCtSeriesMode === 'pas') {
-          datasets.push({ label: 'Rentas (Pasivos)', data: ctPas12m, borderColor: '#4183CA', backgroundColor: 'rgba(65, 131, 202, 0.15)', fill: true, tension: 0.35, borderWidth: 2 });
+          datasets.push({ label: 'Rentas (Pasivos)', data: ctPasSlice, borderColor: '#4183CA', backgroundColor: 'rgba(65, 131, 202, 0.15)', fill: true, tension: 0.35, borderWidth: 2 });
         }
         if (chartCtSeriesMode === 'both' || chartCtSeriesMode === 'all') {
-          datasets.push({ label: 'Total Consolidado', data: ctTot12m, borderColor: '#E20039', borderDash: [4, 4], fill: false, tension: 0.35, borderWidth: 2.5 });
+          datasets.push({ label: 'Total Consolidado', data: ctTotSlice, borderColor: '#E20039', borderDash: [4, 4], fill: false, tension: 0.35, borderWidth: 2.5 });
         }
 
-        const ipcLabel = ctIpcAdjusted ? ` (Ajustado IPC a precios de ${DATES[ct12mIdx.end]})` : ' (Nominal)';
+        const ipcLabel = ctIpcAdjusted ? ` (Ajustado IPC a precios de ${DATES[end]})` : ' (Nominal)';
 
         window.chartCtMain = new Chart(ctxCt, {
           type: 'line',
-          data: { labels: ctDates12m, datasets },
+          data: { labels: datesSlice, datasets },
           options: {
             responsive: true, maintainAspectRatio: false,
             interaction: { mode: 'index', intersect: false },
