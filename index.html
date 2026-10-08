@@ -239,9 +239,9 @@
         </span>
         <div class="flex gap-1.5 flex-wrap">
           <button id="t-prod-all" onclick="toggleProd('all')" class="btn-filter active px-2.5 py-1 rounded-lg text-xs transition">Todos</button>
-          <button id="t-ri" onclick="toggleProd('ri')" class="btn-filter active px-2.5 py-1 rounded-lg text-xs transition">Ret. Individual</button>
-          <button id="t-rc" onclick="toggleProd('rc')" class="btn-filter active px-2.5 py-1 rounded-lg text-xs transition">Ret. Colectivo</button>
-          <button id="t-rvp" onclick="toggleProd('rvp')" class="btn-filter active px-2.5 py-1 rounded-lg text-xs transition">RVP y ART</button>
+          <button id="t-ri" onclick="toggleProd('ri')" class="btn-filter px-2.5 py-1 rounded-lg text-xs transition">Ret. Individual</button>
+          <button id="t-rc" onclick="toggleProd('rc')" class="btn-filter px-2.5 py-1 rounded-lg text-xs transition">Ret. Colectivo</button>
+          <button id="t-rvp" onclick="toggleProd('rvp')" class="btn-filter px-2.5 py-1 rounded-lg text-xs transition">RVP y ART</button>
         </div>
       </div>
 
@@ -253,9 +253,9 @@
         </span>
         <div class="flex gap-1.5 flex-wrap" id="container-seg-buttons">
           <button id="t-seg-all" onclick="toggleDet('all')" class="btn-filter active px-2.5 py-1 rounded-lg text-xs transition">Todos</button>
-          <button id="t-neg" onclick="toggleDet('neg')" class="btn-filter active px-2.5 py-1 rounded-lg text-xs transition">Negocio Propio</button>
-          <button id="t-emp" onclick="toggleDet('emp')" class="btn-filter active px-2.5 py-1 rounded-lg text-xs transition">Plan Empleados</button>
-          <button id="t-vin" onclick="toggleDet('vin')" class="btn-filter active px-2.5 py-1 rounded-lg text-xs transition">Plan Vinculados</button>
+          <button id="t-neg" onclick="toggleDet('neg')" class="btn-filter px-2.5 py-1 rounded-lg text-xs transition">Negocio Propio</button>
+          <button id="t-emp" onclick="toggleDet('emp')" class="btn-filter px-2.5 py-1 rounded-lg text-xs transition">Plan Empleados</button>
+          <button id="t-vin" onclick="toggleDet('vin')" class="btn-filter px-2.5 py-1 rounded-lg text-xs transition">Plan Vinculados</button>
         </div>
       </div>
 
@@ -1019,7 +1019,10 @@
       } else {
         const keyMap = { 'ri': 'individual', 'rc': 'colectivo', 'rvp': 'rvp_art', 'individual': 'individual', 'colectivo': 'colectivo', 'rvp_art': 'rvp_art' };
         const p = keyMap[prodKey];
-        if (selectedProds.includes(p)) {
+        if (selectedProds.length === allProdsList.length) {
+          // Si estaban todos seleccionados, al hacer clic en uno específico se aísla ese producto
+          selectedProds = [p];
+        } else if (selectedProds.includes(p)) {
           if (selectedProds.length > 1) {
             selectedProds = selectedProds.filter(x => x !== p);
           } else {
@@ -1027,6 +1030,9 @@
           }
         } else {
           selectedProds.push(p);
+          if (selectedProds.length === allProdsList.length) {
+            selectedProds = ['individual', 'colectivo', 'rvp_art'];
+          }
         }
       }
 
@@ -1043,7 +1049,10 @@
       } else {
         const keyMap = { 'neg': 'negocio', 'emp': 'empleados', 'vin': 'vinculados', 'negocio': 'negocio', 'empleados': 'empleados', 'vinculados': 'vinculados' };
         const s = keyMap[segKey];
-        if (selectedSegs.includes(s)) {
+        if (selectedSegs.length === allSegsList.length) {
+          // Si estaban todos seleccionados, al hacer clic en uno específico se aísla ese segmento
+          selectedSegs = [s];
+        } else if (selectedSegs.includes(s)) {
           if (selectedSegs.length > 1) {
             selectedSegs = selectedSegs.filter(x => x !== s);
           } else {
@@ -1051,6 +1060,9 @@
           }
         } else {
           selectedSegs.push(s);
+          if (selectedSegs.length === allSegsList.length) {
+            selectedSegs = ['negocio', 'empleados', 'vinculados'];
+          }
         }
       }
 
@@ -1071,9 +1083,9 @@
       const btnRvp = document.getElementById('t-rvp');
 
       if (btnProdAll) btnProdAll.classList.toggle('active', isAllProds);
-      if (btnRi) btnRi.classList.toggle('active', selectedProds.includes('individual'));
-      if (btnRc) btnRc.classList.toggle('active', selectedProds.includes('colectivo'));
-      if (btnRvp) btnRvp.classList.toggle('active', selectedProds.includes('rvp_art'));
+      if (btnRi) btnRi.classList.toggle('active', !isAllProds && selectedProds.includes('individual'));
+      if (btnRc) btnRc.classList.toggle('active', !isAllProds && selectedProds.includes('colectivo'));
+      if (btnRvp) btnRvp.classList.toggle('active', !isAllProds && selectedProds.includes('rvp_art'));
 
       const isAllSegs = (selectedSegs.length === 3);
       const btnSegAll = document.getElementById('t-seg-all');
@@ -1082,9 +1094,9 @@
       const btnVin = document.getElementById('t-vin');
 
       if (btnSegAll) btnSegAll.classList.toggle('active', isAllSegs);
-      if (btnNeg) btnNeg.classList.toggle('active', selectedSegs.includes('negocio'));
-      if (btnEmp) btnEmp.classList.toggle('active', selectedSegs.includes('empleados'));
-      if (btnVin) btnVin.classList.toggle('active', selectedSegs.includes('vinculados'));
+      if (btnNeg) btnNeg.classList.toggle('active', !isAllSegs && selectedSegs.includes('negocio'));
+      if (btnEmp) btnEmp.classList.toggle('active', !isAllSegs && selectedSegs.includes('empleados'));
+      if (btnVin) btnVin.classList.toggle('active', !isAllSegs && selectedSegs.includes('vinculados'));
     }
 
     function updateFilterDescription() {
