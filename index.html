@@ -820,7 +820,8 @@
           const isDemographic = ['aseg_act', 'aseg_pas'].includes(metricKey);
 
           if (isDemographic) {
-            sum += (pVal + dVal);
+            if (usePesos) sum += pVal;
+            if (useUSD) sum += dVal;
           } else {
             if (usePesos) sum += pVal;
             if (useUSD) {
