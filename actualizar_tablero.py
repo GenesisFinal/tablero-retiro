@@ -14,6 +14,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 # Buscar el archivo más reciente de dataset
 def get_latest_dataset_path():
     candidates = [
+        os.path.join(BASE_DIR, "09-26 Nuevo Dataset Retiro - Sep 26 (definitivo).xlsx"),
         os.path.join(BASE_DIR, "09-26 Nuevo Dataset Retiro - Sep 26 (provisorio).xlsx"),
         os.path.join(BASE_DIR, "08-26 Nuevo Dataset Retiro - Ago 26.xlsx"),
         os.path.join(BASE_DIR, "Nuevo Dataset Retiro - Jul 26 v2.xlsx"),
@@ -25,7 +26,7 @@ def get_latest_dataset_path():
     found = glob.glob(os.path.join(BASE_DIR, "*Dataset Retiro*.xlsx"))
     if found:
         return max(found, key=os.path.getmtime)
-    return os.path.join(BASE_DIR, "09-26 Nuevo Dataset Retiro - Sep 26 (provisorio).xlsx")
+    return os.path.join(BASE_DIR, "09-26 Nuevo Dataset Retiro - Sep 26 (definitivo).xlsx")
 
 DATASET_PATH = get_latest_dataset_path()
 OUTPUT_JSON_PATH = os.path.join(BASE_DIR, "data_retiro.json")
@@ -451,9 +452,9 @@ def main():
 
     final_payload = {
         "metadata": {
-            "version": "3.3.0-multidimensional-sep26",
+            "version": "3.4.0-multidimensional-sep26-definitivo",
             "source": os.path.basename(dataset_file),
-            "updated_at": "2026-10-07T11:25:00Z",
+            "updated_at": "2026-10-13T15:47:00Z",
             "audit_status": "Validado Actuarialmente",
             "periods_count": len(dates)
         },
