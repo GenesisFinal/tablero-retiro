@@ -1,8 +1,8 @@
 {
   "metadata": {
-    "version": "3.3.0-multidimensional-sep26",
-    "source": "09-26 Nuevo Dataset Retiro - Sep 26 (provisorio).xlsx",
-    "updated_at": "2026-10-07T11:25:00Z",
+    "version": "3.4.0-multidimensional-sep26-definitivo",
+    "source": "09-26 Nuevo Dataset Retiro - Sep 26 (definitivo).xlsx",
+    "updated_at": "2026-10-13T15:47:00Z",
     "audit_status": "Validado Actuarialmente",
     "periods_count": 43
   },
@@ -3047,7 +3047,7 @@
             69310827.36000016,
             220802219.7099977,
             165303330.97999805,
-            170132173.0499991
+            167424353.56999907
           ],
           "rentas": [
             719649.7450211421,
@@ -3317,7 +3317,7 @@
             13.0,
             13.0,
             14.0,
-            16.0
+            15.0
           ],
           "cert_act": [
             473.0,
@@ -3634,7 +3634,7 @@
             17338408.910000008,
             17471470.090000015,
             17567544.860000007,
-            17663053.06
+            17663028.919999998
           ],
           "ct_pasivos": [
             113412.7919275323,
