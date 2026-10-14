@@ -45,7 +45,7 @@ MACRO_IPC_FALLBACK = [
     20.61, 13.24, 11.01, 8.83, 4.18, 4.58, 4.03, 4.17, 3.47, 2.69, 
     2.43, 2.70, 2.21, 2.40, 3.73, 2.78, 1.50, 1.62, 1.90, 1.88, 
     2.08, 2.34, 2.47, 2.85, 2.88, 2.90, 3.38, 2.58, 2.15, 1.89, 
-    2.11, 1.70, 1.60
+    2.11, 1.70, 1.90
 ]
 
 def normalize_text(t):
@@ -452,9 +452,9 @@ def main():
 
     final_payload = {
         "metadata": {
-            "version": "3.4.0-multidimensional-sep26-definitivo",
+            "version": "3.4.1-multidimensional-sep26-ipc-definitivo",
             "source": os.path.basename(dataset_file),
-            "updated_at": "2026-10-13T15:47:00Z",
+            "updated_at": "2026-10-13T21:05:00Z",
             "audit_status": "Validado Actuarialmente",
             "periods_count": len(dates)
         },
