@@ -1,8 +1,8 @@
 {
   "metadata": {
-    "version": "3.4.0-multidimensional-sep26-definitivo",
+    "version": "3.4.1-multidimensional-sep26-ipc-definitivo",
     "source": "09-26 Nuevo Dataset Retiro - Sep 26 (definitivo).xlsx",
-    "updated_at": "2026-10-13T15:47:00Z",
+    "updated_at": "2026-10-13T21:05:00Z",
     "audit_status": "Validado Actuarialmente",
     "periods_count": 43
   },
@@ -140,7 +140,7 @@
       1.89,
       2.11,
       1.7,
-      1.6
+      1.9
     ]
   },
   "cube": {
@@ -8284,8 +8284,8 @@
     "benchmarks": [
       {
         "p": "Último mes (Septiembre 2026 / L1M)",
-        "ipc_a": "1,60%",
-        "ipc_an": "20,98%",
+        "ipc_a": "1,90%",
+        "ipc_an": "25,34%",
         "tt_a": "1,07%",
         "tt_an": "13,62%",
         "tc_a": "1,49%",
@@ -8293,8 +8293,8 @@
       },
       {
         "p": "Últimos 3 meses (L3M)",
-        "ipc_a": "5,51%",
-        "ipc_an": "23,92%",
+        "ipc_a": "5,82%",
+        "ipc_an": "25,39%",
         "tt_a": "3,24%",
         "tt_an": "13,62%",
         "tc_a": "3,31%",
@@ -8302,8 +8302,8 @@
       },
       {
         "p": "Últimos 6 meses (L6M)",
-        "ipc_a": "12,65%",
-        "ipc_an": "26,89%",
+        "ipc_a": "12,98%",
+        "ipc_an": "27,64%",
         "tt_a": "7,31%",
         "tt_an": "15,16%",
         "tc_a": "10,78%",
@@ -8338,8 +8338,8 @@
       },
       {
         "p": "Ejercicio 2026/2027 (En curso)",
-        "ipc_a": "5,51%",
-        "ipc_an": "23,92%",
+        "ipc_a": "5,82%",
+        "ipc_an": "25,39%",
         "tt_a": "3,24%",
         "tt_an": "13,62%",
         "tc_a": "3,31%",
@@ -8347,8 +8347,8 @@
       },
       {
         "p": "Últimos 12 meses (L12M)",
-        "ipc_a": "32,97%",
-        "ipc_an": "32,97%",
+        "ipc_a": "33,36%",
+        "ipc_an": "33,36%",
         "tt_a": "19,35%",
         "tt_an": "19,35%",
         "tc_a": "10,94%",
@@ -8356,8 +8356,8 @@
       },
       {
         "p": "Últimos 24 meses (L24M)",
-        "ipc_a": "75,20%",
-        "ipc_an": "32,36%",
+        "ipc_a": "75,71%",
+        "ipc_an": "32,56%",
         "tt_a": "46,06%",
         "tt_an": "20,86%",
         "tc_a": "57,75%",
@@ -8365,8 +8365,8 @@
       },
       {
         "p": "Últimos 36 meses (L36M)",
-        "ipc_a": "441,36%",
-        "ipc_an": "75,59%",
+        "ipc_a": "442,96%",
+        "ipc_an": "75,76%",
         "tt_a": "129,32%",
         "tt_an": "31,87%",
         "tc_a": "337,49%",
