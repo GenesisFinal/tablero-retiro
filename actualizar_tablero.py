@@ -2,18 +2,28 @@
 """
 Script de Actualización y Validación Actuarial Automática
 Tablero de Control de Seguros de Retiro - La Segunda
-Dataset: 08-26 Nuevo Dataset Retiro - Ago 26.xlsx (Parser Dinámico y Resiliente)
+Dataset: 10-26 Nuevo Dataset Retiro - Oct 26.xlsx (Parser Dinámico y Resiliente)
 """
 
-import os, sys, json, re, glob, unicodedata
-import openpyxl
-import numpy as np
+import os, sys, json, re, glob, unicodedata, zipfile, datetime
+import xml.etree.ElementTree as ET
+
+try:
+    import openpyxl
+except ImportError:
+    openpyxl = None
+
+try:
+    import numpy as np
+except ImportError:
+    np = None
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # Buscar el archivo más reciente de dataset
 def get_latest_dataset_path():
     candidates = [
+        os.path.join(BASE_DIR, "10-26 Nuevo Dataset Retiro - Oct 26.xlsx"),
         os.path.join(BASE_DIR, "09-26 Nuevo Dataset Retiro - Sep 26 (definitivo).xlsx"),
         os.path.join(BASE_DIR, "09-26 Nuevo Dataset Retiro - Sep 26 (provisorio).xlsx"),
         os.path.join(BASE_DIR, "08-26 Nuevo Dataset Retiro - Ago 26.xlsx"),
@@ -26,18 +36,18 @@ def get_latest_dataset_path():
     found = glob.glob(os.path.join(BASE_DIR, "*Dataset Retiro*.xlsx"))
     if found:
         return max(found, key=os.path.getmtime)
-    return os.path.join(BASE_DIR, "09-26 Nuevo Dataset Retiro - Sep 26 (definitivo).xlsx")
+    return os.path.join(BASE_DIR, "10-26 Nuevo Dataset Retiro - Oct 26.xlsx")
 
 DATASET_PATH = get_latest_dataset_path()
 OUTPUT_JSON_PATH = os.path.join(BASE_DIR, "data_retiro.json")
 
-# Macro fallback series (Mar-23 to Sep-26, 43 periods)
+# Macro fallback series (Mar-23 to Oct-26, 44 periods)
 MACRO_FX_FALLBACK = [
     209.01, 222.68, 239.85, 256.70, 275.25, 350.00, 349.95, 350.00, 360.50, 808.45, 
     826.40, 842.20, 858.00, 876.50, 895.50, 912.00, 932.00, 953.50, 970.50, 992.00, 
     1011.50, 1032.00, 1053.50, 1064.75, 1074.00, 1170.00, 1188.00, 1205.00, 1374.00, 1342.00, 
     1380.00, 1445.00, 1451.50, 1455.00, 1447.00, 1397.00, 1382.00, 1391.00, 1408.00, 1482.00, 
-    1485.00, 1508.50, 1531.00
+    1485.00, 1508.50, 1531.00, 1534.00
 ]
 
 MACRO_IPC_FALLBACK = [
@@ -45,7 +55,7 @@ MACRO_IPC_FALLBACK = [
     20.61, 13.24, 11.01, 8.83, 4.18, 4.58, 4.03, 4.17, 3.47, 2.69, 
     2.43, 2.70, 2.21, 2.40, 3.73, 2.78, 1.50, 1.62, 1.90, 1.88, 
     2.08, 2.34, 2.47, 2.85, 2.88, 2.90, 3.38, 2.58, 2.15, 1.89, 
-    2.11, 1.70, 1.90
+    2.11, 1.70, 1.90, 1.80
 ]
 
 def normalize_text(t):
@@ -53,13 +63,66 @@ def normalize_text(t):
     s = unicodedata.normalize('NFKD', str(t)).encode('ASCII', 'ignore').decode('utf-8').strip().lower()
     return re.sub(r'\s+', ' ', s)
 
+def _read_xlsx_native(file_path):
+    """Lector nativo de .xlsx sin dependencias externas (usa zipfile + xml)."""
+    with zipfile.ZipFile(file_path, 'r') as z:
+        strings = []
+        if 'xl/sharedStrings.xml' in z.namelist():
+            ss = ET.fromstring(z.read('xl/sharedStrings.xml'))
+            for si in ss.findall('{http://schemas.openxmlformats.org/spreadsheetml/2006/main}si'):
+                t_text = ''.join(t.text or '' for t in si.iter('{http://schemas.openxmlformats.org/spreadsheetml/2006/main}t'))
+                strings.append(t_text)
+        sheet = ET.fromstring(z.read('xl/worksheets/sheet1.xml'))
+        grid = {}
+        max_row = 0
+        max_col = 0
+        for row in sheet.iter('{http://schemas.openxmlformats.org/spreadsheetml/2006/main}row'):
+            r_idx = int(row.attrib['r'])
+            if r_idx > max_row:
+                max_row = r_idx
+            for c in row.findall('{http://schemas.openxmlformats.org/spreadsheetml/2006/main}c'):
+                ref = c.attrib['r']
+                col_letters = re.match(r'[A-Z]+', ref).group(0)
+                col_idx = 0
+                for ch in col_letters:
+                    col_idx = col_idx * 26 + (ord(ch) - ord('A') + 1)
+                if col_idx > max_col:
+                    max_col = col_idx
+                t = c.attrib.get('t')
+                is_elem = c.find('{http://schemas.openxmlformats.org/spreadsheetml/2006/main}is')
+                v_elem = c.find('{http://schemas.openxmlformats.org/spreadsheetml/2006/main}v')
+                val = None
+                if is_elem is not None:
+                    val = ''.join(te.text or '' for te in is_elem.iter('{http://schemas.openxmlformats.org/spreadsheetml/2006/main}t'))
+                elif v_elem is not None and v_elem.text is not None:
+                    val = v_elem.text
+                    if t == 's':
+                        val = strings[int(val)]
+                    elif t != 'str':
+                        try:
+                            val = float(val)
+                        except:
+                            pass
+                if val is not None:
+                    if r_idx == 1 and col_idx >= 5 and isinstance(val, (int, float)):
+                        val = datetime.datetime(1899, 12, 30) + datetime.timedelta(days=int(val))
+                    grid[(r_idx, col_idx)] = val
+        return grid, max_row, max_col
+
 def load_and_parse_multidimensional_dataset(file_path):
     print(f"Cargando dataset multidimensional desde: {file_path}...")
-    wb = openpyxl.load_workbook(file_path, data_only=True)
-    ws = wb["DataSet Andres"]
+    if openpyxl is not None:
+        wb = openpyxl.load_workbook(file_path, data_only=True)
+        ws = wb["DataSet Andres"]
+        max_row = ws.max_row
+        max_col = ws.max_column
+        get_cell = lambda r, c: ws.cell(row=r, column=c).value
+    else:
+        grid, max_row, max_col = _read_xlsx_native(file_path)
+        get_cell = lambda r, c: grid.get((r, c))
 
     # 1. Extraer fechas de la fila 1 (columnas 5 en adelante)
-    raw_dates = [ws.cell(row=1, column=c).value for c in range(5, ws.max_column + 1)]
+    raw_dates = [get_cell(1, c) for c in range(5, max_col + 1)]
     dates = []
     for d in raw_dates:
         if d is not None:
@@ -75,11 +138,11 @@ def load_and_parse_multidimensional_dataset(file_path):
     current_prod = ""
     current_concept = ""
 
-    for r in range(1, ws.max_row + 1):
-        c1 = ws.cell(row=r, column=1).value
-        c2 = ws.cell(row=r, column=2).value
-        c3 = ws.cell(row=r, column=3).value
-        c4 = ws.cell(row=r, column=4).value
+    for r in range(1, max_row + 1):
+        c1 = get_cell(r, 1)
+        c2 = get_cell(r, 2)
+        c3 = get_cell(r, 3)
+        c4 = get_cell(r, 4)
         
         if c1 is not None and str(c1).strip() != "":
             current_prod = str(c1).strip()
@@ -92,7 +155,7 @@ def load_and_parse_multidimensional_dataset(file_path):
         vals = []
         has_data = False
         for col in range(5, 5 + N):
-            v = ws.cell(row=r, column=col).value
+            v = get_cell(r, col)
             if v is not None:
                 has_data = True
                 try:
@@ -350,17 +413,20 @@ def compute_official_tables(dates, cube, fx_series, ipc_monthly):
     y, m = last_date.split('-')
     last_month_str = f"{month_names.get(m, m)} {y}"
 
-    rent_p = np.array(cube["individual"]["rentabilidad"]["pesos"])
-    rent_d = np.array(cube["individual"]["rentabilidad"]["dolares"])
-    tt_arr = np.array(cube["individual"]["rentabilidad"]["tt_pesos"])
-    ipc_arr = np.array([x / 100.0 for x in ipc_monthly])
-    fx_arr = np.array(fx_series)
+    rent_p = list(cube["individual"]["rentabilidad"]["pesos"])
+    rent_d = list(cube["individual"]["rentabilidad"]["dolares"])
+    tt_arr = list(cube["individual"]["rentabilidad"]["tt_pesos"])
+    ipc_arr = [x / 100.0 for x in ipc_monthly]
+    fx_arr = list(fx_series)
 
     def calc_compound(rates, s_idx, e_idx):
         r = rates[s_idx:e_idx+1]
         m = len(r)
         if m == 0: return "0,00%", "0,00%"
-        prod = np.prod(1.0 + np.array(r)) - 1.0
+        prod_acc = 1.0
+        for val in r:
+            prod_acc *= (1.0 + float(val))
+        prod = prod_acc - 1.0
         anual = ((1.0 + prod) ** (12.0 / m)) - 1.0 if m > 0 else 0.0
         return f"{prod*100:,.2f}%".replace('.', ','), f"{anual*100:,.2f}%".replace('.', ',')
 
@@ -422,7 +488,7 @@ def main():
     cube = parsed["cube"]
 
     # Validación Actuarial Consolidada al último período
-    last_fx = fx[-1] if fx else 1508.50
+    last_fx = fx[-1] if fx else 1534.00
     last_idx = len(dates) - 1
     
     def calc_segment_total(seg):
@@ -452,9 +518,9 @@ def main():
 
     final_payload = {
         "metadata": {
-            "version": "3.4.1-multidimensional-sep26-ipc-definitivo",
+            "version": "3.5.0-multidimensional-oct26",
             "source": os.path.basename(dataset_file),
-            "updated_at": "2026-10-13T21:05:00Z",
+            "updated_at": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
             "audit_status": "Validado Actuarialmente",
             "periods_count": len(dates)
         },
@@ -483,9 +549,38 @@ def main():
             pos_end = html.find(";\n    let DATES = ", pos_db)
             if pos_end != -1:
                 html = html[:pos_db + len(db_marker)] + json.dumps(final_payload, ensure_ascii=False) + html[pos_end:]
+                # Actualizar etiquetas de período y contadores en index.html
+                html = html.replace(
+                    '>Septiembre 2026</span>',
+                    '>Octubre 2026</span>'
+                ).replace(
+                    'Histórico Total (43 Meses)',
+                    'Histórico Total (44 Meses)'
+                ).replace(
+                    '(Octubre 2025 - Septiembre 2026)',
+                    '(Noviembre 2025 - Octubre 2026)'
+                ).replace(
+                    'Matriz Histórica de 43 Períodos Mensuales',
+                    'Matriz Histórica de 44 Períodos Mensuales'
+                ).replace(
+                    'Dataset oficial auditado al cierre Septiembre 2026',
+                    'Dataset oficial auditado al cierre Octubre 2026'
+                ).replace(
+                    '// 1. DATASET MAESTRO MULTIDIMENSIONAL (41 Meses)',
+                    '// 1. DATASET MAESTRO MULTIDIMENSIONAL (44 Meses)'
+                ).replace(
+                    "'12m': { label: 'Últimos 12 Meses (L12M)', subtitle: 'Octubre 2025 - Septiembre 2026', count: 12 },",
+                    "'12m': { label: 'Últimos 12 Meses (L12M)', subtitle: 'Noviembre 2025 - Octubre 2026', count: 12 },"
+                ).replace(
+                    "'2026-2027': { label: 'Ejercicio 2026/2027 (En curso)', subtitle: 'Julio 2026 - Septiembre 2026 (3 meses computados)', count: 3 },",
+                    "'2026-2027': { label: 'Ejercicio 2026/2027 (En curso)', subtitle: 'Julio 2026 - Octubre 2026 (4 meses computados)', count: 4 },"
+                ).replace(
+                    "subtitle: 'Marzo 2023 - Septiembre 2026 (43 meses)', count: 43",
+                    "subtitle: 'Marzo 2023 - Octubre 2026 (44 meses)', count: 44"
+                )
                 with open(index_path, "w", encoding="utf-8") as f:
                     f.write(html)
-                print("OK: index.html actualizado con el nuevo dataset embebido.")
+                print("OK: index.html actualizado con el nuevo dataset embebido y etiquetas Octubre 2026.")
 
     # Despliegue si se pasa flag --deploy
     if "--deploy" in sys.argv:
