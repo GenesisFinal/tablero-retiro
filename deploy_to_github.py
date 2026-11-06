@@ -2,6 +2,8 @@
 """
 Script de Despliegue Automatizado a GitHub / GitHub Pages
 Tablero de Seguros de Retiro (AGMD Style Dark Green)
+Usa Git Data API (Trees/Commits) para publicar todos los archivos en UN SOLO commit atómico,
+evitando que múltiples commits consecutivos cancelen el despliegue de GitHub Pages.
 """
 
 import base64
@@ -13,7 +15,6 @@ import urllib.request
 import urllib.error
 
 def get_github_token():
-    # Buscar token localmente en archivo de configuración o proyectos hermanos
     possible_paths = [
         os.path.join(os.path.dirname(__file__), "GitHub token.txt"),
         os.path.join("G:\\Mi unidad\\IA\\Valores Financieros", "GitHub token.txt"),
@@ -61,94 +62,94 @@ def main():
     full_repo = f"{username}/{repo_name}"
     print(f"Desplegando en repositorio: {full_repo}")
 
-    # 1. Verificar o Crear Repositorio
-    status_code, text = http_request("GET", f"https://api.github.com/repos/{full_repo}", headers)
-    if status_code == 404:
-        print(f"Creando repositorio '{repo_name}' en GitHub...")
-        create_payload = {
-            "name": repo_name,
-            "description": "Tablero de Control de Seguros de Retiro - La Segunda (AGMD Style Dark Green • JetBrains Mono • Looker Studio • Autoactualizable)",
-            "homepage": f"https://{username}.github.io/{repo_name}/",
-            "private": False,
-            "has_issues": True,
-            "has_projects": True,
-            "has_wiki": False,
-            "auto_init": True
-        }
-        c_status, c_text = http_request("POST", "https://api.github.com/user/repos", headers, create_payload)
-        if c_status in [200, 201]:
-            print(f"Repositorio '{full_repo}' creado exitosamente!")
-            time.sleep(2)
-        else:
-            print(f"Error al crear repositorio: {c_status} - {c_text}")
-            sys.exit(1)
-    else:
-        print(f"Repositorio '{full_repo}' ya existe.")
+    # 1.Obtener referencia actual de main
+    ref_status, ref_text = http_request("GET", f"https://api.github.com/repos/{full_repo}/git/ref/heads/main", headers)
+    if ref_status != 200:
+        print(f"Error al obtener ref heads/main: {ref_status} - {ref_text}")
+        sys.exit(1)
+    latest_commit_sha = json.loads(ref_text)["object"]["sha"]
 
-    # 2. Función para subir o actualizar archivo en el repo con reintentos
-    def upload_file(remote_path, local_path, commit_msg):
+    commit_status, commit_text = http_request("GET", f"https://api.github.com/repos/{full_repo}/git/commits/{latest_commit_sha}", headers)
+    base_tree_sha = json.loads(commit_text)["tree"]["sha"]
+
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    files_to_publish = [
+        ".nojekyll",
+        "favicon.svg",
+        "LaSegunda_Color_RGB.png",
+        "index.html",
+        "data_retiro.json",
+        "actualizar_tablero.py",
+        "deploy_to_github.py",
+    ]
+
+    tree_items = []
+    for fname in files_to_publish:
+        local_path = os.path.join(base_dir, fname)
         if not os.path.exists(local_path):
-            print(f"Archivo local no encontrado: {local_path}")
-            return False
-
+            continue
         with open(local_path, "rb") as f:
             content_bytes = f.read()
         content_b64 = base64.b64encode(content_bytes).decode("utf-8")
+        b_status, b_text = http_request(
+            "POST",
+            f"https://api.github.com/repos/{full_repo}/git/blobs",
+            headers,
+            {"content": content_b64, "encoding": "base64"}
+        )
+        if b_status not in [200, 201]:
+            print(f"Error creando blob para {fname}: {b_status} - {b_text}")
+            sys.exit(1)
+        blob_sha = json.loads(b_text)["sha"]
+        print(f"Preparado {fname} ({len(content_bytes):,} bytes) -> blob {blob_sha[:8]}")
+        tree_items.append({
+            "path": fname,
+            "mode": "100644",
+            "type": "blob",
+            "sha": blob_sha
+        })
 
-        url = f"https://api.github.com/repos/{full_repo}/contents/{remote_path}"
-        
-        for attempt in range(6):
-            g_status, g_text = http_request("GET", url, headers)
-            sha = None
-            if g_status == 200:
-                try:
-                    sha = json.loads(g_text).get("sha")
-                except Exception:
-                    sha = None
+    # Crear nuevo árbol
+    t_status, t_text = http_request(
+        "POST",
+        f"https://api.github.com/repos/{full_repo}/git/trees",
+        headers,
+        {"base_tree": base_tree_sha, "tree": tree_items}
+    )
+    if t_status not in [200, 201]:
+        print(f"Error creando tree: {t_status} - {t_text}")
+        sys.exit(1)
+    new_tree_sha = json.loads(t_text)["sha"]
 
-            payload = {
-                "message": commit_msg,
-                "content": content_b64
-            }
-            if sha:
-                payload["sha"] = sha
-
-            print(f"Subiendo {remote_path} ({len(content_bytes):,} bytes, intento {attempt+1})...")
-            p_status, p_text = http_request("PUT", url, headers, payload)
-            if p_status in [200, 201]:
-                print(f"OK: {remote_path} publicado en GitHub.")
-                return True
-            else:
-                print(f"Aviso al subir {remote_path}: {p_status} - {p_text[:120]}")
-                time.sleep(2 * (attempt + 1))
-        print(f"ERROR: No se pudo subir {remote_path} tras 6 intentos.")
-        return False
-
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    
-    upload_file(".nojekyll", os.path.join(base_dir, ".nojekyll"), "Config: Deshabilitar procesamiento Jekyll con .nojekyll")
-    upload_file("favicon.svg", os.path.join(base_dir, "favicon.svg"), "Asset: Favicon SVG para pestaña y marcadores")
-    upload_file("LaSegunda_Color_RGB.png", os.path.join(base_dir, "LaSegunda_Color_RGB.png"), "Asset: Logo oficial La Segunda Seguros")
-    upload_file("index.html", os.path.join(base_dir, "index.html"), "Feat: Actualizacion dataset Octubre 2026 (44 meses) y benchmarks")
-    upload_file("data_retiro.json", os.path.join(base_dir, "data_retiro.json"), "Data: Actualizacion cubo multidimensional Octubre 2026 (44 meses)")
-    upload_file("actualizar_tablero.py", os.path.join(base_dir, "actualizar_tablero.py"), "Code: Parser nativo sin dependencias externas y soporte Octubre 2026")
-    upload_file("deploy_to_github.py", os.path.join(base_dir, "deploy_to_github.py"), "Code: Script de despliegue automatizado a GitHub Pages")
-
-    # 4. Activar GitHub Pages si aún no está activado
-    pages_url = f"https://api.github.com/repos/{full_repo}/pages"
-    pg_status, _ = http_request("GET", pages_url, headers)
-    if pg_status == 404:
-        print("Habilitando GitHub Pages en la rama main...")
-        pages_payload = {
-            "source": {
-                "branch": "main",
-                "path": "/"
-            }
+    # Crear un único commit atómico
+    commit_msg = "Feat: Actualizacion Tablero Octubre 2026 (44 meses) y despliegue atomico"
+    nc_status, nc_text = http_request(
+        "POST",
+        f"https://api.github.com/repos/{full_repo}/git/commits",
+        headers,
+        {
+            "message": commit_msg,
+            "tree": new_tree_sha,
+            "parents": [latest_commit_sha]
         }
-        pp_status, _ = http_request("POST", pages_url, headers, pages_payload)
-        if pp_status not in [200, 201]:
-            pages_payload["source"]["branch"] = "master"
-            http_request("POST", pages_url, headers, pages_payload)
+    )
+    if nc_status not in [200, 201]:
+        print(f"Error creando commit: {nc_status} - {nc_text}")
+        sys.exit(1)
+    new_commit_sha = json.loads(nc_text)["sha"]
+
+    # Actualizar ref heads/main
+    u_status, u_text = http_request(
+        "PATCH",
+        f"https://api.github.com/repos/{full_repo}/git/refs/heads/main",
+        headers,
+        {"sha": new_commit_sha, "force": False}
+    )
+    if u_status not in [200, 201]:
+        print(f"Error actualizando main: {u_status} - {u_text}")
+        sys.exit(1)
+
+    print(f"OK: Commit atómico publicado en main ({new_commit_sha[:8]}).")
 
     public_url = f"https://{username}.github.io/{repo_name}/"
     print("\n=======================================================")
