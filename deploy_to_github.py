@@ -4,12 +4,13 @@ Script de Despliegue Automatizado a GitHub / GitHub Pages
 Tablero de Seguros de Retiro (AGMD Style Dark Green)
 """
 
-import requests
 import base64
 import json
 import os
 import sys
 import time
+import urllib.request
+import urllib.error
 
 def get_github_token():
     # Buscar token localmente en archivo de configuración o proyectos hermanos
@@ -26,6 +27,22 @@ def get_github_token():
                     if clean.startswith("ghp_"):
                         return clean
     return os.environ.get("GITHUB_TOKEN")
+
+def http_request(method, url, headers, payload=None):
+    data = json.dumps(payload).encode("utf-8") if payload is not None else None
+    req_headers = dict(headers)
+    if data is not None:
+        req_headers["Content-Type"] = "application/json"
+    req = urllib.request.Request(url, data=data, headers=req_headers, method=method)
+    try:
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            body = resp.read().decode("utf-8", errors="replace")
+            return resp.status, body
+    except urllib.error.HTTPError as e:
+        body = e.read().decode("utf-8", errors="replace")
+        return e.code, body
+    except Exception as e:
+        return 0, str(e)
 
 def main():
     token = get_github_token()
@@ -45,8 +62,8 @@ def main():
     print(f"Desplegando en repositorio: {full_repo}")
 
     # 1. Verificar o Crear Repositorio
-    repo_res = requests.get(f"https://api.github.com/repos/{full_repo}", headers=headers)
-    if repo_res.status_code == 404:
+    status_code, text = http_request("GET", f"https://api.github.com/repos/{full_repo}", headers)
+    if status_code == 404:
         print(f"Creando repositorio '{repo_name}' en GitHub...")
         create_payload = {
             "name": repo_name,
@@ -58,12 +75,12 @@ def main():
             "has_wiki": False,
             "auto_init": True
         }
-        create_res = requests.post("https://api.github.com/user/repos", headers=headers, json=create_payload)
-        if create_res.status_code in [200, 201]:
+        c_status, c_text = http_request("POST", "https://api.github.com/user/repos", headers, create_payload)
+        if c_status in [200, 201]:
             print(f"Repositorio '{full_repo}' creado exitosamente!")
             time.sleep(2)
         else:
-            print(f"Error al crear repositorio: {create_res.status_code} - {create_res.text}")
+            print(f"Error al crear repositorio: {c_status} - {c_text}")
             sys.exit(1)
     else:
         print(f"Repositorio '{full_repo}' ya existe.")
@@ -81,10 +98,13 @@ def main():
         url = f"https://api.github.com/repos/{full_repo}/contents/{remote_path}"
         
         for attempt in range(6):
-            get_res = requests.get(url, headers=headers)
+            g_status, g_text = http_request("GET", url, headers)
             sha = None
-            if get_res.status_code == 200:
-                sha = get_res.json().get("sha")
+            if g_status == 200:
+                try:
+                    sha = json.loads(g_text).get("sha")
+                except Exception:
+                    sha = None
 
             payload = {
                 "message": commit_msg,
@@ -94,12 +114,12 @@ def main():
                 payload["sha"] = sha
 
             print(f"Subiendo {remote_path} ({len(content_bytes):,} bytes, intento {attempt+1})...")
-            put_res = requests.put(url, headers=headers, json=payload)
-            if put_res.status_code in [200, 201]:
+            p_status, p_text = http_request("PUT", url, headers, payload)
+            if p_status in [200, 201]:
                 print(f"OK: {remote_path} publicado en GitHub.")
                 return True
             else:
-                print(f"Aviso al subir {remote_path}: {put_res.status_code} - {put_res.text[:120]}")
+                print(f"Aviso al subir {remote_path}: {p_status} - {p_text[:120]}")
                 time.sleep(2 * (attempt + 1))
         print(f"ERROR: No se pudo subir {remote_path} tras 6 intentos.")
         return False
@@ -109,15 +129,15 @@ def main():
     upload_file(".nojekyll", os.path.join(base_dir, ".nojekyll"), "Config: Deshabilitar procesamiento Jekyll con .nojekyll")
     upload_file("favicon.svg", os.path.join(base_dir, "favicon.svg"), "Asset: Favicon SVG para pestaña y marcadores")
     upload_file("LaSegunda_Color_RGB.png", os.path.join(base_dir, "LaSegunda_Color_RGB.png"), "Asset: Logo oficial La Segunda Seguros")
-    upload_file("index.html", os.path.join(base_dir, "index.html"), "Feat: Actualizacion IPC oficial INDEC Septiembre 2026 (1,90%) y recalculo de benchmarks")
-    upload_file("data_retiro.json", os.path.join(base_dir, "data_retiro.json"), "Data: Actualizacion IPC oficial Septiembre 2026 (1,90%) y series deflactadas")
-    upload_file("actualizar_tablero.py", os.path.join(base_dir, "actualizar_tablero.py"), "Code: Actualizacion serie macroeconomica IPC Sep-26 (1.90%)")
+    upload_file("index.html", os.path.join(base_dir, "index.html"), "Feat: Actualizacion dataset Octubre 2026 (44 meses) y benchmarks")
+    upload_file("data_retiro.json", os.path.join(base_dir, "data_retiro.json"), "Data: Actualizacion cubo multidimensional Octubre 2026 (44 meses)")
+    upload_file("actualizar_tablero.py", os.path.join(base_dir, "actualizar_tablero.py"), "Code: Parser nativo sin dependencias externas y soporte Octubre 2026")
     upload_file("deploy_to_github.py", os.path.join(base_dir, "deploy_to_github.py"), "Code: Script de despliegue automatizado a GitHub Pages")
 
     # 4. Activar GitHub Pages si aún no está activado
     pages_url = f"https://api.github.com/repos/{full_repo}/pages"
-    pages_get = requests.get(pages_url, headers=headers)
-    if pages_get.status_code == 404:
+    pg_status, _ = http_request("GET", pages_url, headers)
+    if pg_status == 404:
         print("Habilitando GitHub Pages en la rama main...")
         pages_payload = {
             "source": {
@@ -125,11 +145,10 @@ def main():
                 "path": "/"
             }
         }
-        pages_post = requests.post(pages_url, headers=headers, json=pages_payload)
-        if pages_post.status_code not in [200, 201]:
-            # Probar con rama master
+        pp_status, _ = http_request("POST", pages_url, headers, pages_payload)
+        if pp_status not in [200, 201]:
             pages_payload["source"]["branch"] = "master"
-            pages_post = requests.post(pages_url, headers=headers, json=pages_payload)
+            http_request("POST", pages_url, headers, pages_payload)
 
     public_url = f"https://{username}.github.io/{repo_name}/"
     print("\n=======================================================")
